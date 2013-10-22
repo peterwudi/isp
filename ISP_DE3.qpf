@@ -1,0 +1,6 @@
+QUARTUS_VERSION = "9.1"
+DATE = "17:49:27 October 22, 2013"
+
+# Revisions
+
+PROJECT_REVISION = "ISP_DE3"
