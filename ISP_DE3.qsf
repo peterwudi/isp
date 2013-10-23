@@ -795,6 +795,15 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to JVC_DATAOUT
 set_location_assignment PIN_AC32 -to JVC_DATAIN
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to JVC_DATAIN
 
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VERILOG_FILE components/rom_selector.v
+set_global_assignment -name VERILOG_FILE components/pll_reconfig.v
+set_global_assignment -name VERILOG_FILE components/gen_pll.v
+set_global_assignment -name VERILOG_FILE components/vpg.v
+set_global_assignment -name SOURCE_FILE components/vpg.h
+set_global_assignment -name VERILOG_FILE components/vga_time_generator.v
+set_global_assignment -name VERILOG_FILE components/sys_pll.v
 set_global_assignment -name VERILOG_FILE components/SEG7_LUT.v
 set_global_assignment -name VERILOG_FILE components/Line_Buffer1.v
 set_global_assignment -name VERILOG_FILE components/reset_delay.v

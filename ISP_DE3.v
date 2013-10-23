@@ -357,6 +357,63 @@ I2C_CCD_Config u10(
 
 
 
+//	System  generate
+sys_pll sys_pll_inst(
+	.areset(1'b0),
+	.inclk0(OSC2_50),
+	.c0(pll_100M),
+	.c1(pll_100K),
+	.c2(D5M_XCLKIN),//25M 
+	.locked(reset_n_dvi)
+	);
+
+//---------------------------------------------------//
+//				DVI Mode Change Button Monitor 			 //
+//---------------------------------------------------//
+wire		[3:0]	vpg_mode;	
+/*`ifdef SXGA_1280x1024p60
+	assign vpg_mode = `MODE_1280x1024;
+`else
+*/
+    assign vpg_mode = `VGA_640x480p60;
+//`endif
+
+
+//----------------------------------------------//
+// 			 Video Pattern Generator	  	   	//
+//----------------------------------------------//
+wire [3:0]	vpg_disp_mode;
+wire [1:0]	vpg_disp_color;
+wire vpg_pclk;
+wire vpg_de;
+wire vpg_hs;
+wire vpg_vs;
+wire [23:0]	vpg_data;
+vpg	vpg_inst(
+	.clk_100(pll_100M),
+	.reset_n(read_rstn & reset_n_dvi),//
+	.mode(vpg_mode),
+	.mode_change(1'b0),
+	.disp_color(`COLOR_RGB444),       
+	.vpg_pclk(vpg_pclk),
+	.vpg_de(vpg_de),
+	.vpg_hs(vpg_hs),
+	.vpg_vs(vpg_vs),
+	.vpg_r(vpg_data[23:16]), //
+	.vpg_g(vpg_data[15:8]), //
+	.vpg_b(vpg_data[7:0]) //
+);
+//DVI Signal
+assign DVI_TX_DE = vpg_de;
+assign DVI_TX_HS = vpg_hs;
+assign DVI_TX_VS = vpg_vs;
+assign DVI_TX_CLK = vpg_pclk;
+//DVI data source selection via SW[0]
+assign DVI_TX_D = SW[0] ? {Read_DATA2[9:2],Read_DATA1[14:10],Read_DATA2[14:12],Read_DATA1[9:2]} : vpg_data;
+
+
+
+
 
 
 //=======================================================
