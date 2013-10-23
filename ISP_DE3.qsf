@@ -11,13 +11,12 @@ set_global_assignment -name DEVICE EP3SL150F1152C2
 set_global_assignment -name TOP_LEVEL_ENTITY ISP_DE3
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "17:49:27 OCTOBER 22,2013"
-set_global_assignment -name LAST_QUARTUS_VERSION 12.1
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name USE_GENERATED_PHYSICAL_CONSTRAINTS OFF -section_id eda_palace
 set_global_assignment -name DEVICE_FILTER_PACKAGE FBGA
 set_global_assignment -name DEVICE_FILTER_PIN_COUNT 1152
 set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 2
 set_global_assignment -name STRATIXIII_CONFIGURATION_SCHEME "ACTIVE SERIAL"
-set_global_assignment -name VERILOG_FILE ISP_DE3.v
 
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -795,3 +794,16 @@ set_location_assignment PIN_AC31 -to JVC_DATAOUT
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to JVC_DATAOUT
 set_location_assignment PIN_AC32 -to JVC_DATAIN
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to JVC_DATAIN
+
+set_global_assignment -name VERILOG_FILE components/SEG7_LUT.v
+set_global_assignment -name VERILOG_FILE components/Line_Buffer1.v
+set_global_assignment -name VERILOG_FILE components/reset_delay.v
+set_global_assignment -name VERILOG_FILE components/raw2rgb.v
+set_global_assignment -name VERILOG_FILE components/I2C_Controller.v
+set_global_assignment -name VERILOG_FILE components/i2c_ccd_config.v
+set_global_assignment -name VERILOG_FILE components/ext_pll_ctrl.v
+set_global_assignment -name VERILOG_FILE components/filter.v
+set_global_assignment -name VERILOG_FILE components/demosaic.v
+set_global_assignment -name VERILOG_FILE components/convolution.v
+set_global_assignment -name SYSTEMVERILOG_FILE tb.sv
+set_global_assignment -name VERILOG_FILE ISP_DE3.v

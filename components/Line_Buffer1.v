@@ -4,7 +4,7 @@
 // MODULE: ALTSHIFT_TAPS 
 
 // ============================================================
-// File Name: Line_Buffer.v
+// File Name: Line_Buffer1.v
 // Megafunction Name(s):
 // 			ALTSHIFT_TAPS
 //
@@ -36,7 +36,7 @@
 // synopsys translate_off
 `timescale 1 ps / 1 ps
 // synopsys translate_on
-module Line_Buffer (
+module Line_Buffer1 (
 	clken,
 	clock,
 	shiftin,
@@ -78,7 +78,7 @@ module Line_Buffer (
 				// synopsys translate_on
 				);
 	defparam
-		ALTSHIFT_TAPS_component.intended_device_family = "Stratix IV",
+		ALTSHIFT_TAPS_component.intended_device_family = "Stratix III",
 		ALTSHIFT_TAPS_component.lpm_hint = "RAM_BLOCK_TYPE=AUTO",
 		ALTSHIFT_TAPS_component.lpm_type = "altshift_taps",
 		ALTSHIFT_TAPS_component.number_of_taps = 2,
@@ -94,14 +94,14 @@ endmodule
 // Retrieval info: PRIVATE: ACLR NUMERIC "0"
 // Retrieval info: PRIVATE: CLKEN NUMERIC "1"
 // Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "1"
-// Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix IV"
+// Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix III"
 // Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "2"
 // Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "3"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
 // Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "1280"
 // Retrieval info: PRIVATE: WIDTH NUMERIC "12"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
-// Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Stratix IV"
+// Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Stratix III"
 // Retrieval info: CONSTANT: LPM_HINT STRING "RAM_BLOCK_TYPE=AUTO"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altshift_taps"
 // Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "2"
@@ -119,10 +119,10 @@ endmodule
 // Retrieval info: CONNECT: shiftout 0 0 12 0 @shiftout 0 0 12 0
 // Retrieval info: CONNECT: taps0x 0 0 12 0 @taps 0 0 12 0
 // Retrieval info: CONNECT: taps1x 0 0 12 0 @taps 0 0 12 12
-// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer.v TRUE
-// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer.inc FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer.cmp FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer.bsf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer_bb.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer1.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer1.inc FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer1.cmp FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer1.bsf TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer1_inst.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer1_bb.v FALSE
 // Retrieval info: LIB_FILE: altera_mf
