@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pinplan
+ variation_name="ddr2_controller"
+ megafunction_name="ALTERA_MEM_IF_DDR2_EMIF"
+ intended_family="Stratix III"
+ specifies="all_ports">
+ <global>
+  <pin name="pll_ref_clk" direction="input" scope="external" />
+  <pin name="global_reset_n" direction="input" scope="external" />
+  <pin name="soft_reset_n" direction="input" scope="external" />
+  <pin name="afi_clk" direction="output" scope="external" />
+  <pin name="afi_half_clk" direction="output" scope="external" />
+  <pin name="afi_reset_n" direction="output" scope="external" />
+  <pin name="afi_reset_export_n" direction="output" scope="external" />
+  <pin name="mem_a[13..0]" direction="output" scope="external" />
+  <pin name="mem_ba[1..0]" direction="output" scope="external" />
+  <pin name="mem_ck[1..0]" direction="output" scope="external" />
+  <pin name="mem_ck_n[1..0]" direction="output" scope="external" />
+  <pin name="mem_cke[1..0]" direction="output" scope="external" />
+  <pin name="mem_cs_n[1..0]" direction="output" scope="external" />
+  <pin name="mem_dm[7..0]" direction="output" scope="external" />
+  <pin name="mem_ras_n" direction="output" scope="external" />
+  <pin name="mem_cas_n" direction="output" scope="external" />
+  <pin name="mem_we_n" direction="output" scope="external" />
+  <pin name="mem_dq[63..0]" direction="bidir" scope="external" />
+  <pin name="mem_dqs[7..0]" direction="bidir" scope="external" />
+  <pin name="mem_dqs_n[7..0]" direction="bidir" scope="external" />
+  <pin name="mem_odt[1..0]" direction="output" scope="external" />
+  <pin name="avl_ready" direction="output" scope="external" />
+  <pin name="avl_burstbegin" direction="input" scope="external" />
+  <pin name="avl_addr[24..0]" direction="input" scope="external" />
+  <pin name="avl_rdata_valid" direction="output" scope="external" />
+  <pin name="avl_rdata[255..0]" direction="output" scope="external" />
+  <pin name="avl_wdata[255..0]" direction="input" scope="external" />
+  <pin name="avl_be[31..0]" direction="input" scope="external" />
+  <pin name="avl_read_req" direction="input" scope="external" />
+  <pin name="avl_write_req" direction="input" scope="external" />
+  <pin name="avl_size[2..0]" direction="input" scope="external" />
+  <pin name="local_init_done" direction="output" scope="external" />
+  <pin name="local_cal_success" direction="output" scope="external" />
+  <pin name="local_cal_fail" direction="output" scope="external" />
+  <pin name="oct_rdn" direction="input" scope="external" />
+  <pin name="oct_rup" direction="input" scope="external" />
+ </global>
+</pinplan>
