@@ -252,18 +252,18 @@ ext_pll_ctrl ext_pll_ctrl_Inst(
 //  Structural coding
 //=======================================================
 //D5M
-//assign	D5M_TRIGGER				=	1'b1;  // tRIGGER
-//assign	D5M_ESETn				=	DLY_RST_1;
+assign	GPIO1_TRIGGER	=	1'b1;  // tRIGGER
+assign	GPIO1_RESETn	=	DLY_RST_1;
 
-//D5M read 
-//always@(posedge D5M_PIXLCLK)
-//begin
-//	rCCD_DATA	<=	D5M_D;
-//	rCCD_LVAL	<=	D5M_LVAL;
-//	rCCD_FVAL	<=	D5M_FVAL;
-//end
+//	D5M read 
+always@(posedge GPIO1_PIXLCLK)
+begin
+	rCCD_DATA	<=	GPIO1_D;
+	rCCD_LVAL	<=	GPIO1_LVAL;
+	rCCD_FVAL	<=	GPIO1_FVAL;
+end
 
-//Reset module
+//	Reset module
 Reset_Delay	u2(	
 	.iCLK(OSC2_50),
 	.iRST(Button[0]),
@@ -274,79 +274,77 @@ Reset_Delay	u2(
 	.oRST_4(DLY_RST_4),
 );
 
-////D5M image capture
-//CCD_Capture	u3(
-//	.oDATA(mCCD_DATA),
-//	.oDVAL(mCCD_DVAL),
-//	.oX_Cont(X_Cont),
-//	.oY_Cont(Y_Cont),
-//	.oFrame_Cont(Frame_Cont),
-//	.iDATA(rCCD_DATA),
-//	.iFVAL(rCCD_FVAL),
-//	.iLVAL(rCCD_LVAL),
-//	.iSTART(!Button[3]|auto_start),
-//	.iEND(!Button[2]),
-//	.iCLK(~D5M_PIXLCLK),
-//	.iRST(DLY_RST_2)
-//);
+//	D5M image capture
+CCD_Capture	u3(
+	.oDATA(mCCD_DATA),
+	.oDVAL(mCCD_DVAL),
+	.oX_Cont(X_Cont),
+	.oY_Cont(Y_Cont),
+	.oFrame_Cont(Frame_Cont),
+	.iDATA(rCCD_DATA),
+	.iFVAL(rCCD_FVAL),
+	.iLVAL(rCCD_LVAL),
+	.iSTART(!Button[3]|auto_start),
+	.iEND(!Button[2]),
+	.iCLK(~GPIO1_PIXLCLK),
+	.iRST(DLY_RST_2)
+);
 
 //D5M raw date convert to RGB data
-/*
-`ifdef SXGA_1280x1024p60
-RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
-							.iRST_n(DLY_RST_1),
-							.iData(mCCD_DATA),
-							.iDval(mCCD_DVAL),
-							.oRed(sCCD_R),
-							.oGreen(sCCD_G),
-							.oBlue(sCCD_B),
-							.oDval(sCCD_DVAL),
-							.iZoom(SLIDE_SW[3:2]),
-							.iX_Cont(X_Cont),
-							.iY_Cont(Y_Cont)
-						);
-`else
-*/
+//`ifdef SXGA_1280x1024p60
+//RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
+//							.iRST_n(DLY_RST_1),
+//							.iData(mCCD_DATA),
+//							.iDval(mCCD_DVAL),
+//							.oRed(sCCD_R),
+//							.oGreen(sCCD_G),
+//							.oBlue(sCCD_B),
+//							.oDval(sCCD_DVAL),
+//							.iZoom(SLIDE_SW[3:2]),
+//							.iX_Cont(X_Cont),
+//							.iY_Cont(Y_Cont)
+//						);
+//`else
 
-//RAW2RGB	u4(
-//	.iCLK(D5M_PIXLCLK),
-//	.iRST(DLY_RST_1),
-//	.iDATA(mCCD_DATA),
-//	.iDVAL(mCCD_DVAL),
-//	.oRed(sCCD_R),
-//	.oGreen(sCCD_G),
-//	.oBlue(sCCD_B),
-//	.oDVAL(sCCD_DVAL),
-//	.iX_Cont(X_Cont),
-//	.iY_Cont(Y_Cont)
-//);
-////`endif			
-//
-//
-////Frame count display
-//Frame_Display u5(
-//	.iDIG(Frame_Cont[7:0]),
-//	.oHEX0(HEX0),
-//	.oHEX1(HEX1)
-//);
+RAW2RGB	u4(
+	.iCLK(GPIO1_PIXLCLK),
+	.iRST(DLY_RST_1),
+	.iDATA(mCCD_DATA),
+	.iDVAL(mCCD_DVAL),
+	.oRed(sCCD_R),
+	.oGreen(sCCD_G),
+	.oBlue(sCCD_B),
+	.oDVAL(sCCD_DVAL),
+	.iX_Cont(X_Cont),
+	.iY_Cont(Y_Cont)
+);
+//`endif			
+
+
+//Frame count display
+Frame_Display u5(
+	.iDig(Frame_Cont[7:0]),
+	.oHEX0(HEX0),
+	.oHEX1(HEX1)
+);
 
 // DDR2
+// BLAH BLAH BLAH BLAH OH~~~~~~
 
 
-//
-////D5M I2C control
-//I2C_CCD_Config u10(
-//	//	Host Side
-//	.iCLK(OSC2_50),
-//	.iRST_N(DLY_RST_2),
-//	.iZOOM_MODE_SW(SW[1]),
-//	.iEXPOSURE_ADJ(Button[1]),
-//	.iEXPOSURE_DEC_p(SW[0]),							
-//	
-//	//	I2C Side
-//	.I2C_SCLK(D5M_SCLK),
-//	.I2C_SDAT(D5M_SDATA)
-//);
+//D5M I2C control
+I2C_CCD_Config u10(
+	//	Host Side
+	.iCLK(OSC2_50),
+	.iRST_N(DLY_RST_2),
+	.iZOOM_MODE_SW(SW[1]),
+	.iEXPOSURE_ADJ(Button[1]),
+	.iEXPOSURE_DEC_p(SW[0]),							
+	
+	//	I2C Side
+	.I2C_SCLK(GPIO1_SCLK),
+	.I2C_SDAT(GPIO1_SDATA)
+);
 
 
 
@@ -420,10 +418,14 @@ assign HSTCC_DVI_TX_HS = vpg_hs;
 assign HSTCC_DVI_TX_VS = vpg_vs;
 assign HSTCC_DVI_TX_CLK = vpg_pclk;
 
-//DVI data source selection via SW[0]
-//assign DVI_TX_D = SW[0] ? {Read_DATA2[9:2],Read_DATA1[14:10],Read_DATA2[14:12],Read_DATA1[9:2]} : vpg_data;
+//DVI data source selection via SW[0], vpg_data = {R,G,B}
+//assign HSTCC_DVI_TX_D = SW[0] ? {Read_DATA2[9:2],Read_DATA1[14:10],Read_DATA2[14:12],Read_DATA1[9:2]} : vpg_data;
 
-assign HSTCC_DVI_TX_D = vpg_data;
+// 
+assign HSTCC_DVI_TX_D = SW[0] ? {sCCD_R[11:4], sCCD_G[11:4], sCCD_B[11:4]} : vpg_data;
+
+// Note: only testing video pattern
+//assign HSTCC_DVI_TX_D = vpg_data;
 
 
 

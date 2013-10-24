@@ -77,13 +77,13 @@ module Frame_Display (
 	output	[6:0]		oHEX1
 );
 
-Hex7_LUT	u0
+Hex_LUT	u0
 (
 	.oHex(oHEX0),
 	.iDig(iDig[3:0])
 );
 
-Hex7_LUT	u1
+Hex_LUT	u1
 (
 	.oHex(oHEX1),
 	.iDig(iDig[7:4])
