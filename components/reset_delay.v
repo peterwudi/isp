@@ -39,7 +39,7 @@
 //   Ver  :| Author            :| Mod. Date :| Changes Made:
 //   V1.0 :| Johnny FAN        :| 07/07/09  :| Initial Revision
 // --------------------------------------------------------------------
-`include "vpg.h" 
+`include "..\vpg_source\vpg.h" 
 module	Reset_Delay(iCLK,iRST,oRST_0,oRST_1,oRST_2,oRST_3,oRST_4);
 input		iCLK;
 input		iRST;

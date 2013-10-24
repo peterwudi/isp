@@ -39,7 +39,7 @@
 //   Ver  :| Author            :| Mod. Date :| Changes Made:
 //   V1.0 :| Johnny FAN        :| 07/07/09  :| Initial Revision
 // --------------------------------------------------------------------
-`include "vpg.h" //added by Peli 2010-07-19 for resolution selection
+`include "..\vpg_source\vpg.h" //added by Peli 2010-07-19 for resolution selection
 module I2C_CCD_Config (	//	Host Side
 						iCLK,
 						iRST_N,
