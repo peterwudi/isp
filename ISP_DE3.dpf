@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<pin_planner>
+	<pin_info>
+		<pin name="mem_clk[1]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_clk_n[1]" >
+		</pin>
+		<pin name="mem_clk[0]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_clk_n[0]" >
+		</pin>
+		<pin name="mem_clk_n[1]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_clk[1]" >
+		</pin>
+		<pin name="mem_clk_n[0]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_clk[0]" >
+		</pin>
+		<pin name="mem_dqs[7]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[7]" >
+		</pin>
+		<pin name="mem_dqs[6]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[6]" >
+		</pin>
+		<pin name="mem_dqs[5]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[5]" >
+		</pin>
+		<pin name="mem_dqs[4]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[4]" >
+		</pin>
+		<pin name="mem_dqs[3]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[3]" >
+		</pin>
+		<pin name="mem_dqs[2]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[2]" >
+		</pin>
+		<pin name="mem_dqs[1]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[1]" >
+		</pin>
+		<pin name="mem_dqs[0]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqsn[0]" >
+		</pin>
+		<pin name="mem_dqsn[7]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[7]" >
+		</pin>
+		<pin name="mem_dqsn[6]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[6]" >
+		</pin>
+		<pin name="mem_dqsn[5]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[5]" >
+		</pin>
+		<pin name="mem_dqsn[4]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[4]" >
+		</pin>
+		<pin name="mem_dqsn[3]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[3]" >
+		</pin>
+		<pin name="mem_dqsn[2]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[2]" >
+		</pin>
+		<pin name="mem_dqsn[1]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[1]" >
+		</pin>
+		<pin name="mem_dqsn[0]" direction="Bidir" source="Hierarchy Database" diff_pair_node="mem_dqs[0]" >
+		</pin>
+	</pin_info>
+	<buses>
+	</buses>
+	<group_file_association>
+	</group_file_association>
+	<pin_planner_file_specifies>
+	</pin_planner_file_specifies>
+</pin_planner>

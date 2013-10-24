@@ -1,4 +1,4 @@
--- Copyright (C) 1991-2010 Altera Corporation
+-- Copyright (C) 1991-2009 Altera Corporation
 -- Your use of Altera Corporation's design tools, logic functions 
 -- and other software and tools, and its AMPP partner logic 
 -- functions, and any output files from any of the foregoing 
@@ -13,15 +13,15 @@
 -- applicable agreement for further details.
 
 -- MIF file representing initial state of PLL Scan Chain
---    Device Family: Stratix IV
+--    Device Family: Stratix III
 --    Device Part: -
---    Device Speed Grade: 2
---    PLL Scan Chain: Enhanced PLL (234 bits)
---    File Name: E:\My_design\DE4_HSMA_DVI\gen_pll.mif
---    Generated: Fri Jul 09 15:24:54 2010
+--    Device Speed Grade: -
+--    PLL Scan Chain: Fast PLL (180 bits)
+--    File Name: D:\01_Test_program\DVI_Demo_06\DVI_Demo_S3_B\vpg_source\gen_pll.mif
+--    Generated: Mon Jun 15 12:33:02 2009
 
 WIDTH=1;
-DEPTH=234;
+DEPTH=180;
 
 ADDRESS_RADIX=UNS;
 DATA_RADIX=UNS;
@@ -207,58 +207,4 @@ CONTENT BEGIN
 	177  :   0;
 	178  :   0;
 	179  :   0;
-	180  :   1; -- clk7 counter: Bypass = 1 (1 bit(s))
-	181  :   0; -- clk7 counter: High Count = 0 (8 bit(s))
-	182  :   0;
-	183  :   0;
-	184  :   0;
-	185  :   0;
-	186  :   0;
-	187  :   0;
-	188  :   0;
-	189  :   0; -- clk7 counter: Odd Division = 0 (1 bit(s))
-	190  :   0; -- clk7 counter: Low Count = 0 (8 bit(s))
-	191  :   0;
-	192  :   0;
-	193  :   0;
-	194  :   0;
-	195  :   0;
-	196  :   0;
-	197  :   0;
-	198  :   1; -- clk8 counter: Bypass = 1 (1 bit(s))
-	199  :   0; -- clk8 counter: High Count = 0 (8 bit(s))
-	200  :   0;
-	201  :   0;
-	202  :   0;
-	203  :   0;
-	204  :   0;
-	205  :   0;
-	206  :   0;
-	207  :   0; -- clk8 counter: Odd Division = 0 (1 bit(s))
-	208  :   0; -- clk8 counter: Low Count = 0 (8 bit(s))
-	209  :   0;
-	210  :   0;
-	211  :   0;
-	212  :   0;
-	213  :   0;
-	214  :   0;
-	215  :   0;
-	216  :   1; -- clk9 counter: Bypass = 1 (1 bit(s))
-	217  :   0; -- clk9 counter: High Count = 0 (8 bit(s))
-	218  :   0;
-	219  :   0;
-	220  :   0;
-	221  :   0;
-	222  :   0;
-	223  :   0;
-	224  :   0;
-	225  :   0; -- clk9 counter: Odd Division = 0 (1 bit(s))
-	226  :   0; -- clk9 counter: Low Count = 0 (8 bit(s))
-	227  :   0;
-	228  :   0;
-	229  :   0;
-	230  :   0;
-	231  :   0;
-	232  :   0;
-	233  :   0;
 END;

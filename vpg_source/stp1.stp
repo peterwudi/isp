@@ -1,0 +1,291 @@
+<session jtag_chain="USB-Blaster [USB-0]" jtag_device="@1: EP3C120 (0x020F70DD)" sof_file="" top_level_entity="PCI_HDMI_TX_RX">
+  <display_tree gui_logging_enabled="0">
+    <display_branch instance="auto_signaltap_0" signal_set="USE_GLOBAL_TEMP" trigger="USE_GLOBAL_TEMP"/>
+  </display_tree>
+  <global_info>
+    <single attribute="active instance" value="0"/>
+    <single attribute="lock mode" value="36110"/>
+    <multi attribute="window position" size="9" value="1027,608,398,124,356,50,124,0,1"/>
+  </global_info>
+  <instance entity_name="sld_signaltap" is_auto_node="yes" name="auto_signaltap_0" source_file="sld_signaltap.vhd">
+    <node_ip_info instance_id="0" mfg_id="110" node_id="0" version="6"/>
+    <position_info>
+      <single attribute="active tab" value="1"/>
+      <single attribute="data vertical scroll position" value="0"/>
+      <single attribute="data horizontal scroll position" value="0"/>
+      <single attribute="zoom level numerator" value="1"/>
+      <single attribute="zoom level denominator" value="1"/>
+      <single attribute="zoom offset numerator" value="130944"/>
+      <single attribute="zoom offset denominator" value="1"/>
+    </position_info>
+    <signal_set global_temp="1" name="signal_set: 2008/10/21 13:57:08  #0">
+      <clock name="vpg:vpg_inst|gen_pll:gen_pll_inst|c0" polarity="posedge" tap_mode="classic"/>
+      <config ram_type="M4K" reserved_data_nodes="0" reserved_trigger_nodes="0" sample_depth="512" trigger_in_enable="no" trigger_out_enable="no"/>
+      <top_entity/>
+      <signal_vec>
+        <trigger_input_vec>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_de" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_hs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_vs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_clk" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_de" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_hs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_vs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[10]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[11]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[8]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[9]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[10]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[11]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[8]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[9]" tap_mode="classic" type="combinatorial"/>
+        </trigger_input_vec>
+        <data_input_vec>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_de" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_hs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_vs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_clk" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_de" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_hs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_vs" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[10]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[11]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[8]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[9]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[0]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[10]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[11]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[1]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[2]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[3]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[4]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[5]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[6]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[7]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[8]" tap_mode="classic" type="combinatorial"/>
+          <wire name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[9]" tap_mode="classic" type="combinatorial"/>
+        </data_input_vec>
+      </signal_vec>
+      <presentation>
+        <data_view>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_clk"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_de"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_hs"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_vs"/>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[7]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[8]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[9]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[10]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[11]"/>
+          </bus>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[7]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[8]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[9]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[10]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[11]"/>
+          </bus>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_vs"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_hs"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_de"/>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[7]"/>
+          </bus>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[7]"/>
+          </bus>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[7]"/>
+          </bus>
+        </data_view>
+        <setup_view>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_clk"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_de"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_hs"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_vs"/>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[7]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[8]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[9]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[10]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_x[11]"/>
+          </bus>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[7]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[8]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[9]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[10]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|pixel_y[11]"/>
+          </bus>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_vs"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_hs"/>
+          <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_de"/>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_r[7]"/>
+          </bus>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_g[7]"/>
+          </bus>
+          <bus is_signal_inverted="no" link="all" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b" order="lsb_to_msb" radix="hex" state="collapse" type="combinatorial">
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[0]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[1]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[2]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[3]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[4]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[5]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[6]"/>
+            <net is_signal_inverted="no" name="vpg:vpg_inst|pattern_gen:pattern_gen_inst|gen_b[7]"/>
+          </bus>
+        </setup_view>
+      </presentation>
+      <trigger attribute_mem_mode="false" global_temp="1" name="trigger: 2008/10/21 13:57:08  #1" position="pre" power_up_trigger_mode="false" segment_size="1" trigger_in="dont_care" trigger_out="active high" trigger_type="circular">
+        <power_up_trigger position="pre" trigger_in="dont_care" trigger_out="active high"/>
+        <events use_custom_flow_control="no">
+          <level enabled="yes" name="condition1" type="basic">
+            <power_up enabled="yes">
+            </power_up>
+            <op_node/>
+          </level>
+        </events>
+      </trigger>
+    </signal_set>
+  </instance>
+  <mnemonics/>
+  <static_plugin_mnemonics/>
+</session>

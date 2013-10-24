@@ -1,4 +1,4 @@
--- Copyright (C) 1991-2010 Altera Corporation
+-- Copyright (C) 1991-2009 Altera Corporation
 -- Your use of Altera Corporation's design tools, logic functions 
 -- and other software and tools, and its AMPP partner logic 
 -- functions, and any output files from any of the foregoing 
@@ -13,12 +13,12 @@
 -- applicable agreement for further details.
 
 -- MIF file representing initial state of PLL Scan Chain
---    Device Family: Stratix IV
+--    Device Family: Stratix III
 --    Device Part: -
---    Device Speed Grade: 2
+--    Device Speed Grade: -
 --    PLL Scan Chain: Enhanced PLL (234 bits)
---    File Name: E:\My_design\DE4_HSMA_DVI\gen_pll.mif
---    Generated: Fri Jul 09 15:24:54 2010
+--    File Name: D:\01_Test_program\DVI_Demo_06\DVI_Demo_S3_B\vpg_source\gen_162.mif
+--    Generated: Mon Jun 15 12:32:31 2009
 
 WIDTH=1;
 DEPTH=234;

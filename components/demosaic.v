@@ -37,7 +37,7 @@ Line_Buffer u0
 	.taps1x(mDATA_0)
 );
 
-always@(posedge iCLK or negedge iRST)
+always@(posedge iCLK or negedge iRST_n)
 begin
 	if(!iRST_n)
 	begin

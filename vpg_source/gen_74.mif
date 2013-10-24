@@ -1,4 +1,4 @@
--- Copyright (C) 1991-2010 Altera Corporation
+-- Copyright (C) 1991-2009 Altera Corporation
 -- Your use of Altera Corporation's design tools, logic functions 
 -- and other software and tools, and its AMPP partner logic 
 -- functions, and any output files from any of the foregoing 
@@ -13,15 +13,15 @@
 -- applicable agreement for further details.
 
 -- MIF file representing initial state of PLL Scan Chain
---    Device Family: Stratix IV
+--    Device Family: Cyclone III
 --    Device Part: -
---    Device Speed Grade: 2
---    PLL Scan Chain: Enhanced PLL (234 bits)
---    File Name: E:\My_design\DE4_HSMA_DVI\gen_pll.mif
---    Generated: Fri Jul 09 15:24:54 2010
+--    Device Speed Grade: -
+--    PLL Scan Chain: Fast PLL (144 bits)
+--    File Name: D:\01_Test_program\DE3_DVI\DE3_DVI\C3H_DVI_PortA\HSMC_DVI_GEN_Reference_Design\DE3_TEST0\vpg_source\gen_74.mif
+--    Generated: Wed May 13 14:36:18 2009
 
 WIDTH=1;
-DEPTH=234;
+DEPTH=144;
 
 ADDRESS_RADIX=UNS;
 DATA_RADIX=UNS;
@@ -36,7 +36,7 @@ CONTENT BEGIN
 	6    :   1;
 	7    :   0;
 	8    :   0;
-	9    :   1; -- VCO Post Scale = 1 (1 bit(s)) (VCO post-scale divider counter value = 1)
+	9    :   0; -- VCO Post Scale = 0 (1 bit(s)) (VCO post-scale divider counter value = 2)
 	10   :   0; -- Reserved Bits = 0 (5 bit(s))
 	11   :   0;
 	12   :   0;
@@ -45,60 +45,60 @@ CONTENT BEGIN
 	15   :   0; -- Charge Pump Current = 1 (3 bit(s)) (Setting 1)
 	16   :   0;
 	17   :   1;
-	18   :   0; -- M counter: Bypass = 0 (1 bit(s))
-	19   :   0; -- M counter: High Count = 41 (8 bit(s))
+	18   :   0; -- N counter: Bypass = 0 (1 bit(s))
+	19   :   0; -- N counter: High Count = 4 (8 bit(s))
 	20   :   0;
-	21   :   1;
+	21   :   0;
 	22   :   0;
-	23   :   1;
-	24   :   0;
+	23   :   0;
+	24   :   1;
 	25   :   0;
-	26   :   1;
-	27   :   1; -- M counter: Odd Division = 1 (1 bit(s))
-	28   :   0; -- M counter: Low Count = 40 (8 bit(s))
+	26   :   0;
+	27   :   1; -- N counter: Odd Division = 1 (1 bit(s))
+	28   :   0; -- N counter: Low Count = 3 (8 bit(s))
 	29   :   0;
-	30   :   1;
+	30   :   0;
 	31   :   0;
-	32   :   1;
+	32   :   0;
 	33   :   0;
-	34   :   0;
-	35   :   0;
-	36   :   0; -- N counter: Bypass = 0 (1 bit(s))
-	37   :   0; -- N counter: High Count = 5 (8 bit(s))
+	34   :   1;
+	35   :   1;
+	36   :   0; -- M counter: Bypass = 0 (1 bit(s))
+	37   :   0; -- M counter: High Count = 23 (8 bit(s))
 	38   :   0;
 	39   :   0;
-	40   :   0;
+	40   :   1;
 	41   :   0;
 	42   :   1;
-	43   :   0;
+	43   :   1;
 	44   :   1;
-	45   :   0; -- N counter: Odd Division = 0 (1 bit(s))
-	46   :   0; -- N counter: Low Count = 5 (8 bit(s))
+	45   :   0; -- M counter: Odd Division = 0 (1 bit(s))
+	46   :   0; -- M counter: Low Count = 23 (8 bit(s))
 	47   :   0;
 	48   :   0;
-	49   :   0;
+	49   :   1;
 	50   :   0;
 	51   :   1;
-	52   :   0;
+	52   :   1;
 	53   :   1;
 	54   :   0; -- clk0 counter: Bypass = 0 (1 bit(s))
-	55   :   0; -- clk0 counter: High Count = 3 (8 bit(s))
+	55   :   0; -- clk0 counter: High Count = 2 (8 bit(s))
 	56   :   0;
 	57   :   0;
 	58   :   0;
 	59   :   0;
 	60   :   0;
 	61   :   1;
-	62   :   1;
+	62   :   0;
 	63   :   1; -- clk0 counter: Odd Division = 1 (1 bit(s))
-	64   :   0; -- clk0 counter: Low Count = 2 (8 bit(s))
+	64   :   0; -- clk0 counter: Low Count = 1 (8 bit(s))
 	65   :   0;
 	66   :   0;
 	67   :   0;
 	68   :   0;
 	69   :   0;
-	70   :   1;
-	71   :   0;
+	70   :   0;
+	71   :   1;
 	72   :   1; -- clk1 counter: Bypass = 1 (1 bit(s))
 	73   :   0; -- clk1 counter: High Count = 0 (8 bit(s))
 	74   :   0;
@@ -171,94 +171,4 @@ CONTENT BEGIN
 	141  :   0;
 	142  :   0;
 	143  :   0;
-	144  :   1; -- clk5 counter: Bypass = 1 (1 bit(s))
-	145  :   0; -- clk5 counter: High Count = 0 (8 bit(s))
-	146  :   0;
-	147  :   0;
-	148  :   0;
-	149  :   0;
-	150  :   0;
-	151  :   0;
-	152  :   0;
-	153  :   0; -- clk5 counter: Odd Division = 0 (1 bit(s))
-	154  :   0; -- clk5 counter: Low Count = 0 (8 bit(s))
-	155  :   0;
-	156  :   0;
-	157  :   0;
-	158  :   0;
-	159  :   0;
-	160  :   0;
-	161  :   0;
-	162  :   1; -- clk6 counter: Bypass = 1 (1 bit(s))
-	163  :   0; -- clk6 counter: High Count = 0 (8 bit(s))
-	164  :   0;
-	165  :   0;
-	166  :   0;
-	167  :   0;
-	168  :   0;
-	169  :   0;
-	170  :   0;
-	171  :   0; -- clk6 counter: Odd Division = 0 (1 bit(s))
-	172  :   0; -- clk6 counter: Low Count = 0 (8 bit(s))
-	173  :   0;
-	174  :   0;
-	175  :   0;
-	176  :   0;
-	177  :   0;
-	178  :   0;
-	179  :   0;
-	180  :   1; -- clk7 counter: Bypass = 1 (1 bit(s))
-	181  :   0; -- clk7 counter: High Count = 0 (8 bit(s))
-	182  :   0;
-	183  :   0;
-	184  :   0;
-	185  :   0;
-	186  :   0;
-	187  :   0;
-	188  :   0;
-	189  :   0; -- clk7 counter: Odd Division = 0 (1 bit(s))
-	190  :   0; -- clk7 counter: Low Count = 0 (8 bit(s))
-	191  :   0;
-	192  :   0;
-	193  :   0;
-	194  :   0;
-	195  :   0;
-	196  :   0;
-	197  :   0;
-	198  :   1; -- clk8 counter: Bypass = 1 (1 bit(s))
-	199  :   0; -- clk8 counter: High Count = 0 (8 bit(s))
-	200  :   0;
-	201  :   0;
-	202  :   0;
-	203  :   0;
-	204  :   0;
-	205  :   0;
-	206  :   0;
-	207  :   0; -- clk8 counter: Odd Division = 0 (1 bit(s))
-	208  :   0; -- clk8 counter: Low Count = 0 (8 bit(s))
-	209  :   0;
-	210  :   0;
-	211  :   0;
-	212  :   0;
-	213  :   0;
-	214  :   0;
-	215  :   0;
-	216  :   1; -- clk9 counter: Bypass = 1 (1 bit(s))
-	217  :   0; -- clk9 counter: High Count = 0 (8 bit(s))
-	218  :   0;
-	219  :   0;
-	220  :   0;
-	221  :   0;
-	222  :   0;
-	223  :   0;
-	224  :   0;
-	225  :   0; -- clk9 counter: Odd Division = 0 (1 bit(s))
-	226  :   0; -- clk9 counter: Low Count = 0 (8 bit(s))
-	227  :   0;
-	228  :   0;
-	229  :   0;
-	230  :   0;
-	231  :   0;
-	232  :   0;
-	233  :   0;
 END;

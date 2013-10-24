@@ -1,0 +1,126 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2009 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 0 0 320 176)
+	(text "gen_pll" (rect 140 0 188 16)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 160 25 172)(font "Arial" ))
+	(port
+		(pt 0 64)
+		(input)
+		(text "inclk0" (rect 0 0 31 14)(font "Arial" (font_size 8)))
+		(text "inclk0" (rect 4 51 31 64)(font "Arial" (font_size 8)))
+		(line (pt 0 64)(pt 72 64)(line_width 1))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "areset" (rect 0 0 36 14)(font "Arial" (font_size 8)))
+		(text "areset" (rect 4 67 32 80)(font "Arial" (font_size 8)))
+		(line (pt 0 80)(pt 72 80)(line_width 1))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "scanclk" (rect 0 0 43 14)(font "Arial" (font_size 8)))
+		(text "scanclk" (rect 4 83 37 96)(font "Arial" (font_size 8)))
+		(line (pt 0 96)(pt 72 96)(line_width 1))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "scandata" (rect 0 0 53 14)(font "Arial" (font_size 8)))
+		(text "scandata" (rect 4 99 46 112)(font "Arial" (font_size 8)))
+		(line (pt 0 112)(pt 72 112)(line_width 1))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "scanclkena" (rect 0 0 64 14)(font "Arial" (font_size 8)))
+		(text "scanclkena" (rect 4 115 55 128)(font "Arial" (font_size 8)))
+		(line (pt 0 128)(pt 72 128)(line_width 1))
+	)
+	(port
+		(pt 0 144)
+		(input)
+		(text "configupdate" (rect 0 0 74 14)(font "Arial" (font_size 8)))
+		(text "configupdate" (rect 4 131 66 144)(font "Arial" (font_size 8)))
+		(line (pt 0 144)(pt 72 144)(line_width 1))
+	)
+	(port
+		(pt 320 64)
+		(output)
+		(text "c0" (rect 0 0 14 14)(font "Arial" (font_size 8)))
+		(text "c0" (rect 305 51 316 64)(font "Arial" (font_size 8)))
+		(line (pt 320 64)(pt 248 64)(line_width 1))
+	)
+	(port
+		(pt 320 80)
+		(output)
+		(text "scandataout" (rect 0 0 70 14)(font "Arial" (font_size 8)))
+		(text "scandataout" (rect 257 67 314 80)(font "Arial" (font_size 8)))
+		(line (pt 320 80)(pt 248 80)(line_width 1))
+	)
+	(port
+		(pt 320 96)
+		(output)
+		(text "scandone" (rect 0 0 56 14)(font "Arial" (font_size 8)))
+		(text "scandone" (rect 269 83 314 96)(font "Arial" (font_size 8)))
+		(line (pt 320 96)(pt 248 96)(line_width 1))
+	)
+	(port
+		(pt 320 112)
+		(output)
+		(text "locked" (rect 0 0 36 14)(font "Arial" (font_size 8)))
+		(text "locked" (rect 286 99 316 112)(font "Arial" (font_size 8)))
+		(line (pt 320 112)(pt 248 112)(line_width 1))
+	)
+	(drawing
+		(text "Stratix III" (rect 271 161 310 173)(font "Arial" ))
+		(text "inclk0 frequency: 100.000 MHz" (rect 82 67 212 79)(font "Arial" ))
+		(text "Operation Mode: Normal" (rect 82 81 183 93)(font "Arial" ))
+		(text "PLL Type: Left_Right PLL" (rect 82 95 191 107)(font "Arial" ))
+		(text "Clk " (rect 83 118 100 130)(font "Arial" ))
+		(text "Ratio" (rect 105 118 127 130)(font "Arial" ))
+		(text "Ph (dg)" (rect 133 118 163 130)(font "Arial" ))
+		(text "DC (%)" (rect 168 118 199 130)(font "Arial" ))
+		(text "c0" (rect 86 133 96 145)(font "Arial" ))
+		(text "81/50" (rect 105 133 128 145)(font "Arial" ))
+		(text "0.00" (rect 139 133 157 145)(font "Arial" ))
+		(text "50.00" (rect 172 133 195 145)(font "Arial" ))
+		(line (pt 0 0)(pt 321 0)(line_width 1))
+		(line (pt 321 0)(pt 321 177)(line_width 1))
+		(line (pt 0 177)(pt 321 177)(line_width 1))
+		(line (pt 0 0)(pt 0 177)(line_width 1))
+		(line (pt 80 116)(pt 201 116)(line_width 1))
+		(line (pt 80 130)(pt 201 130)(line_width 1))
+		(line (pt 80 145)(pt 201 145)(line_width 1))
+		(line (pt 80 116)(pt 80 145)(line_width 1))
+		(line (pt 102 116)(pt 102 145)(line_width 3))
+		(line (pt 130 116)(pt 130 145)(line_width 3))
+		(line (pt 165 116)(pt 165 145)(line_width 3))
+		(line (pt 200 116)(pt 200 145)(line_width 1))
+		(line (pt 72 48)(pt 248 48)(line_width 1))
+		(line (pt 248 48)(pt 248 160)(line_width 1))
+		(line (pt 72 160)(pt 248 160)(line_width 1))
+		(line (pt 72 48)(pt 72 160)(line_width 1))
+	)
+)

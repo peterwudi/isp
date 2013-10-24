@@ -37,18 +37,18 @@ module ISP_DE3(
 		input					TEMP_INTn,
 
 		////////// USB //////////
-		output	[17:1]	OTG_A;
-		output				OTG_CS_n;
-		inout		[31:0]	OTG_D;
-		output				OTG_DC_DACK;
-		input					OTG_DC_DREQ;
-		input					OTG_DC_IRQ;
-		output				OTG_HC_DACK;
-		input					OTG_HC_DREQ;
-		input					OTG_HC_IRQ;
-		output				OTG_OE_n;
-		output				OTG_RESET_n;
-		output				OTG_WE_n;
+		output	[17:1]	OTG_A,
+		output				OTG_CS_n,
+		inout		[31:0]	OTG_D,
+		output				OTG_DC_DACK,
+		input					OTG_DC_DREQ,
+		input					OTG_DC_IRQ,
+		output				OTG_HC_DACK,
+		input					OTG_HC_DREQ,
+		input					OTG_HC_IRQ,
+		output				OTG_OE_n,
+		output				OTG_RESET_n,
+		output				OTG_WE_n,
 
 		////////// SDCARD //////////
 		output				SD_CLK,
@@ -69,58 +69,58 @@ module ISP_DE3(
 		input					GPIO1_XCLKIN,
 
 		////////// mem (J9, DDR2 SO-DIMM), connect to DDR2_SODIMM(DDR2_SODIMM Board) //////////
-		output	[1:0]		mem_SA;
-		output				mem_SCL;
-		inout					mem_SDA;
-		output	[15:0]	mem_addr;
-		output	[2:0]		mem_ba;
-		output				mem_cas_n;
-		output	[1:0]		mem_cke;
-		inout		[1:0]		mem_clk;
-		inout		[1:0]		mem_clk_n;
-		output	[1:0]		mem_cs_n;
-		output	[7:0]		mem_dm;
-		inout		[63:0]	mem_dq;
-		inout		[7:0]		mem_dqs;
-		inout		[7:0]		mem_dqsn;
-		output	[1:0]		mem_odt;
-		output				mem_ras_n;
-		output				mem_we_n;
+//		output	[1:0]		mem_SA,
+//		output				mem_SCL,
+//		inout					mem_SDA,
+//		output	[15:0]	mem_addr,
+//		output	[2:0]		mem_ba,
+//		output				mem_cas_n,
+//		output	[1:0]		mem_cke,
+//		inout		[1:0]		mem_clk,
+//		inout		[1:0]		mem_clk_n,
+//		output	[1:0]		mem_cs_n,
+//		output	[7:0]		mem_dm,
+//		inout		[63:0]	mem_dq,
+//		inout		[7:0]		mem_dqs,
+//		inout		[7:0]		mem_dqsn,
+//		output	[1:0]		mem_odt,
+//		output				mem_ras_n,
+//		output				mem_we_n,
 
 		////////// HSTCC (J5 HSTC-C TOP/J6, HSTC-C BOTTOM), connect to DVI(DVI TX/RX Board) //////////
-		input					HSTCC_DVI_RX_CLK;
-		input		[3:1]		HSTCC_DVI_RX_CTL;
-		input		[23:0]	HSTCC_DVI_RX_D;
-		inout					HSTCC_DVI_RX_DDCSCL;
-		inout					HSTCC_DVI_RX_DDCSDA;
-		input					HSTCC_DVI_RX_DE;
-		input					HSTCC_DVI_RX_HS;
-		input 				HSTCC_DVI_RX_SCDT;
-		input					HSTCC_DVI_RX_VS;
-		output				HSTCC_DVI_TX_CLK;
-		output	[3:1]		HSTCC_DVI_TX_CTL;
-		output	[23:0]	HSTCC_DVI_TX_D;
-		inout					HSTCC_DVI_TX_DDCSCL;
-		inout					HSTCC_DVI_TX_DDCSDA;
-		output				HSTCC_DVI_TX_DE;
-		output				HSTCC_DVI_TX_DKEN;
-		output				HSTCC_DVI_TX_HS;
-		output				HSTCC_DVI_TX_HTPLG;
-		output				HSTCC_DVI_TX_ISEL;
-		output				HSTCC_DVI_TX_MSEN;
-		output				HSTCC_DVI_TX_SCL;
-		inout					HSTCC_DVI_TX_SDA;
-		output				HSTCC_DVI_TX_VS;
-		output				HSTCC_EDID_WP;
-		output				HSTCC_HSMC_SCL;
-		inout					HSTCC_HSMC_SDA;
-		output				HSTCC_TX_PD_N;
+		input					HSTCC_DVI_RX_CLK,
+		input		[3:1]		HSTCC_DVI_RX_CTL,
+		input		[23:0]	HSTCC_DVI_RX_D,
+		inout					HSTCC_DVI_RX_DDCSCL,
+		inout					HSTCC_DVI_RX_DDCSDA,
+		input					HSTCC_DVI_RX_DE,
+		input					HSTCC_DVI_RX_HS,
+		input 				HSTCC_DVI_RX_SCDT,
+		input					HSTCC_DVI_RX_VS,
+		output				HSTCC_DVI_TX_CLK,
+		output	[3:1]		HSTCC_DVI_TX_CTL,
+		output	[23:0]	HSTCC_DVI_TX_D,
+		inout					HSTCC_DVI_TX_DDCSCL,
+		inout					HSTCC_DVI_TX_DDCSDA,
+		output				HSTCC_DVI_TX_DE,
+		output				HSTCC_DVI_TX_DKEN,
+		output				HSTCC_DVI_TX_HS,
+		output				HSTCC_DVI_TX_HTPLG,
+		output				HSTCC_DVI_TX_ISEL,
+		output				HSTCC_DVI_TX_MSEN,
+		output				HSTCC_DVI_TX_SCL,
+		inout					HSTCC_DVI_TX_SDA,
+		output				HSTCC_DVI_TX_VS,
+		output				HSTCC_EDID_WP,
+		output				HSTCC_HSMC_SCL,
+		inout					HSTCC_HSMC_SDA,
+		output				HSTCC_TX_PD_N,
 
 		////////// REGULATOR //////////
-		output				JVC_CLK;
-		output				JVC_CS;
-		input					JVC_DATAIN;
-		output				JVC_DATAOUT;
+		output				JVC_CLK,
+		output				JVC_CS,
+		input					JVC_DATAIN,
+		output				JVC_DATAOUT
 
 	);
 
@@ -169,9 +169,9 @@ assign			reset_n 		= Button[0];
 
 
 //	DDR2
-wire				ip_init_done;
-wire				wrt_full_port0;
-wire				wrt_full_port1;
+//wire				ip_init_done;
+//wire				wrt_full_port0;
+//wire				wrt_full_port1;
 
 //	DVI
 wire 				reset_n_dvi;
@@ -202,7 +202,7 @@ assign clk1_set_wr = 4'd4; //100 MHZ
 assign clk2_set_wr = 4'd4; //100 MHZ
 assign clk3_set_wr = 4'd4; //100 MHZ
 
-assign rstn = BUTTON[0];
+assign rstn = Button[0];
 assign counter_max = &auto_set_counter;
 assign counter_inc = auto_set_counter + 1'b1;
 
@@ -252,23 +252,16 @@ ext_pll_ctrl ext_pll_ctrl_Inst(
 //  Structural coding
 //=======================================================
 //D5M
-assign	D5M_TRIGGER				=	1'b1;  // tRIGGER
-assign	D5M_ESETn				=	DLY_RST_1;
-
-//DVI
-assign	HSTCC_DVI_TX_ISEL 	=	1'b0; 	// disable i2c
-assign	HSTCC_DVI_TX_SCL		=	1'b1; 	// BSEL=0, 12-bit, dual-edge input
-assign	HSTCC_DVI_TX_HTPLG 	=	1'b1; 	// Note. *** EDGE=1, primary latch to occur on the rising edge of the input clock IDCK+
-assign	HSTCC_DVI_TX_SDA		=	1'b1;  	// DSEL=X (VREF=3.3V)
-assign	HSTCC_DVI_TX_PD_N		=	1'b1;
+//assign	D5M_TRIGGER				=	1'b1;  // tRIGGER
+//assign	D5M_ESETn				=	DLY_RST_1;
 
 //D5M read 
-always@(posedge D5M_PIXLCLK)
-begin
-	rCCD_DATA	<=	D5M_D;
-	rCCD_LVAL	<=	D5M_LVAL;
-	rCCD_FVAL	<=	D5M_FVAL;
-end
+//always@(posedge D5M_PIXLCLK)
+//begin
+//	rCCD_DATA	<=	D5M_D;
+//	rCCD_LVAL	<=	D5M_LVAL;
+//	rCCD_FVAL	<=	D5M_FVAL;
+//end
 
 //Reset module
 Reset_Delay	u2(	
@@ -281,21 +274,21 @@ Reset_Delay	u2(
 	.oRST_4(DLY_RST_4),
 );
 
-//D5M image capture
-CCD_Capture	u3(
-	.oDATA(mCCD_DATA),
-	.oDVAL(mCCD_DVAL),
-	.oX_Cont(X_Cont),
-	.oY_Cont(Y_Cont),
-	.oFrame_Cont(Frame_Cont),
-	.iDATA(rCCD_DATA),
-	.iFVAL(rCCD_FVAL),
-	.iLVAL(rCCD_LVAL),
-	.iSTART(!Button[3]|auto_start),
-	.iEND(!Button[2]),
-	.iCLK(~D5M_PIXLCLK),
-	.iRST(DLY_RST_2)
-);
+////D5M image capture
+//CCD_Capture	u3(
+//	.oDATA(mCCD_DATA),
+//	.oDVAL(mCCD_DVAL),
+//	.oX_Cont(X_Cont),
+//	.oY_Cont(Y_Cont),
+//	.oFrame_Cont(Frame_Cont),
+//	.iDATA(rCCD_DATA),
+//	.iFVAL(rCCD_FVAL),
+//	.iLVAL(rCCD_LVAL),
+//	.iSTART(!Button[3]|auto_start),
+//	.iEND(!Button[2]),
+//	.iCLK(~D5M_PIXLCLK),
+//	.iRST(DLY_RST_2)
+//);
 
 //D5M raw date convert to RGB data
 /*
@@ -315,45 +308,45 @@ RAW2RGB				u4	(	.iCLK(D5M_PIXLCLK),
 `else
 */
 
-RAW2RGB	u4(
-	.iCLK(D5M_PIXLCLK),
-	.iRST(DLY_RST_1),
-	.iDATA(mCCD_DATA),
-	.iDVAL(mCCD_DVAL),
-	.oRed(sCCD_R),
-	.oGreen(sCCD_G),
-	.oBlue(sCCD_B),
-	.oDVAL(sCCD_DVAL),
-	.iX_Cont(X_Cont),
-	.iY_Cont(Y_Cont)
-);
-//`endif			
-
-
-//Frame count display
-Frame_Display u5(
-	.iDIG(Frame_Cont[7:0]),
-	.oHEX0(HEX0),
-	.oHEX1(HEX1)
-);
+//RAW2RGB	u4(
+//	.iCLK(D5M_PIXLCLK),
+//	.iRST(DLY_RST_1),
+//	.iDATA(mCCD_DATA),
+//	.iDVAL(mCCD_DVAL),
+//	.oRed(sCCD_R),
+//	.oGreen(sCCD_G),
+//	.oBlue(sCCD_B),
+//	.oDVAL(sCCD_DVAL),
+//	.iX_Cont(X_Cont),
+//	.iY_Cont(Y_Cont)
+//);
+////`endif			
+//
+//
+////Frame count display
+//Frame_Display u5(
+//	.iDIG(Frame_Cont[7:0]),
+//	.oHEX0(HEX0),
+//	.oHEX1(HEX1)
+//);
 
 // DDR2
 
 
-
-//D5M I2C control
-I2C_CCD_Config u10(
-	//	Host Side
-	.iCLK(OSC2_50),
-	.iRST_N(DLY_RST_2),
-	.iZOOM_MODE_SW(SW[1]),
-	.iEXPOSURE_ADJ(Button[1]),
-	.iEXPOSURE_DEC_p(SW[0]),							
-	
-	//	I2C Side
-	.I2C_SCLK(D5M_SCLK),
-	.I2C_SDAT(D5M_SDATA)
-);
+//
+////D5M I2C control
+//I2C_CCD_Config u10(
+//	//	Host Side
+//	.iCLK(OSC2_50),
+//	.iRST_N(DLY_RST_2),
+//	.iZOOM_MODE_SW(SW[1]),
+//	.iEXPOSURE_ADJ(Button[1]),
+//	.iEXPOSURE_DEC_p(SW[0]),							
+//	
+//	//	I2C Side
+//	.I2C_SCLK(D5M_SCLK),
+//	.I2C_SDAT(D5M_SDATA)
+//);
 
 
 
@@ -363,7 +356,7 @@ sys_pll sys_pll_inst(
 	.inclk0(OSC2_50),
 	.c0(pll_100M),
 	.c1(pll_100K),
-	.c2(D5M_XCLKIN),//25M 
+	//.c2(D5M_XCLKIN),//25M 
 	.locked(reset_n_dvi)
 	);
 
@@ -379,19 +372,24 @@ wire		[3:0]	vpg_mode;
 //`endif
 
 
+
+// Note: only for DVI testing purpose
 //----------------------------------------------//
 // 			 Video Pattern Generator	  	   	//
 //----------------------------------------------//
 wire [3:0]	vpg_disp_mode;
 wire [1:0]	vpg_disp_color;
+
 wire vpg_pclk;
 wire vpg_de;
 wire vpg_hs;
 wire vpg_vs;
 wire [23:0]	vpg_data;
+
 vpg	vpg_inst(
 	.clk_100(pll_100M),
-	.reset_n(read_rstn & reset_n_dvi),//
+	//.reset_n(read_rstn & reset_n_dvi),//
+	.reset_n(reset_n_dvi),
 	.mode(vpg_mode),
 	.mode_change(1'b0),
 	.disp_color(`COLOR_RGB444),       
@@ -403,16 +401,29 @@ vpg	vpg_inst(
 	.vpg_g(vpg_data[15:8]), //
 	.vpg_b(vpg_data[7:0]) //
 );
+
+
+//----------------------------------------------//
+// 			 DVI TX                 	  	   	//
+//----------------------------------------------//
+//=============== DVI TX CONFIG ==================
+assign HSTCC_DVI_TX_ISEL 	= 1'b0; 	// disable i2c
+assign HSTCC_DVI_TX_SCL 	= 1'b1; 	// BSEL=0, 12-bit, dual-edge input
+assign HSTCC_DVI_TX_HTPLG 	= 1'b1; 	// Note. *** EDGE=1, primary latch to occur on the rising edge of the input clock IDCK+
+assign HSTCC_DVI_TX_SDA 	= 1'b1;  	// DSEL=X (VREF=3.3V)
+assign HSTCC_TX_PD_N 		= 1;
+
+
 //DVI Signal
-assign DVI_TX_DE = vpg_de;
-assign DVI_TX_HS = vpg_hs;
-assign DVI_TX_VS = vpg_vs;
-assign DVI_TX_CLK = vpg_pclk;
+assign HSTCC_DVI_TX_DE = vpg_de;
+assign HSTCC_DVI_TX_HS = vpg_hs;
+assign HSTCC_DVI_TX_VS = vpg_vs;
+assign HSTCC_DVI_TX_CLK = vpg_pclk;
+
 //DVI data source selection via SW[0]
-assign DVI_TX_D = SW[0] ? {Read_DATA2[9:2],Read_DATA1[14:10],Read_DATA2[14:12],Read_DATA1[9:2]} : vpg_data;
+//assign DVI_TX_D = SW[0] ? {Read_DATA2[9:2],Read_DATA1[14:10],Read_DATA2[14:12],Read_DATA1[9:2]} : vpg_data;
 
-
-
+assign HSTCC_DVI_TX_D = vpg_data;
 
 
 
