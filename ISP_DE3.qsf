@@ -803,6 +803,7 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name VERILOG_FILE vpg_source/vpg.v
 set_global_assignment -name SOURCE_FILE vpg_source/vpg.h
 set_global_assignment -name VERILOG_FILE vpg_source/vga_time_generator.v
@@ -817,6 +818,8 @@ set_global_assignment -name VERILOG_FILE vpg_source/rom_pll_25.v
 set_global_assignment -name VERILOG_FILE vpg_source/pll_reconfig.v
 set_global_assignment -name VERILOG_FILE vpg_source/pattern_gen.v
 set_global_assignment -name VERILOG_FILE vpg_source/gen_pll.v
+set_global_assignment -name VERILOG_FILE components/ddr2_fifo.v
+set_global_assignment -name VERILOG_FILE components/mem_buffer.v
 set_global_assignment -name VERILOG_FILE components/CCD_Capture.v
 set_global_assignment -name VERILOG_FILE components/sys_pll.v
 set_global_assignment -name VERILOG_FILE components/SEG7_LUT.v
@@ -832,6 +835,3 @@ set_global_assignment -name VERILOG_FILE components/convolution.v
 set_global_assignment -name SYSTEMVERILOG_FILE tb.sv
 set_global_assignment -name VERILOG_FILE ISP_DE3.v
 set_global_assignment -name SDC_FILE ISP_DE3.sdc
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
-set_global_assignment -name QIP_FILE ddr2/ddr2_controller.qip
-set_global_assignment -name SIP_FILE ddr2/ddr2_controller.sip

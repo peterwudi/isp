@@ -330,115 +330,54 @@ Frame_Display u5(
 
 // DDR2
 // BLAH BLAH BLAH BLAH OH~~~~~~
-ddr2_multi_port   u8    (
-                         // global signals
-						   .clk_50(OSC2_50),
-						   .reset_n(reset_n),
+//ddr2_multi_port   u8    (
+//                         // global signals
+//						   .clk_50(OSC2_50),
+//						   .reset_n(reset_n),
+//
+//						 // the_Read_Port0   
+//						   .iCLK_F_to_the_Read_Port0(vpg_pclk),
+//						   .iIP_INIT_DONE_to_the_Read_Port0(ip_init_done),
+//						   .iREAD_ACK_F_to_the_Read_Port0(vpg_de),
+//						   .iRST_n_F_to_the_Read_Port0(read_rstn),
+//						   .oEMPTY_F_from_the_Read_Port0(),
+//						   .oPORT_READY_F_from_the_Read_Port0(),
+//						   .oREAD_DATA_F_from_the_Read_Port0({Read_DATA1,Read_DATA2}),
+//						   
+//						 // the_Write_Port0     
+//						   .iCLK_F_to_the_Write_Port0(~D5M_PIXLCLK),
+//						   .iFLUSH_REQ_F_to_the_Write_Port0(),
+//						   .iIP_INIT_DONE_to_the_Write_Port0(ip_init_done),
+//						   .iRST_n_F_to_the_Write_Port0(BUTTON[0]),
+//						   .iWRITE_DATA_F_to_the_Write_Port0({1'b0,sCCD_G[11:7],sCCD_B[11:2],1'b0,sCCD_G[6:2],sCCD_R[11:2]}), 
+//						   .iWRITE_F_to_the_Write_Port0(sCCD_DVAL),
+//						   .oBURST_COUNT_from_the_Write_Port0(),
+//						   .oFLUSH_BUSY_F_from_the_Write_Port0(),
+//						   .oFULL_F_from_the_Write_Port0(wrt_full_port0),
+//						  						  
+//						  // the_ddr2   
+//						   .global_reset_n_to_the_ddr2(reset_n),
+//						   .local_init_done_from_the_ddr2(ip_init_done),
+//						   .mem_addr_from_the_ddr2(M1_DDR2_addr),
+//						   .mem_ba_from_the_ddr2(M1_DDR2_ba),
+//						   .mem_cas_n_from_the_ddr2(M1_DDR2_cas_n),
+//						   .mem_cke_from_the_ddr2(M1_DDR2_cke),
+//						   .mem_clk_n_to_and_from_the_ddr2(M1_DDR2_clk_n),
+//						   .mem_clk_to_and_from_the_ddr2(M1_DDR2_clk),
+//						   .mem_cs_n_from_the_ddr2(M1_DDR2_cs_n),
+//						   .mem_dm_from_the_ddr2(M1_DDR2_dm),
+//						   .mem_dq_to_and_from_the_ddr2(M1_DDR2_dq),
+//						   .mem_dqs_to_and_from_the_ddr2(M1_DDR2_dqs),
+//						   .mem_dqsn_to_and_from_the_ddr2(M1_DDR2_dqsn),
+//						   .mem_odt_from_the_ddr2(M1_DDR2_odt),
+//						   .mem_ras_n_from_the_ddr2(M1_DDR2_ras_n),
+//						   .mem_we_n_from_the_ddr2(M1_DDR2_we_n),
+//                        
+//                         );
+						 
+								 
 
-						 // the_Read_Port0   
-						   .iCLK_F_to_the_Read_Port0(vpg_pclk),
-						   .iIP_INIT_DONE_to_the_Read_Port0(ip_init_done),
-						   .iREAD_ACK_F_to_the_Read_Port0(vpg_de),
-						   .iRST_n_F_to_the_Read_Port0(read_rstn),
-						   .oEMPTY_F_from_the_Read_Port0(),
-						   .oPORT_READY_F_from_the_Read_Port0(),
-						   .oREAD_DATA_F_from_the_Read_Port0({Read_DATA1,Read_DATA2}),
-						   
-						 // the_Write_Port0     
-						   .iCLK_F_to_the_Write_Port0(~D5M_PIXLCLK),
-						   .iFLUSH_REQ_F_to_the_Write_Port0(),
-						   .iIP_INIT_DONE_to_the_Write_Port0(ip_init_done),
-						   .iRST_n_F_to_the_Write_Port0(BUTTON[0]),
-						   .iWRITE_DATA_F_to_the_Write_Port0({1'b0,sCCD_G[11:7],sCCD_B[11:2],1'b0,sCCD_G[6:2],sCCD_R[11:2]}), 
-						   .iWRITE_F_to_the_Write_Port0(sCCD_DVAL),
-						   .oBURST_COUNT_from_the_Write_Port0(),
-						   .oFLUSH_BUSY_F_from_the_Write_Port0(),
-						   .oFULL_F_from_the_Write_Port0(wrt_full_port0),
-						  						  
-						  // the_ddr2   
-						   .global_reset_n_to_the_ddr2(reset_n),
-						   .local_init_done_from_the_ddr2(ip_init_done),
-						   .mem_addr_from_the_ddr2(M1_DDR2_addr),
-						   .mem_ba_from_the_ddr2(M1_DDR2_ba),
-						   .mem_cas_n_from_the_ddr2(M1_DDR2_cas_n),
-						   .mem_cke_from_the_ddr2(M1_DDR2_cke),
-						   .mem_clk_n_to_and_from_the_ddr2(M1_DDR2_clk_n),
-						   .mem_clk_to_and_from_the_ddr2(M1_DDR2_clk),
-						   .mem_cs_n_from_the_ddr2(M1_DDR2_cs_n),
-						   .mem_dm_from_the_ddr2(M1_DDR2_dm),
-						   .mem_dq_to_and_from_the_ddr2(M1_DDR2_dq),
-						   .mem_dqs_to_and_from_the_ddr2(M1_DDR2_dqs),
-						   .mem_dqsn_to_and_from_the_ddr2(M1_DDR2_dqsn),
-						   .mem_odt_from_the_ddr2(M1_DDR2_odt),
-						   .mem_ras_n_from_the_ddr2(M1_DDR2_ras_n),
-						   .mem_we_n_from_the_ddr2(M1_DDR2_we_n),
-                        
-                         );
-
-ddr2_controller u8	(
-		.pll_ref_clk(OSC2_50),
-		.global_reset_n(reset_n),
-		.soft_reset_n(),
-		
-//		output wire         afi_clk,
-//		output wire         afi_half_clk,
-//		output wire         afi_reset_n,
-//		output wire         afi_reset_export_n,
-		
-		.mem_a(mem_addr[13:0]),
-		.mem_ba(mem_ba[1:0]),
-		.mem_ck(),
-		.mem_ck_n(mem_clk_n),
-		.mem_cke(mem_cke),
-		.mem_cs_n(mem_cs_n),
-		.mem_dm(mem_dm),
-		.mem_ras_n(mem_ras_n),
-		.mem_cas_n(mem_cas_n),
-		.mem_we_n(mem_we_n),
-		.mem_dq(mem_dq),
-		.mem_dqs(mem_dqs),
-		.mem_dqs_n(mem_dqs),
-		.mem_odt(mem_odt),
-		
-//		output wire         avl_ready,
-//		input  wire         avl_burstbegin,
-//		input  wire [24:0]  avl_addr,
-//		output wire         avl_rdata_valid,
-//		output wire [255:0] avl_rdata,
-//		input  wire [255:0] avl_wdata,
-//		input  wire [31:0]  avl_be,
-//		input  wire         avl_read_req,
-//		input  wire         avl_write_req,
-//		input  wire [2:0]   avl_size,
-
-		.local_init_done(ip_init_done),
-//		output wire         local_cal_success,
-//		output wire         local_cal_fail,
-		.oct_rdn(oct_rdn),
-		.oct_rup(oct_rup)
-	);								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								 
+			
 								 
 								 
 //D5M I2C control
