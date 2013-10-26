@@ -11,7 +11,7 @@ set ::GLOBAL_ddr2_sys_ddr2_p0_dqs_group_size 8
 set ::GLOBAL_ddr2_sys_ddr2_p0_number_of_ck_pins 2
 set ::GLOBAL_ddr2_sys_ddr2_p0_number_of_dm_pins 8
 set ::GLOBAL_ddr2_sys_ddr2_p0_dqs_delay_chain_length 2
-set ::GLOBAL_ddr2_sys_ddr2_p0_uniphy_temp_ver_code 858138609
+set ::GLOBAL_ddr2_sys_ddr2_p0_uniphy_temp_ver_code 1953295129
 # PLL Parameters
 
 #USER W A R N I N G !

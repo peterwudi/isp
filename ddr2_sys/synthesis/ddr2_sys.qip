@@ -2,15 +2,12 @@ set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_NAME 
 set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0sp1"
 set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "ddr2_sys" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../ddr2_sys.sopcinfo"]
-set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1382732486"
+set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1382816739"
 set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.cmp"]
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.qsys"]
 
 set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "ddr2_sys.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_handshake_clock_crosser.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_clock_crosser.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_pipeline_base.v"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_width_adapter.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_address_alignment.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_burst_uncompressor.sv"]
@@ -25,21 +22,8 @@ set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $:
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_agent.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_translator.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_translator.sv"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_master_0.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_master_0_p2b_adapter.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_master_0_b2p_adapter.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_packets_to_master.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_packets_to_bytes.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_bytes_to_packets.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_master_0_timing_adt.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_jtag_interface.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_dc_streaming.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_sld_node.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_streaming.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_pli_streaming.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_idle_remover.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_idle_inserter.v"]
-set_global_assignment -library "ddr2_sys" -name SDC_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_jtag_interface.sdc"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_write_buffer.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_read_buffer.v"]
 set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2.v"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_mem_if_dll_stratixiii.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_mem_if_oct_stratixiii.sv"]
@@ -82,6 +66,22 @@ set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quart
 set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/alt_mem_ddrx_controller_st_top.v"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/alt_mem_if_nextgen_ddr2_controller_core.sv"]
 set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_dmaster.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_dmaster_p2b_adapter.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_dmaster_b2p_adapter.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_packets_to_master.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_packets_to_bytes.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_bytes_to_packets.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_dmaster_timing_adt.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_jtag_interface.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_dc_streaming.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_sld_node.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_jtag_streaming.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_pli_streaming.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_clock_crosser.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_pipeline_base.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_idle_remover.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_idle_inserter.v"]
+set_global_assignment -library "ddr2_sys" -name SDC_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_st_jtag_interface.sdc"]
 set_global_assignment -library "ddr2_sys" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_s0_software/sequencer.c"]
 set_global_assignment -library "ddr2_sys" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_s0_software/sequencer.h"]
 set_global_assignment -library "ddr2_sys" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_s0_software/sequencer_defines.h"]
@@ -178,9 +178,6 @@ set_global_assignment -library "ddr2_sys" -name TCL_FILE [file join $::quartus(q
 set_global_assignment -library "ddr2_sys" -name TCL_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_p0_parameters.tcl"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_ddr2_pll0.sv"]
 
-set_global_assignment -entity "altera_avalon_st_handshake_clock_crosser" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_st_handshake_clock_crosser"
-set_global_assignment -entity "altera_avalon_st_handshake_clock_crosser" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "altera_avalon_st_handshake_clock_crosser" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "altera_merlin_width_adapter" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_width_adapter"
 set_global_assignment -entity "altera_merlin_width_adapter" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "altera_merlin_width_adapter" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
@@ -211,30 +208,6 @@ set_global_assignment -entity "altera_merlin_slave_translator" -library "ddr2_sy
 set_global_assignment -entity "altera_merlin_master_translator" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_master_translator"
 set_global_assignment -entity "altera_merlin_master_translator" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "altera_merlin_master_translator" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "ddr2_sys_master_0" -library "ddr2_sys" -name IP_TOOL_NAME "altera_jtag_avalon_master"
-set_global_assignment -entity "ddr2_sys_master_0" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "ddr2_sys_master_0" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "ddr2_sys_master_0_p2b_adapter" -library "ddr2_sys" -name IP_TOOL_NAME "channel_adapter"
-set_global_assignment -entity "ddr2_sys_master_0_p2b_adapter" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "ddr2_sys_master_0_p2b_adapter" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "ddr2_sys_master_0_b2p_adapter" -library "ddr2_sys" -name IP_TOOL_NAME "channel_adapter"
-set_global_assignment -entity "ddr2_sys_master_0_b2p_adapter" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "ddr2_sys_master_0_b2p_adapter" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "altera_avalon_packets_to_master" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_packets_to_master"
-set_global_assignment -entity "altera_avalon_packets_to_master" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "altera_avalon_packets_to_master" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_st_packets_to_bytes"
-set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "ddr2_sys" -name IP_TOOL_VERSION "11.1"
-set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_st_bytes_to_packets"
-set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "ddr2_sys" -name IP_TOOL_VERSION "11.1"
-set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "ddr2_sys_master_0_timing_adt" -library "ddr2_sys" -name IP_TOOL_NAME "timing_adapter"
-set_global_assignment -entity "ddr2_sys_master_0_timing_adt" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "ddr2_sys_master_0_timing_adt" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
-set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "ddr2_sys" -name IP_TOOL_NAME "altera_jtag_dc_streaming"
-set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
-set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "ddr2_sys_ddr2" -library "ddr2_sys" -name IP_TOOL_NAME "altera_mem_if_ddr2_emif"
 set_global_assignment -entity "ddr2_sys_ddr2" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "ddr2_sys_ddr2" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
@@ -256,6 +229,27 @@ set_global_assignment -entity "alt_mem_if_nextgen_ddr2_controller_core" -library
 set_global_assignment -entity "ddr2_sys_ddr2_dmaster" -library "ddr2_sys" -name IP_TOOL_NAME "alt_mem_if_jtag_master"
 set_global_assignment -entity "ddr2_sys_ddr2_dmaster" -library "ddr2_sys" -name IP_TOOL_VERSION "100.99.98.97"
 set_global_assignment -entity "ddr2_sys_ddr2_dmaster" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_p2b_adapter" -library "ddr2_sys" -name IP_TOOL_NAME "channel_adapter"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_p2b_adapter" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_p2b_adapter" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_b2p_adapter" -library "ddr2_sys" -name IP_TOOL_NAME "channel_adapter"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_b2p_adapter" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_b2p_adapter" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_packets_to_master" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_packets_to_master"
+set_global_assignment -entity "altera_avalon_packets_to_master" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_avalon_packets_to_master" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_st_packets_to_bytes"
+set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "ddr2_sys" -name IP_TOOL_VERSION "11.1"
+set_global_assignment -entity "altera_avalon_st_packets_to_bytes" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_st_bytes_to_packets"
+set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "ddr2_sys" -name IP_TOOL_VERSION "11.1"
+set_global_assignment -entity "altera_avalon_st_bytes_to_packets" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_timing_adt" -library "ddr2_sys" -name IP_TOOL_NAME "timing_adapter"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_timing_adt" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_ddr2_dmaster_timing_adt" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "ddr2_sys" -name IP_TOOL_NAME "altera_jtag_dc_streaming"
+set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_avalon_st_jtag_interface" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -entity "ddr2_sys_ddr2_s0" -library "ddr2_sys" -name IP_TOOL_NAME "altera_mem_if_ddr2_qseq"
 set_global_assignment -entity "ddr2_sys_ddr2_s0" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
 set_global_assignment -entity "ddr2_sys_ddr2_s0" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"

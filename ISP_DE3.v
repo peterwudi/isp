@@ -86,6 +86,12 @@ module ISP_DE3(
 		output	[1:0]		mem_odt,
 		output				mem_ras_n,
 		output				mem_we_n,
+		
+		input					rdn,
+		input					rup,
+		output				mem_ck,
+		output				mem_ck_n,
+		
 
 		////////// HSTCC (J5 HSTC-C TOP/J6, HSTC-C BOTTOM), connect to DVI(DVI TX/RX Board) //////////
 		input					HSTCC_DVI_RX_CLK,
@@ -132,8 +138,9 @@ module ISP_DE3(
 //  REG/WIRE declarations
 //=======================================================
 //	D5M
-wire	[15:0]	Read_DATA1;
-wire	[15:0]	Read_DATA2;
+//wire	[15:0]	Read_DATA1;
+//wire	[15:0]	Read_DATA2;
+wire	[31:0]	Read_DATA;
 wire				VGA_CTRL_CLK;
 wire	[11:0]	mCCD_DATA;
 wire				mCCD_DVAL;
@@ -374,10 +381,75 @@ Frame_Display u5(
 //						   .mem_we_n_from_the_ddr2(M1_DDR2_we_n),
 //                        
 //                         );
-						 
-								 
+ddr2_sys u8 (
+	.clk_clk							 (GPIO1_PIXLCLK),
+	.reset_reset_n              (reset_n),
 
-			
+
+	// DDR2
+	.memory_mem_a               (mem_addr),
+	.memory_mem_ba              (mem_ba),
+	.memory_mem_ck              (mem_ck),
+	.memory_mem_ck_n            (mem_ckn),
+	.memory_mem_cke             (mem_cke),
+	.memory_mem_cs_n            (mem_cs_n),
+	.memory_mem_dm              (mem_dm),
+	.memory_mem_ras_n           (mem_ras_n),
+	.memory_mem_cas_n           (mem_cas_n),
+	.memory_mem_we_n            (mem_we_n),
+	.memory_mem_dq              (mem_dq),
+	.memory_mem_dqs             (mem_dqs),
+	.memory_mem_dqs_n           (mem_dqsn),
+	.memory_mem_odt             (mem_odt),
+	.oct_rdn                    (rdn),
+	.oct_rup                    (rup),
+	
+	// Read
+	.read_control_read_base     (read_addr),
+	.read_control_read_length   ('d4),
+	.read_control_go            (sCCD_DVAL),
+	.read_control_done          (),
+	.read_control_early_done    (),
+	.read_user_read_buffer      (),
+	.read_user_buffer_data      (Read_DATA),
+	.read_user_data_available   (),
+	
+	// Write
+	.write_control_write_base   (write_addr),
+	.write_control_write_length ('d4),
+	.write_control_go           (sCCD_DVAL),
+	.write_control_done         (),
+	.write_user_write_buffer    (),
+	.write_user_buffer_data     ({2'b0,sCCD_R[11:2],sCCD_G[11:2],sCCD_B[11:2]}),
+	.write_user_buffer_full     ()
+);					 
+
+reg	[31:0]	count;
+reg	[29:0]	read_addr;
+reg	[29:0]	write_addr;
+
+
+always @(posedge GPIO1_PIXLCLK) begin
+	if (!reset_n)
+		count <= 0;
+	else begin
+		// Pingpong read/write
+		if (count < 307200) begin
+			write_addr	<= count;
+			read_addr	<= count + 'd307200;
+		end
+		else if (count < 307200*2) begin
+			write_addr	<= count;
+			read_addr	<= count - 'd307200;
+		end
+		else begin
+			count			<= 0;
+			read_addr	<= 'd307200;
+			write_addr	<= 'd0;
+		end
+	end
+end
+
 								 
 								 
 //D5M I2C control
@@ -469,7 +541,10 @@ assign HSTCC_DVI_TX_CLK = vpg_pclk;
 //assign HSTCC_DVI_TX_D = SW[0] ? {Read_DATA2[9:2],Read_DATA1[14:10],Read_DATA2[14:12],Read_DATA1[9:2]} : vpg_data;
 
 // Note: only testing switch with unbuffered RGB values from the sensor
-assign HSTCC_DVI_TX_D = SW[0] ? {sCCD_R[11:4], sCCD_G[11:4], sCCD_B[11:4]} : vpg_data;
+//assign HSTCC_DVI_TX_D = SW[0] ? {sCCD_R[11:4], sCCD_G[11:4], sCCD_B[11:4]} : vpg_data;
+assign HSTCC_DVI_TX_D = SW[0] ? {Read_DATA[29:22], Read_DATA[19:12], Read_DATA[9:2]} : vpg_data;
+
+
 
 // Note: only testing video pattern
 //assign HSTCC_DVI_TX_D = vpg_data;

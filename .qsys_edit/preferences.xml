@@ -14,8 +14,7 @@
    <frequency preferredWidth="479" />
   </columns>
  </clocktable>
- <library
-   expandedCategories="Library/Qsys Interconnect,Library,Library/Bridges,Project,Library/Bridges/Memory-Mapped,Library/Embedded Processors,Library/Verification,Library/Qsys Interconnect/Memory-Mapped,Library/Verification/Debug &amp; Performance,Library/Verification/Simulation" />
- <window width="1936" height="1066" x="-8" y="-8" />
+ <library expandedCategories="Library,Project" />
+ <window width="1920" height="1050" x="0" y="0" />
  <hdlexample language="VHDL" />
 </preferences>

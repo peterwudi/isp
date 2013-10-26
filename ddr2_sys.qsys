@@ -36,7 +36,7 @@
          type = "int";
       }
    }
-   element master_0
+   element read
    {
       datum _sortIndex
       {
@@ -49,6 +49,14 @@
       datum _sortIndex
       {
          value = "0";
+         type = "int";
+      }
+   }
+   element write
+   {
+      datum _sortIndex
+      {
+         value = "4";
          type = "int";
       }
    }
@@ -67,13 +75,15 @@
  <parameter name="projectName" value="ISP_DE3.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1382732292456" />
+ <parameter name="timeStamp" value="1382816684040" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_50.clk_in" type="clock" dir="end" />
  <interface name="reset" internal="clk_50.clk_in_reset" type="reset" dir="end" />
  <interface name="memory" internal="ddr2.memory" type="conduit" dir="end" />
  <interface name="oct" internal="ddr2.oct" type="conduit" dir="end" />
+ <interface name="read" internal="read.conduit_end" type="conduit" dir="end" />
+ <interface name="write" internal="write.conduit_end" type="conduit" dir="end" />
  <module kind="clock_source" version="13.0" enabled="1" name="clk_50">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -385,18 +395,23 @@
   <parameter name="NUM_OCT_SHARING_INTERFACES" value="1" />
   <parameter name="AUTO_DEVICE" value="EP3SL150F1152C2" />
  </module>
- <module
-   kind="altera_jtag_avalon_master"
-   version="13.0"
-   enabled="1"
-   name="master_0">
-  <parameter name="USE_PLI" value="0" />
-  <parameter name="PLI_PORT" value="50000" />
-  <parameter name="COMPONENT_CLOCK" value="0" />
-  <parameter name="FAST_VER" value="0" />
-  <parameter name="FIFO_DEPTHS" value="2" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Stratix III" />
-  <parameter name="AUTO_DEVICE" value="EP3SL150F1152C2" />
+ <module kind="read_buffer" version="1.0" enabled="1" name="read">
+  <parameter name="DATAWIDTH" value="32" />
+  <parameter name="BYTEENABLEWIDTH" value="4" />
+  <parameter name="ADDRESSWIDTH" value="30" />
+  <parameter name="FIFODEPTH" value="32" />
+  <parameter name="FIFODEPTH_LOG2" value="5" />
+  <parameter name="FIFOUSEMEMORY" value="1" />
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="166666700" />
+ </module>
+ <module kind="write_buffer" version="1.0" enabled="1" name="write">
+  <parameter name="DATAWIDTH" value="32" />
+  <parameter name="BYTEENABLEWIDTH" value="4" />
+  <parameter name="ADDRESSWIDTH" value="30" />
+  <parameter name="FIFODEPTH" value="32" />
+  <parameter name="FIFODEPTH_LOG2" value="5" />
+  <parameter name="FIFOUSEMEMORY" value="1" />
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="166666700" />
  </module>
  <connection kind="clock" version="13.0" start="clk_50.clk" end="ddr2.pll_ref_clk" />
  <connection
@@ -415,17 +430,35 @@
    version="13.0"
    start="clk_50.clk_reset"
    end="ddr2.global_reset" />
- <connection kind="avalon" version="13.0" start="master_0.master" end="ddr2.avl">
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="read.avalon_master"
+   end="ddr2.avl">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="clock" version="13.0" start="clk_50.clk" end="master_0.clk" />
+ <connection
+   kind="clock"
+   version="13.0"
+   start="ddr2.afi_clk"
+   end="read.clock_sink" />
  <connection
    kind="reset"
    version="13.0"
    start="clk_50.clk_reset"
-   end="master_0.clk_reset" />
+   end="read.reset_sink" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk_50.clk_reset"
+   end="write.reset_sink" />
+ <connection
+   kind="clock"
+   version="13.0"
+   start="ddr2.afi_clk"
+   end="write.clock_sink" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
 </system>
