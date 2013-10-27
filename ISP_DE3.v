@@ -69,28 +69,28 @@ module ISP_DE3(
 		input					GPIO1_XCLKIN,
 
 		////////// mem (J9, DDR2 SO-DIMM), connect to DDR2_SODIMM(DDR2_SODIMM Board) //////////
-		output	[1:0]		mem_SA,
-		output				mem_SCL,
-		inout					mem_SDA,
-		output	[15:0]	mem_addr,
-		output	[2:0]		mem_ba,
-		output				mem_cas_n,
-		output	[1:0]		mem_cke,
-		inout		[1:0]		mem_clk,
-		inout		[1:0]		mem_clk_n,
-		output	[1:0]		mem_cs_n,
-		output	[7:0]		mem_dm,
-		inout		[63:0]	mem_dq,
-		inout		[7:0]		mem_dqs,
-		inout		[7:0]		mem_dqsn,
-		output	[1:0]		mem_odt,
-		output				mem_ras_n,
-		output				mem_we_n,
-		
-		input					rdn,
-		input					rup,
-		output				mem_ck,
-		output				mem_ck_n,
+//		output	[1:0]		mem_SA,
+//		output				mem_SCL,
+//		inout					mem_SDA,
+//		output	[15:0]	mem_addr,
+//		output	[2:0]		mem_ba,
+//		output				mem_cas_n,
+//		output	[1:0]		mem_cke,
+//		inout		[1:0]		mem_clk,
+//		inout		[1:0]		mem_clk_n,
+//		output	[1:0]		mem_cs_n,
+//		output	[7:0]		mem_dm,
+//		inout		[63:0]	mem_dq,
+//		inout		[7:0]		mem_dqs,
+//		inout		[7:0]		mem_dqsn,
+//		output	[1:0]		mem_odt,
+//		output				mem_ras_n,
+//		output				mem_we_n,
+//		
+//		input					rdn,
+//		input					rup,
+//		output				mem_ck,
+//		output				mem_ck_n,
 		
 
 		////////// HSTCC (J5 HSTC-C TOP/J6, HSTC-C BOTTOM), connect to DVI(DVI TX/RX Board) //////////
@@ -278,7 +278,7 @@ Reset_Delay	u2(
 	.oRST_1(DLY_RST_1),
 	.oRST_2(DLY_RST_2),
 	.oRST_3(DLY_RST_3),
-	.oRST_4(DLY_RST_4),
+	.oRST_4(DLY_RST_4)
 );
 
 //	D5M image capture
@@ -387,22 +387,22 @@ ddr2_sys u8 (
 
 
 	// DDR2
-	.memory_mem_a               (mem_addr),
-	.memory_mem_ba              (mem_ba),
-	.memory_mem_ck              (mem_ck),
-	.memory_mem_ck_n            (mem_ckn),
-	.memory_mem_cke             (mem_cke),
-	.memory_mem_cs_n            (mem_cs_n),
-	.memory_mem_dm              (mem_dm),
-	.memory_mem_ras_n           (mem_ras_n),
-	.memory_mem_cas_n           (mem_cas_n),
-	.memory_mem_we_n            (mem_we_n),
-	.memory_mem_dq              (mem_dq),
-	.memory_mem_dqs             (mem_dqs),
-	.memory_mem_dqs_n           (mem_dqsn),
-	.memory_mem_odt             (mem_odt),
-	.oct_rdn                    (rdn),
-	.oct_rup                    (rup),
+//	.memory_mem_a               (mem_addr),
+//	.memory_mem_ba              (mem_ba),
+//	.memory_mem_ck              (mem_ck),
+//	.memory_mem_ck_n            (mem_ckn),
+//	.memory_mem_cke             (mem_cke),
+//	.memory_mem_cs_n            (mem_cs_n),
+//	.memory_mem_dm              (mem_dm),
+//	.memory_mem_ras_n           (mem_ras_n),
+//	.memory_mem_cas_n           (mem_cas_n),
+//	.memory_mem_we_n            (mem_we_n),
+//	.memory_mem_dq              (mem_dq),
+//	.memory_mem_dqs             (mem_dqs),
+//	.memory_mem_dqs_n           (mem_dqsn),
+//	.memory_mem_odt             (mem_odt),
+//	.oct_rdn                    (rdn),
+//	.oct_rup                    (rup),
 	
 	// Read
 	.read_control_read_base     (read_addr),
@@ -474,7 +474,7 @@ sys_pll sys_pll_inst(
 	.inclk0(OSC2_50),
 	.c0(pll_100M),
 	.c1(pll_100K),
-	//.c2(D5M_XCLKIN),//25M 
+	.c2(GPIO1_XCLKIN),//25M 
 	.locked(reset_n_dvi)
 	);
 
