@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences>
+ <debug showDebugMenu="0" />
+ <systemtable>
+  <columns>
+   <connections preferredWidth="95" />
+   <irq preferredWidth="34" />
+  </columns>
+ </systemtable>
+ <clocktable>
+  <columns>
+   <clockname preferredWidth="548" />
+   <clocksource preferredWidth="548" />
+   <frequency preferredWidth="528" />
+  </columns>
+ </clocktable>
+ <library
+   expandedCategories="Library/DSP,Library/Interface Protocols/DisplayPort,Library/Memories and Memory Controllers/On-Chip,Library/Memories and Memory Controllers/External Memory Interfaces/Performance Monitors,Library/Peripherals,Library/Interface Protocols/Ethernet/Example,Library/Memories and Memory Controllers/External Memory Interfaces/RLDRAM II Interfaces,Library/Memories and Memory Controllers/External Memory Interfaces/SDRAM Interfaces,Library/University Program,Library/DSP/Video and Image Processing,Library/Interface Protocols/Serial,Library/Qsys Interconnect/Memory-Mapped,Library/University Program/Bridges,Library/University Program/Audio &amp; Video,Library/Memories and Memory Controllers/External Memory Interfaces/Pattern Generators,Library/Memories and Memory Controllers/External Memory Interfaces,Library/Interface Protocols/PCI,Library/Memories and Memory Controllers/External Memory Interfaces/Memory Interfaces,Library/Qsys Interconnect/Interrupt,Library/Interface Protocols/RapidIO,Library/Verification/Simulation,Library/Memories and Memory Controllers/External Memory Interfaces/Flash Interfaces,Library/Memories and Memory Controllers/External Memory Interfaces/Memory Models,Library/Bridges and Adapters/DMA,Library/Interface Protocols/Transceiver PHY,Library/Interface Protocols/SDI,Library/Verification,Library/Peripherals/Debug and Performance,Library/Interface Protocols,Library/Peripherals/Microcontroller Peripherals,Library/Memories and Memory Controllers/External Memory Interfaces/QDR II Interfaces,Library/PLL,Library/Interface Protocols/Ethernet,Library/Configuration &amp; Programming,Library/Qsys Interconnect,Library/DSP/Error Detection_Correction,Library,Library/Peripherals/Display,Library/Bridges/Memory-Mapped,Library/Microcontroller Peripherals,Library/Clock and Reset,Library/Bridges/Streaming,Library/Merlin Components,Library/University Program/Memory,Library/Interface Protocols/Ethernet/Submodules,Library/Memories and Memory Controllers/External Memory Interfaces/DDR3 Interfaces,Library/Memories and Memory Controllers,Library/Memories and Memory Controllers/External Memory Interfaces/DDR2 Interfaces,Library/Memories and Memory Controllers/External Memory Interfaces/Memory Interfaces/Flash,Library/Memories and Memory Controllers/External Memory Interfaces/LPDDR2 Interfaces,Library/Bridges,Library/DSP/Filters,Library/University Program/Audio &amp; Video/Video,Library/Memories and Memory Controllers/External Memory Interfaces/DDR Interfaces,Library/Embedded Processors,Library/Qsys Interconnect/Tri-State Components,Project,Library/Verification/Debug &amp; Performance,Library/University Program/Generic IO,Library/Bridges and Adapters" />
+ <window width="1920" height="1050" x="0" y="0" />
+ <hdlexample language="VERILOG" />
+</preferences>

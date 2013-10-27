@@ -1,0 +1,22 @@
+	component bus is
+		port (
+			clk_clk                    : in  std_logic                     := 'X';             -- clk
+			reset_reset_n              : in  std_logic                     := 'X';             -- reset_n
+			write_control_write_base   : in  std_logic_vector(29 downto 0) := (others => 'X'); -- control_write_base
+			write_control_write_length : in  std_logic_vector(29 downto 0) := (others => 'X'); -- control_write_length
+			write_control_go           : in  std_logic                     := 'X';             -- control_go
+			write_control_done         : out std_logic;                                        -- control_done
+			write_user_write_buffer    : in  std_logic                     := 'X';             -- user_write_buffer
+			write_user_buffer_data     : in  std_logic_vector(31 downto 0) := (others => 'X'); -- user_buffer_data
+			write_user_buffer_full     : out std_logic;                                        -- user_buffer_full
+			read_control_read_base     : in  std_logic_vector(29 downto 0) := (others => 'X'); -- control_read_base
+			read_control_read_length   : in  std_logic_vector(29 downto 0) := (others => 'X'); -- control_read_length
+			read_control_go            : in  std_logic                     := 'X';             -- control_go
+			read_control_done          : out std_logic;                                        -- control_done
+			read_control_early_done    : out std_logic;                                        -- control_early_done
+			read_user_read_buffer      : in  std_logic                     := 'X';             -- user_read_buffer
+			read_user_buffer_data      : in  std_logic_vector(31 downto 0) := (others => 'X'); -- user_buffer_data
+			read_user_data_available   : out std_logic                                         -- user_data_available
+		);
+	end component bus;
+

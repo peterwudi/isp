@@ -420,7 +420,8 @@ ddr2_sys u8 (
 	.write_control_go           (sCCD_DVAL),
 	.write_control_done         (),
 	.write_user_write_buffer    (),
-	.write_user_buffer_data     ({2'b0,sCCD_R[11:2],sCCD_G[11:2],sCCD_B[11:2]}),
+//	.write_user_buffer_data     ({2'b0,sCCD_R[11:2],sCCD_G[11:2],sCCD_B[11:2]}),
+	.write_user_buffer_data     ({2'b0,10'h3FF,20'b0}),
 	.write_user_buffer_full     ()
 );					 
 
@@ -429,24 +430,28 @@ reg	[29:0]	read_addr;
 reg	[29:0]	write_addr;
 
 
-always @(posedge GPIO1_PIXLCLK) begin
+always @(negedge GPIO1_PIXLCLK) begin
 	if (!reset_n)
 		count <= 0;
 	else begin
+		write_addr <= 0;
+		read_addr	<= 0;
+		count	<= count + 1;
+	
 		// Pingpong read/write
-		if (count < 307200) begin
-			write_addr	<= count;
-			read_addr	<= count + 'd307200;
-		end
-		else if (count < 307200*2) begin
-			write_addr	<= count;
-			read_addr	<= count - 'd307200;
-		end
-		else begin
-			count			<= 0;
-			read_addr	<= 'd307200;
-			write_addr	<= 'd0;
-		end
+//		if (count < 307200) begin
+//			write_addr	<= count;
+//			read_addr	<= count + 'd307200;
+//		end
+//		else if (count < 307200*2) begin
+//			write_addr	<= count;
+//			read_addr	<= count - 'd307200;
+//		end
+//		else begin
+//			count			<= 0;
+//			read_addr	<= 'd307200;
+//			write_addr	<= 'd0;
+//		end
 	end
 end
 
