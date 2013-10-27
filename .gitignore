@@ -232,6 +232,7 @@ pip-log.txt
 *.pin
 *.sof
 *.qws
+*.xml
 
 
 
