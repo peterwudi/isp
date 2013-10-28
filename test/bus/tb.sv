@@ -11,18 +11,19 @@ module tb();
 
 logic					clk;
 logic					reset_n;
+
+logic					write;
+logic		[18:0]	write_addr;
 logic		[31:0]	iData;
-//logic					iValid;
+logic					write_done;
 	
 logic					read;
 logic		[18:0]	read_addr;
-logic					oValid;
 logic		[31:0]	oData;
+logic					oValid;
 logic					read_done;
 	
-logic					write;
-logic		[18:0]	write_addr;
-logic					write_done;
+
 
 bus dut ( .* );
 
@@ -41,7 +42,7 @@ initial begin
 	reset_n = 1'b1;
 	@(negedge clk);
 	
-	for (int i = 4; i < 5; i++) begin
+	for (int i = 4; i < 65; i += 4) begin
 		iData = i;
 		write = 1'b1;
 		write_addr = i;
@@ -60,7 +61,7 @@ initial begin
 	write = 1'b0;
 	@(negedge clk);
 	
-	for (int i = 4; i < 5; i++) begin
+	for (int i = 4; i < 65; i += 4) begin
 		read = 1'b1;
 		read_addr = i;
 		@(negedge clk);
