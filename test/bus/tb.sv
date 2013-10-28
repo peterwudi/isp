@@ -9,22 +9,20 @@ localparam	totalOutBytes	= width * height;
 
 module tb();
 
-logic 						clk;
-logic unsigned [31:0]	iData;
-logic							iValid;
-logic							reset_n;
-logic							read;
-logic							write;
-
-logic							user_write_buffer;
-logic							user_read_buffer;
+logic					clk;
+logic					reset_n;
+logic		[31:0]	iData;
+//logic					iValid;
 	
-logic							write_ctrl_done;
-logic							read_ctrl_done;
-logic							write_buffer_full;
-logic							user_data_available;
-logic							oValid;
-logic unsigned	[31:0]	oData;
+logic					read;
+logic		[18:0]	read_addr;
+logic					oValid;
+logic		[31:0]	oData;
+logic					read_done;
+	
+logic					write;
+logic		[18:0]	write_addr;
+logic					write_done;
 
 bus dut ( .* );
 
@@ -34,10 +32,7 @@ always #2.5 clk = ~clk;  // 200 MHz clock
 initial begin
 	iData = 'd0;
 	read = 1'b0;
-	iValid = 1'b0;
 	write	= 1'b0;
-	user_write_buffer = 1'b0;
-	user_read_buffer = 1'b0;
 	
 	@(negedge clk);
 	reset_n = 1'b0;
@@ -46,49 +41,40 @@ initial begin
 	reset_n = 1'b1;
 	@(negedge clk);
 	
-	for (int i = 0; i < 5; i++) begin
-		iValid = 1'b1;
+	for (int i = 4; i < 5; i++) begin
 		iData = i;
 		write = 1'b1;
-		user_write_buffer = 1'b0;
-		@(negedge clk);
+		write_addr = i;
 		
-		write = 1'b0;
-		// Wait for write_ctrl_done
-		while(!write_ctrl_done || write_buffer_full) begin
+		// Waiting until write is done
+		while(!write_done) begin
 			@(negedge clk);
 		end
 		
-		// Keep iValid high for a cycle
 		@(negedge clk);
-		user_write_buffer = 1'b1;
-		
+		write = 1'b0;
+		@(negedge clk);
 		//$display("in1 = %d, data[%d] = %d", in1, i, i_r_data_arr[i]);
 	end
 	
-	iValid = 1'b0;
 	write = 1'b0;
-	user_write_buffer = 1'b0;
 	@(negedge clk);
 	
-	for (int i = 0; i < 5; i++) begin
+	for (int i = 4; i < 5; i++) begin
 		read = 1'b1;
-		user_read_buffer = 1'b0;
+		read_addr = i;
 		@(negedge clk);
-		oValid = 1'b0;
-		read = 1'b0;
 		
-		// Wait for read_ctrl_done
-		while(!read_ctrl_done) begin
+		// Wait for valid data
+		while(!oValid) begin
 			@(negedge clk);
 		end
 		
-		// Read
 		@(negedge clk);
-		user_read_buffer = 1'b1;
+		read = 1'b0;
 		@(negedge clk);
-		oValid = 1'b1;
 	end
+	
 	@(negedge clk);
 	reset_n = 1'b1;
 

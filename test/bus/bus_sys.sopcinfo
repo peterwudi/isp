@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="bus_sys" kind="bus_sys" version="1.0" fabric="QSYS">
  <!-- Format version 13.0sp1 232 (Future versions may contain additional information.) -->
- <!-- 2013.10.27.14:14:15 -->
+ <!-- 2013.10.27.22:27:48 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1382897655</value>
+  <value>1382927268</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -450,7 +450,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.SIZE_VALUE</name>
-   <value>655360</value>
+   <value>32768</value>
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.WRITABLE</name>
@@ -534,7 +534,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="initializationFileName">
    <type>java.lang.String</type>
-   <value>onchip_mem.hex</value>
+   <value>E:\University of Toronto\masters\isp\isp\test\bus\onchip_mem.hex</value>
    <derived>false</derived>
    <enabled>false</enabled>
    <visible>true</visible>
@@ -550,7 +550,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="memorySize">
    <type>long</type>
-   <value>655360</value>
+   <value>32768</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -654,7 +654,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="derived_set_addr_width">
    <type>int</type>
-   <value>18</value>
+   <value>13</value>
    <derived>true</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -775,7 +775,7 @@ parameters are a RESULT of the module parameters. -->
    </parameter>
    <parameter name="addressSpan">
     <type>java.math.BigInteger</type>
-    <value>655360</value>
+    <value>32768</value>
     <derived>true</derived>
     <enabled>true</enabled>
     <visible>false</visible>
@@ -855,7 +855,7 @@ parameters are a RESULT of the module parameters. -->
    </parameter>
    <parameter name="explicitAddressSpan">
     <type>java.math.BigInteger</type>
-    <value>655360</value>
+    <value>32768</value>
     <derived>false</derived>
     <enabled>true</enabled>
     <visible>true</visible>
@@ -1066,7 +1066,7 @@ parameters are a RESULT of the module parameters. -->
    <port>
     <name>address</name>
     <direction>Input</direction>
-    <width>18</width>
+    <width>13</width>
     <role>address</role>
    </port>
    <port>
@@ -1189,28 +1189,12 @@ the requested settings for a module instance. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <parameter name="FIFODEPTH">
-   <type>int</type>
-   <value>32</value>
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE">
+   <type>java.lang.Long</type>
+   <value>50000000</value>
    <derived>false</derived>
    <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="FIFODEPTH_LOG2">
-   <type>int</type>
-   <value>5</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="FIFOUSEMEMORY">
-   <type>int</type>
-   <value>1</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
+   <visible>false</visible>
    <valid>true</valid>
   </parameter>
   <parameter name="deviceFamily">
@@ -1265,6 +1249,22 @@ parameters are a RESULT of the module parameters. -->
     <visible>true</visible>
     <valid>true</valid>
    </parameter>
+   <parameter name="clockRateKnown">
+    <type>java.lang.Boolean</type>
+    <value>true</value>
+    <derived>true</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="clockRate">
+    <type>java.lang.Long</type>
+    <value>50000000</value>
+    <derived>true</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
    <type>clock</type>
    <isStart>false</isStart>
    <port>
@@ -1317,93 +1317,6 @@ parameters are a RESULT of the module parameters. -->
     <direction>Input</direction>
     <width>1</width>
     <role>reset</role>
-   </port>
-  </interface>
-  <interface name="conduit_end" kind="conduit_end" version="13.0">
-   <!-- The connection points exposed by a module instance for the
-particular module parameters. Connection points and their
-parameters are a RESULT of the module parameters. -->
-   <parameter name="associatedClock">
-    <type>java.lang.String</type>
-    <value>clock_sink</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="associatedReset">
-    <type>java.lang.String</type>
-    <value>reset_sink</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="deviceFamily">
-    <type>java.lang.String</type>
-    <value>UNKNOWN</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="generateLegacySim">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <type>conduit</type>
-   <isStart>false</isStart>
-   <port>
-    <name>control_read_base</name>
-    <direction>Input</direction>
-    <width>30</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_read_length</name>
-    <direction>Input</direction>
-    <width>30</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_go</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_done</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_early_done</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>user_read_buffer</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>user_buffer_data</name>
-    <direction>Input</direction>
-    <width>32</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>user_data_available</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>export</role>
    </port>
   </interface>
   <interface name="avalon_master" kind="avalon_master" version="13.0">
@@ -1671,7 +1584,7 @@ parameters are a RESULT of the module parameters. -->
    <port>
     <name>master_address</name>
     <direction>Output</direction>
-    <width>30</width>
+    <width>20</width>
     <role>address</role>
    </port>
    <port>
@@ -1710,8 +1623,77 @@ parameters are a RESULT of the module parameters. -->
     <slaveName>s1</slaveName>
     <name>onchip_memory2_0.s1</name>
     <baseAddress>0</baseAddress>
-    <span>655360</span>
+    <span>32768</span>
    </memoryBlock>
+  </interface>
+  <interface name="conduit_end_1" kind="conduit_end" version="13.0">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value>clock_sink</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedReset">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>conduit</type>
+   <isStart>false</isStart>
+   <port>
+    <name>read_addr</name>
+    <direction>Input</direction>
+    <width>20</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>read</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>oValid</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>oData</name>
+    <direction>Output</direction>
+    <width>32</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>read_done</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>export</role>
+   </port>
   </interface>
  </module>
  <module
@@ -1745,28 +1727,12 @@ the requested settings for a module instance. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <parameter name="FIFODEPTH">
-   <type>int</type>
-   <value>32</value>
+  <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE">
+   <type>java.lang.Long</type>
+   <value>50000000</value>
    <derived>false</derived>
    <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="FIFODEPTH_LOG2">
-   <type>int</type>
-   <value>5</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="FIFOUSEMEMORY">
-   <type>int</type>
-   <value>1</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
+   <visible>false</visible>
    <valid>true</valid>
   </parameter>
   <parameter name="deviceFamily">
@@ -1821,6 +1787,22 @@ parameters are a RESULT of the module parameters. -->
     <visible>true</visible>
     <valid>true</valid>
    </parameter>
+   <parameter name="clockRateKnown">
+    <type>java.lang.Boolean</type>
+    <value>true</value>
+    <derived>true</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="clockRate">
+    <type>java.lang.Long</type>
+    <value>50000000</value>
+    <derived>true</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
    <type>clock</type>
    <isStart>false</isStart>
    <port>
@@ -1873,87 +1855,6 @@ parameters are a RESULT of the module parameters. -->
     <direction>Input</direction>
     <width>1</width>
     <role>reset</role>
-   </port>
-  </interface>
-  <interface name="conduit_end" kind="conduit_end" version="13.0">
-   <!-- The connection points exposed by a module instance for the
-particular module parameters. Connection points and their
-parameters are a RESULT of the module parameters. -->
-   <parameter name="associatedClock">
-    <type>java.lang.String</type>
-    <value>clock_sink</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="associatedReset">
-    <type>java.lang.String</type>
-    <value>reset_sink</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="deviceFamily">
-    <type>java.lang.String</type>
-    <value>UNKNOWN</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="generateLegacySim">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <type>conduit</type>
-   <isStart>false</isStart>
-   <port>
-    <name>control_write_base</name>
-    <direction>Input</direction>
-    <width>30</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_write_length</name>
-    <direction>Input</direction>
-    <width>30</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_go</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>control_done</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>user_write_buffer</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>user_buffer_data</name>
-    <direction>Input</direction>
-    <width>32</width>
-    <role>export</role>
-   </port>
-   <port>
-    <name>user_buffer_full</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>export</role>
    </port>
   </interface>
   <interface name="avalon_master" kind="avalon_master" version="13.0">
@@ -2245,7 +2146,7 @@ parameters are a RESULT of the module parameters. -->
    <port>
     <name>master_address</name>
     <direction>Output</direction>
-    <width>30</width>
+    <width>20</width>
     <role>address</role>
    </port>
    <memoryBlock>
@@ -2254,8 +2155,71 @@ parameters are a RESULT of the module parameters. -->
     <slaveName>s1</slaveName>
     <name>onchip_memory2_0.s1</name>
     <baseAddress>0</baseAddress>
-    <span>655360</span>
+    <span>32768</span>
    </memoryBlock>
+  </interface>
+  <interface name="conduit_end_1" kind="conduit_end" version="13.0">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value>clock_sink</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedReset">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>conduit</type>
+   <isStart>false</isStart>
+   <port>
+    <name>write_addr</name>
+    <direction>Input</direction>
+    <width>20</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>iData</name>
+    <direction>Input</direction>
+    <width>32</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>write</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>export</role>
+   </port>
+   <port>
+    <name>write_done</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>export</role>
+   </port>
   </interface>
  </module>
  <connection
@@ -2524,10 +2488,18 @@ parameters are a RESULT of the module parameters. -->
  </connection>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>avalon_slave</name>
+  <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Slave</displayName>
+  <displayName>Reset Input</displayName>
+  <version>13.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>2</instanceCount>
+  <name>conduit_end</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Conduit</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2539,30 +2511,6 @@ parameters are a RESULT of the module parameters. -->
   <version>1.0</version>
  </plugin>
  <plugin>
-  <instanceCount>1</instanceCount>
-  <name>reset_sink</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Input</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>reset_source</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Output</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
-  <instanceCount>3</instanceCount>
-  <name>reset_sink</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Input</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
   <instanceCount>3</instanceCount>
   <name>clock_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
@@ -2572,10 +2520,10 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>3</instanceCount>
-  <name>reset</name>
+  <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Reset Connection</displayName>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Reset Input</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2595,11 +2543,11 @@ parameters are a RESULT of the module parameters. -->
   <version>13.0</version>
  </plugin>
  <plugin>
-  <instanceCount>1</instanceCount>
-  <name>clock_source</name>
+  <instanceCount>2</instanceCount>
+  <name>avalon_master</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>Clock Source</displayName>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Memory Mapped Master</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2611,27 +2559,43 @@ parameters are a RESULT of the module parameters. -->
   <version>13.0</version>
  </plugin>
  <plugin>
-  <instanceCount>2</instanceCount>
-  <name>avalon_master</name>
+  <instanceCount>1</instanceCount>
+  <name>avalon_slave</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Master</displayName>
+  <displayName>Avalon Memory Mapped Slave</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
-  <instanceCount>2</instanceCount>
-  <name>conduit_end</name>
+  <instanceCount>1</instanceCount>
+  <name>reset_source</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Conduit</displayName>
+  <displayName>Reset Output</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
   <name>clock_source</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Clock Output</displayName>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>Clock Source</displayName>
+  <version>13.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>altera_avalon_onchip_memory2</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>On-Chip Memory (RAM or ROM)</displayName>
+  <version>13.0.1.99.2</version>
+ </plugin>
+ <plugin>
+  <instanceCount>3</instanceCount>
+  <name>reset</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IConnection</subtype>
+  <displayName>Reset Connection</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2644,11 +2608,11 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>altera_avalon_onchip_memory2</name>
+  <name>clock_source</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>On-Chip Memory (RAM or ROM)</displayName>
-  <version>13.0.1.99.2</version>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Output</displayName>
+  <version>13.0</version>
  </plugin>
  <reportVersion>13.0sp1 232</reportVersion>
  <uniqueIdentifier></uniqueIdentifier>

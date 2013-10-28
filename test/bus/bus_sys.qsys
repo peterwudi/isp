@@ -59,19 +59,19 @@
  <parameter name="projectName" value="bus.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1382897041091" />
+ <parameter name="timeStamp" value="1382927246702" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <interface
    name="write"
-   internal="write_buffer_0.conduit_end"
+   internal="write_buffer_0.conduit_end_1"
    type="conduit"
    dir="end" />
  <interface
    name="read"
-   internal="read_buffer_0.conduit_end"
+   internal="read_buffer_0.conduit_end_1"
    type="conduit"
    dir="end" />
  <module kind="clock_source" version="13.0" enabled="1" name="clk_0">
@@ -90,9 +90,9 @@
   <parameter name="dataWidth" value="32" />
   <parameter name="dualPort" value="false" />
   <parameter name="initMemContent" value="true" />
-  <parameter name="initializationFileName" value="onchip_mem.hex" />
+  <parameter name="initializationFileName">E:\University of Toronto\masters\isp\isp\test\bus\onchip_mem.hex</parameter>
   <parameter name="instanceID" value="NONE" />
-  <parameter name="memorySize" value="655360" />
+  <parameter name="memorySize" value="32768" />
   <parameter name="readDuringWriteMode" value="DONT_CARE" />
   <parameter name="simAllowMRAMContentsFile" value="false" />
   <parameter name="simMemInitOnlyFilename" value="0" />
@@ -110,18 +110,12 @@
   <parameter name="DATAWIDTH" value="32" />
   <parameter name="BYTEENABLEWIDTH" value="4" />
   <parameter name="ADDRESSWIDTH" value="30" />
-  <parameter name="FIFODEPTH" value="32" />
-  <parameter name="FIFODEPTH_LOG2" value="5" />
-  <parameter name="FIFOUSEMEMORY" value="1" />
   <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="50000000" />
  </module>
  <module kind="write_buffer" version="1.0" enabled="1" name="write_buffer_0">
   <parameter name="DATAWIDTH" value="32" />
   <parameter name="BYTEENABLEWIDTH" value="4" />
   <parameter name="ADDRESSWIDTH" value="30" />
-  <parameter name="FIFODEPTH" value="32" />
-  <parameter name="FIFODEPTH_LOG2" value="5" />
-  <parameter name="FIFOUSEMEMORY" value="1" />
   <parameter name="AUTO_CLOCK_SINK_CLOCK_RATE" value="50000000" />
  </module>
  <connection

@@ -232,9 +232,6 @@ pip-log.txt
 *.pin
 *.sof
 *.qws
-*.xml
-
-
 
 # Build results
 
@@ -243,7 +240,6 @@ pip-log.txt
 [Ii]ncremental_db/
 [Oo]utput_files/
 [Ss]imulation/
-
 
 
 
