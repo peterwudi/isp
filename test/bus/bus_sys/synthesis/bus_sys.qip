@@ -2,7 +2,7 @@ set_global_assignment -entity "bus_sys" -library "bus_sys" -name IP_TOOL_NAME "Q
 set_global_assignment -entity "bus_sys" -library "bus_sys" -name IP_TOOL_VERSION "13.0sp1"
 set_global_assignment -entity "bus_sys" -library "bus_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "bus_sys" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../bus_sys.sopcinfo"]
-set_instance_assignment -entity "bus_sys" -library "bus_sys" -name SLD_INFO "QSYS_NAME bus_sys HAS_SOPCINFO 1 GENERATION_ID 1382927268"
+set_instance_assignment -entity "bus_sys" -library "bus_sys" -name SLD_INFO "QSYS_NAME bus_sys HAS_SOPCINFO 1 GENERATION_ID 1382993630"
 set_global_assignment -library "bus_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../bus_sys.cmp"]
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "bus_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../bus_sys.qsys"]
@@ -23,8 +23,8 @@ set_global_assignment -library "bus_sys" -name SYSTEMVERILOG_FILE [file join $::
 set_global_assignment -library "bus_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_agent.sv"]
 set_global_assignment -library "bus_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_translator.sv"]
 set_global_assignment -library "bus_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_translator.sv"]
-set_global_assignment -library "bus_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_write_buffer.v"]
-set_global_assignment -library "bus_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_read_buffer.v"]
+set_global_assignment -library "bus_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_write_port.v"]
+set_global_assignment -library "bus_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_read_port.v"]
 set_global_assignment -library "bus_sys" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/bus_sys_onchip_memory2_0.hex"]
 set_global_assignment -library "bus_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/bus_sys_onchip_memory2_0.v"]
 

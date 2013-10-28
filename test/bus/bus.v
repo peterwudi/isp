@@ -1,84 +1,137 @@
 
-module bus
-(
-	input					clk,
+module bus(
+	//input					d5m_clk,
+	input					ctrl_clk,
+	//input					dvi_clk,
+	
 	input					reset_n,
+	
+	// Write side
 	input		[31:0]	iData,
-	//input					iValid,
+	input					iValid,
+	//input		[18:0]	write_addr,	// multiple of 4
 	
-	input					read,
-	input		[18:0]	read_addr,
-	output				read_done,
-	output				oValid,
+	input					read_init,
+	//input		[18:0]	read_addr,	// multiple of 4
 	output	[31:0]	oData,
-	
-	input					write,
-	input		[18:0]	write_addr,
-	output				write_done
+	output				oValid
 	
 );
 
-//reg	[31:0]	read_count;
-//reg	[31:0]	write_count;
+reg				write;
+reg				read;
+
+wire				write_waitrequest;
+wire				read_waitrequest;
+
+reg				moValid;
+
+reg				read_state;
+reg				write_state;
+
+reg	[31:0]	read_addr;
+reg	[31:0]	write_addr;	
+
 
 bus_sys u0 (
-        .clk_clk                    (clk),                    //   clk.clk
+        .clk_clk                    (ctrl_clk),                    //   clk.clk
         .reset_reset_n              (reset_n),              // reset.reset_n
         
 		  .write_write_addr (write_addr), // write.write_addr
-        .write_iData      (iData),      //      .iData
+        //.write_iData      (iData),      //      .iData
+		  // This is testing!!!
+		  .write_iData      (write_addr),
         .write_write      (write),      //      .write
-        .write_write_done (write_done), //      .write_done
+        .write_waitrequest (write_waitrequest), //      .write_done
         
 		  
 		  .read_read_addr   (read_addr),   //  read.read_addr
         .read_read        (read),        //      .read
-        .read_oValid      (oValid),      //      .oValid
         .read_oData       (oData),       //      .oData
-        .read_read_done   (read_done)    //      .wait_read
+        .read_waitrequest   (read_waitrequest)    //      .wait_read
     );
+	 
+	 
+assign oValid = moValid;
 
-//assign	user_write_buffer = (~write_buffer_full) & iValid & write_done;	
+// Read state machine
+always @(posedge ctrl_clk) begin
+	if (!reset_n) begin
+		read_state	<= 0;
+		read			<= 0;
+		read_addr	<= 'd0;
+	end
+	else begin
+		case (read_state)
+			1'b0: begin
+				if (read_init == 1) begin
+					read_state	<= 1'b1;
+					read			<= 1;
+				end
+				else begin
+					read_state	<= 1'b0;
+					read			<= 0;
+				end
+				moValid		<= 0;
+			end
+			1'b1: begin
+				if (read_waitrequest == 1) begin
+					read_state	<= 1'b1;
+					read			<= 1;
+					moValid		<= 0;					
+				end
+				else begin
+					// Read done, ready for the next read
+					read_state	<= 1'b0;
+					read			<= 0;
+					moValid		<= 1;
+					read_addr	<= read_addr + 4;
+				end
+			end
+		endcase
+	end
+end
 
-//assign	user_read_buffer = user_data_available & read_done;
+// Write state machine
+// Streaming, no back pressure
 
+always @(posedge ctrl_clk) begin
+	if (!reset_n) begin
+		write_state	<= 0;
+		write			<= 0;
+		write_addr	<= 'd0;
+	end
+	else begin
+		case (write_state)
+			1'b0: begin
+				if (iValid == 1) begin
+					// Start writing
+					write_state	<= 1'b1;
+					write			<= 1;
+				end
+				else begin
+					// Keep waiting
+					write_state	<= 1'b0;
+					write			<= 0;
+				end
+			end
+			1'b1: begin
+				if (write_waitrequest == 1) begin
+					// Keep waiting
+					write_state	<= 1'b1;
+					write			<= 1;
+				end
+				else begin
+					// Write done
+					write_state	<= 1'b0;
+					write			<= 0;
+					write_addr	<= write_addr + 4;
+				end
+			end
+		endcase
+	end
+end
 
-//always @(negedge clk) begin
-//	if (!reset_n) begin
-//		read_count <= 0;
-//		write_count <= 0;
-//	end		
-//		if (write) begin
-//			write_count	<= write_count + 1;
-//			write_addr	<= write_count;
-//		end
-//		if (read) begin
-//			read_count	<= read_count + 1;
-//			read_addr	<= read_count;
-//		end		
-//		
-		// Pingpong read/write
-//		if (count < 307200) begin
-//			write_addr	<= count;
-//			read_addr	<= count + 'd307200;
-//		end
-//		else if (count < 307200*2) begin
-//			write_addr	<= count;
-//			read_addr	<= count - 'd307200;
-//		end
-//		else begin
-//			count			<= 0;
-//			read_addr	<= 'd307200;
-//			write_addr	<= 'd0;
-//		end
-//	end
-//end
-
-
-	
-	
-	
-	
 	
 	
 	

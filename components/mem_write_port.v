@@ -8,7 +8,7 @@ module mem_write_buffer_avalon_interface (
 	input		[19:0]	write_addr,
 	input		[31:0]	iData,
 	input					write,
-	output				write_done,
+	output				waitrequest,
 	
 	// Avalon-MM master signals
 	output	[19:0]	master_address,
@@ -29,7 +29,8 @@ module mem_write_buffer_avalon_interface (
 	assign	master_byteenable = 4'b1111;
 	assign	master_write = write;
 	assign	master_writedata = iData;
-	assign	write_done = (master_waitrequest == 0);
+	
+	assign	waitrequest = master_waitrequest;
 	
 endmodule
 

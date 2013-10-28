@@ -9,78 +9,106 @@ localparam	totalOutBytes	= width * height;
 
 module tb();
 
-logic					clk;
+logic					d5m_clk;
+logic					ctrl_clk;
+logic					dvi_clk;
 logic					reset_n;
 
-logic					write;
-logic		[18:0]	write_addr;
+//logic		[18:0]	write_addr;
 logic		[31:0]	iData;
-logic					write_done;
+logic					iValid;
 	
-logic					read;
-logic		[18:0]	read_addr;
+logic					read_init;
+//logic		[18:0]	read_addr;
 logic		[31:0]	oData;
 logic					oValid;
-logic					read_done;
-	
 
 
 bus dut ( .* );
 
-initial clk = '1;
-always #2.5 clk = ~clk;  // 200 MHz clock
+initial	d5m_clk = '1;
+initial	ctrl_clk = '1;
+initial	dvi_clk = '1;
+always begin
+	#10		d5m_clk = ~d5m_clk;  	// 50MHz d5m clock
+end
+always begin
+	#10		ctrl_clk = ~ctrl_clk;	// 125MHz ctrl clock
+end
+always begin
+	#10		dvi_clk = ~dvi_clk;		// 50MHz dvi clock
+end
+
 
 initial begin
-	iData = 'd0;
-	read = 1'b0;
-	write	= 1'b0;
+	//	iData = 'd0;
+	read_init = 1'b0;
+	iValid = 0;
 	
-	@(negedge clk);
+	@(negedge d5m_clk);
 	reset_n = 1'b0;
-	@(negedge clk);
-	
-	reset_n = 1'b1;
-	@(negedge clk);
-	
-	for (int i = 4; i < 65; i += 4) begin
-		iData = i;
-		write = 1'b1;
-		write_addr = i;
-		
-		// Waiting until write is done
-		while(!write_done) begin
-			@(negedge clk);
-		end
-		
-		@(negedge clk);
-		write = 1'b0;
-		@(negedge clk);
-		//$display("in1 = %d, data[%d] = %d", in1, i, i_r_data_arr[i]);
-	end
-	
-	write = 1'b0;
-	@(negedge clk);
-	
-	for (int i = 4; i < 65; i += 4) begin
-		read = 1'b1;
-		read_addr = i;
-		@(negedge clk);
-		
-		// Wait for valid data
-		while(!oValid) begin
-			@(negedge clk);
-		end
-		
-		@(negedge clk);
-		read = 1'b0;
-		@(negedge clk);
-	end
-	
-	@(negedge clk);
-	reset_n = 1'b1;
+	@(negedge d5m_clk);
 
+	reset_n = 1'b1;
+	@(negedge d5m_clk);
+	
+	
+	for (int i = 0; i < 20; i++) begin
+		iValid = 1;
+		@(negedge d5m_clk);
+	end
+	
+	iValid = 0;
+	for (int i = 0; i < 20; i++) begin
+		read_init = 1;
+		@(negedge d5m_clk);
+	end
+	
 	$stop(0);
+
 end
+
+
+
+// Write
+//initial begin
+//	iData = 'd0;
+//	read_init = 1'b0;
+//	iValid = 0;
+//	
+//	@(negedge d5m_clk);
+//	reset_n = 1'b0;
+//	@(negedge d5m_clk);
+//
+//	reset_n = 1'b1;
+//	@(negedge d5m_clk);
+//	@(negedge d5m_clk);
+//	@(negedge d5m_clk);
+//	
+//	iValid = 1'b1;
+//	
+//	for (int i = 4; i < 65; i += 4) begin
+//		iData = i;
+//		write_addr = i;
+//		@(negedge d5m_clk);
+//	end
+//	
+//	iValid = 0;
+//	@(negedge d5m_clk);
+//	
+//	for (int i = 4; i < 65; i += 4) begin
+//		read_init = 1'b1;
+//		read_addr = i;
+//		@(negedge dvi_clk);
+//	end
+//	
+//	read_init = 0;
+//	
+//	@(negedge d5m_clk);
+//	reset_n = 1'b1;
+//
+//	$stop(0);
+//end
 
 
 

@@ -8,16 +8,14 @@ module mem_read_buffer_avalon_interface
 	// Control inputs and outputs
 	input		[19:0]	read_addr,
 	input					read,
-	output				oValid,
 	output	[31:0]	oData,
-	output				read_done,
+	output				waitrequest,
 	
 	// Avalon-MM master signals
 	output	[19:0]	master_address,
 	output				master_read,
 	output	[3:0] 	master_byteenable,
 	input		[31:0] 	master_readdata,
-	input					master_readdatavalid,
 	input					master_waitrequest
 );
 
@@ -33,9 +31,8 @@ module mem_read_buffer_avalon_interface
 	assign	master_byteenable = 4'b1111;
 	assign	master_read = read;
 	
-	assign	read_done = (master_waitrequest == 0);
+	assign	waitrequest = master_waitrequest;
 	assign	oData	=	master_readdata;
-	assign	oValid = master_readdatavalid;
 	
 endmodule
 
