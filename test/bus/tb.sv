@@ -14,12 +14,10 @@ logic					ctrl_clk;
 logic					dvi_clk;
 logic					reset_n;
 
-//logic		[18:0]	write_addr;
-//logic		[31:0]	iData;
-//logic					iValid;
+logic		[31:0]	iData;
+logic					iValid;
 	
 logic					read_init;
-//logic		[18:0]	read_addr;
 logic		[31:0]	oData;
 logic					oValid;
 
@@ -33,73 +31,50 @@ always begin
 	#10		d5m_clk = ~d5m_clk;  	// 50MHz d5m clock
 end
 always begin
-	#10		ctrl_clk = ~ctrl_clk;	// 125MHz ctrl clock
+	#4		ctrl_clk = ~ctrl_clk;		// 125MHz ctrl clock
 end
 always begin
 	#10		dvi_clk = ~dvi_clk;		// 50MHz dvi clock
 end
 
 
-initial begin
-	read_init = 1'b0;
 
+// Write
+initial begin
+	iData = 'd0;
+	read_init = 1'b0;
+	iValid = 0;
+	
 	@(negedge d5m_clk);
 	reset_n = 1'b0;
 	@(negedge d5m_clk);
 
 	reset_n = 1'b1;
-	@(negedge d5m_clk);
-	
-	for (int i = 0; i < 24; i++) begin
+	for (int i = 0; i < 16; i++) begin
+		@(negedge d5m_clk);
+	end
+
+	iValid = 1'b1;
+	for (int i = 0; i < 16; i++) begin
+		iData = i;
 		@(negedge d5m_clk);
 	end
 	
+	iValid = 0;
+	@(negedge d5m_clk);
 	
-	read_init = 1;
+	for (int i = 0; i < 16; i++) begin
+		read_init = 1'b1;
+		@(negedge dvi_clk);
+	end
 	
+	read_init = 0;
+	
+	@(negedge d5m_clk);
+	reset_n = 1'b1;
+
+	$stop(0);
 end
-
-
-
-// Write
-//initial begin
-//	iData = 'd0;
-//	read_init = 1'b0;
-//	iValid = 0;
-//	
-//	@(negedge d5m_clk);
-//	reset_n = 1'b0;
-//	@(negedge d5m_clk);
-//
-//	reset_n = 1'b1;
-//	@(negedge d5m_clk);
-//	@(negedge d5m_clk);
-//	@(negedge d5m_clk);
-//	
-//	iValid = 1'b1;
-//	
-//	for (int i = 4; i < 65; i += 4) begin
-//		iData = i;
-//		write_addr = i;
-//		@(negedge d5m_clk);
-//	end
-//	
-//	iValid = 0;
-//	@(negedge d5m_clk);
-//	
-//	for (int i = 4; i < 65; i += 4) begin
-//		read_init = 1'b1;
-//		read_addr = i;
-//		@(negedge dvi_clk);
-//	end
-//	
-//	read_init = 0;
-//	
-//	@(negedge d5m_clk);
-//	reset_n = 1'b1;
-//
-//	$stop(0);
-//end
 
 
 
