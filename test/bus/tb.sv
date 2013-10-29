@@ -15,8 +15,8 @@ logic					dvi_clk;
 logic					reset_n;
 
 //logic		[18:0]	write_addr;
-logic		[31:0]	iData;
-logic					iValid;
+//logic		[31:0]	iData;
+//logic					iValid;
 	
 logic					read_init;
 //logic		[18:0]	read_addr;
@@ -41,10 +41,8 @@ end
 
 
 initial begin
-	//	iData = 'd0;
 	read_init = 1'b0;
-	iValid = 0;
-	
+
 	@(negedge d5m_clk);
 	reset_n = 1'b0;
 	@(negedge d5m_clk);
@@ -52,20 +50,13 @@ initial begin
 	reset_n = 1'b1;
 	@(negedge d5m_clk);
 	
-	
-	for (int i = 0; i < 20; i++) begin
-		iValid = 1;
+	for (int i = 0; i < 24; i++) begin
 		@(negedge d5m_clk);
 	end
 	
-	iValid = 0;
-	for (int i = 0; i < 20; i++) begin
-		read_init = 1;
-		@(negedge d5m_clk);
-	end
 	
-	$stop(0);
-
+	read_init = 1;
+	
 end
 
 

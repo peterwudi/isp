@@ -7,8 +7,8 @@ module bus(
 	input					reset_n,
 	
 	// Write side
-	input		[31:0]	iData,
-	input					iValid,
+	//input		[31:0]	iData,
+	//input					iValid,
 	//input		[18:0]	write_addr,	// multiple of 4
 	
 	input					read_init,
@@ -18,19 +18,21 @@ module bus(
 	
 );
 
-reg				write;
+
 reg				read;
-
-wire				write_waitrequest;
+reg	[31:0]	read_addr;
 wire				read_waitrequest;
-
 reg				moValid;
-
 reg				read_state;
+
+reg				write;
+wire				write_waitrequest;
+reg	[31:0]	write_addr;	
 reg				write_state;
 
-reg	[31:0]	read_addr;
-reg	[31:0]	write_addr;	
+
+// Test only
+reg				iValid;
 
 
 bus_sys u0 (
@@ -102,6 +104,9 @@ always @(posedge ctrl_clk) begin
 		write_addr	<= 'd0;
 	end
 	else begin
+		// Test only
+		iValid <= (write_addr <= 20);
+	
 		case (write_state)
 			1'b0: begin
 				if (iValid == 1) begin
