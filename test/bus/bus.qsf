@@ -64,6 +64,7 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb -section_id tb.sv
 set_global_assignment -name EDA_TEST_BENCH_FILE tb.sv -section_id tb.sv
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VERILOG_FILE ../../components/ddr2_fifo.v
 set_global_assignment -name VERILOG_FILE ../../components/mem_write_port.v
 set_global_assignment -name VERILOG_FILE ../../components/mem_read_port.v
 set_global_assignment -name QIP_FILE bus_sys/synthesis/bus_sys.qip

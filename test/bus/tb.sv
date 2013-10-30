@@ -21,6 +21,9 @@ logic					read_init;
 logic		[31:0]	oData;
 logic					oValid;
 
+logic					read_empty_rdfifo;
+logic					write_full_wrfifo;
+
 
 bus dut ( .* );
 
@@ -38,8 +41,6 @@ always begin
 end
 
 
-
-// Write
 initial begin
 	iData = 'd0;
 	read_init = 1'b0;
@@ -63,7 +64,7 @@ initial begin
 	iValid = 0;
 	@(negedge d5m_clk);
 	
-	for (int i = 0; i < 16; i++) begin
+	for (int i = 0; i < 24; i++) begin
 		read_init = 1'b1;
 		@(negedge dvi_clk);
 	end
