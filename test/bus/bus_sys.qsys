@@ -59,7 +59,7 @@
  <parameter name="projectName" value="bus.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1382979111370" />
+ <parameter name="timeStamp" value="1383592110090" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
@@ -92,7 +92,7 @@
   <parameter name="initMemContent" value="true" />
   <parameter name="initializationFileName">E:\University of Toronto\masters\isp\isp\test\bus\onchip_mem.hex</parameter>
   <parameter name="instanceID" value="NONE" />
-  <parameter name="memorySize" value="32768" />
+  <parameter name="memorySize" value="153600" />
   <parameter name="readDuringWriteMode" value="DONT_CARE" />
   <parameter name="simAllowMRAMContentsFile" value="false" />
   <parameter name="simMemInitOnlyFilename" value="0" />

@@ -28,7 +28,7 @@
 // ------------------------------------------
 // Generation parameters:
 //   output_name:         bus_sys_cmd_xbar_demux
-//   ST_DATA_W:           87
+//   ST_DATA_W:           99
 //   ST_CHANNEL_W:        2
 //   NUM_OUTPUTS:         1
 //   VALID_WIDTH:         1
@@ -46,7 +46,7 @@ module bus_sys_cmd_xbar_demux
     // Sink
     // -------------------
     input  [1-1      : 0]   sink_valid,
-    input  [87-1    : 0]   sink_data, // ST_DATA_W=87
+    input  [99-1    : 0]   sink_data, // ST_DATA_W=99
     input  [2-1 : 0]   sink_channel, // ST_CHANNEL_W=2
     input                         sink_startofpacket,
     input                         sink_endofpacket,
@@ -56,7 +56,7 @@ module bus_sys_cmd_xbar_demux
     // Sources 
     // -------------------
     output reg                      src0_valid,
-    output reg [87-1    : 0] src0_data, // ST_DATA_W=87
+    output reg [99-1    : 0] src0_data, // ST_DATA_W=99
     output reg [2-1 : 0] src0_channel, // ST_CHANNEL_W=2
     output reg                      src0_startofpacket,
     output reg                      src0_endofpacket,

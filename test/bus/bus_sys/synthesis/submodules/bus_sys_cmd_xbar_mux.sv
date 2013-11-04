@@ -30,8 +30,8 @@
 //   ARBITRATION_SHARES:  1 1
 //   ARBITRATION_SCHEME   "round-robin"
 //   PIPELINE_ARB:        1
-//   PKT_TRANS_LOCK:      60 (arbitration locking enabled)
-//   ST_DATA_W:           87
+//   PKT_TRANS_LOCK:      72 (arbitration locking enabled)
+//   ST_DATA_W:           99
 //   ST_CHANNEL_W:        2
 // ------------------------------------------
 
@@ -41,14 +41,14 @@ module bus_sys_cmd_xbar_mux
     // Sinks
     // ----------------------
     input                       sink0_valid,
-    input [87-1   : 0]  sink0_data,
+    input [99-1   : 0]  sink0_data,
     input [2-1: 0]  sink0_channel,
     input                       sink0_startofpacket,
     input                       sink0_endofpacket,
     output                      sink0_ready,
 
     input                       sink1_valid,
-    input [87-1   : 0]  sink1_data,
+    input [99-1   : 0]  sink1_data,
     input [2-1: 0]  sink1_channel,
     input                       sink1_startofpacket,
     input                       sink1_endofpacket,
@@ -59,7 +59,7 @@ module bus_sys_cmd_xbar_mux
     // Source
     // ----------------------
     output                      src_valid,
-    output [87-1    : 0] src_data,
+    output [99-1    : 0] src_data,
     output [2-1 : 0] src_channel,
     output                      src_startofpacket,
     output                      src_endofpacket,
@@ -71,13 +71,13 @@ module bus_sys_cmd_xbar_mux
     input clk,
     input reset
 );
-    localparam PAYLOAD_W        = 87 + 2 + 2;
+    localparam PAYLOAD_W        = 99 + 2 + 2;
     localparam NUM_INPUTS       = 2;
     localparam SHARE_COUNTER_W  = 1;
     localparam PIPELINE_ARB     = 1;
-    localparam ST_DATA_W        = 87;
+    localparam ST_DATA_W        = 99;
     localparam ST_CHANNEL_W     = 2;
-    localparam PKT_TRANS_LOCK   = 60;
+    localparam PKT_TRANS_LOCK   = 72;
 
     // ------------------------------------------
     // Signals
@@ -109,8 +109,8 @@ module bus_sys_cmd_xbar_mux
     // ------------------------------------------
     reg [NUM_INPUTS - 1 : 0] lock;
     always @* begin
-      lock[0] = sink0_data[60];
-      lock[1] = sink1_data[60];
+      lock[0] = sink0_data[72];
+      lock[1] = sink1_data[72];
     end
     reg [NUM_INPUTS - 1 : 0] locked = '0;
     always @(posedge clk or posedge reset) begin

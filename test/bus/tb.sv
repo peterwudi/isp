@@ -59,19 +59,23 @@ initial begin
 	end
 
 	iValid = 1'b1;
-	for (int i = 1; i < 17; i++) begin
+	for (int i = 1; i < 641; i++) begin
 		iData = i;
+		
+		if (i >= 100) begin
+			read_init <= 1;
+		end
 		@(negedge d5m_clk);
 	end
 	
 	iValid = 0;
 	@(negedge d5m_clk);
 	
-	for (int i = 0; i < 24; i++) begin
+	
+	for (int i = 0; i < 200; i++) begin
 		read_init = 1'b1;
 		@(negedge dvi_clk);
 	end
-	
 	read_init = 0;
 	
 	@(negedge d5m_clk);

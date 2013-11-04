@@ -55,7 +55,7 @@ assign	read_empty_rdfifo = read_init & read_fifo_rdempty;
 assign	write_full_wrfifo = iValid & write_fifo_wrfull;
 
 
-parameter frameSize = 16;	//640*480;
+parameter frameSize = 640; //640*480;
 parameter readDelay = 64;
 
 bus_sys u0 (
@@ -182,7 +182,7 @@ always @(posedge ctrl_clk) begin
 				end
 				else begin
 					// Write done
-					if (write_addr < frameSize*4) begin
+					if (write_addr < (frameSize-1)*4) begin
 						write_addr	<= write_addr + 4;
 					end
 					else begin
@@ -248,7 +248,7 @@ always @(posedge ctrl_clk) begin
 				else begin
 					// Read done, ready for the next read
 
-					if (read_addr < frameSize*4) begin	
+					if (read_addr < (frameSize-1)*4) begin	
 						read_addr	<= read_addr + 4;
 					end
 					else begin

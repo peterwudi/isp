@@ -6,13 +6,13 @@ module mem_read_buffer_avalon_interface
 	input					reset,
 	
 	// Control inputs and outputs
-	input		[19:0]	read_addr,
+	input		[31:0]	read_addr,
 	input					read,
 	output	[31:0]	oData,
 	output				waitrequest,
 	
 	// Avalon-MM master signals
-	output	[19:0]	master_address,
+	output	[31:0]	master_address,
 	output				master_read,
 	output	[3:0] 	master_byteenable,
 	input		[31:0] 	master_readdata,

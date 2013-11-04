@@ -49,14 +49,14 @@ module bus_sys_addr_router_default_decode
                DEFAULT_RD_CHANNEL = -1,
                DEFAULT_DESTID = 0 
    )
-  (output [76 - 76 : 0] default_destination_id,
+  (output [88 - 88 : 0] default_destination_id,
    output [2-1 : 0] default_wr_channel,
    output [2-1 : 0] default_rd_channel,
    output [2-1 : 0] default_src_channel
   );
 
   assign default_destination_id = 
-    DEFAULT_DESTID[76 - 76 : 0];
+    DEFAULT_DESTID[88 - 88 : 0];
 
   generate begin : default_decode
     if (DEFAULT_CHANNEL == -1) begin
@@ -95,7 +95,7 @@ module bus_sys_addr_router
     // Command Sink (Input)
     // -------------------
     input                       sink_valid,
-    input  [87-1 : 0]    sink_data,
+    input  [99-1 : 0]    sink_data,
     input                       sink_startofpacket,
     input                       sink_endofpacket,
     output                      sink_ready,
@@ -104,7 +104,7 @@ module bus_sys_addr_router
     // Command Source (Output)
     // -------------------
     output                          src_valid,
-    output reg [87-1    : 0] src_data,
+    output reg [99-1    : 0] src_data,
     output reg [2-1 : 0] src_channel,
     output                          src_startofpacket,
     output                          src_endofpacket,
@@ -114,18 +114,18 @@ module bus_sys_addr_router
     // -------------------------------------------------------
     // Local parameters and variables
     // -------------------------------------------------------
-    localparam PKT_ADDR_H = 55;
+    localparam PKT_ADDR_H = 67;
     localparam PKT_ADDR_L = 36;
-    localparam PKT_DEST_ID_H = 76;
-    localparam PKT_DEST_ID_L = 76;
-    localparam PKT_PROTECTION_H = 80;
-    localparam PKT_PROTECTION_L = 78;
-    localparam ST_DATA_W = 87;
+    localparam PKT_DEST_ID_H = 88;
+    localparam PKT_DEST_ID_L = 88;
+    localparam PKT_PROTECTION_H = 92;
+    localparam PKT_PROTECTION_L = 90;
+    localparam ST_DATA_W = 99;
     localparam ST_CHANNEL_W = 2;
     localparam DECODER_TYPE = 0;
 
-    localparam PKT_TRANS_WRITE = 58;
-    localparam PKT_TRANS_READ  = 59;
+    localparam PKT_TRANS_WRITE = 70;
+    localparam PKT_TRANS_READ  = 71;
 
     localparam PKT_ADDR_W = PKT_ADDR_H-PKT_ADDR_L + 1;
     localparam PKT_DEST_ID_W = PKT_DEST_ID_H-PKT_DEST_ID_L + 1;
@@ -136,13 +136,13 @@ module bus_sys_addr_router
     // Figure out the number of bits to mask off for each slave span
     // during address decoding
     // -------------------------------------------------------
-    localparam PAD0 = log2ceil(64'h8000 - 64'h0); 
+    localparam PAD0 = log2ceil(64'h40000 - 64'h0); 
     // -------------------------------------------------------
     // Work out which address bits are significant based on the
     // address range of the slaves. If the required width is too
     // large or too small, we use the address field width instead.
     // -------------------------------------------------------
-    localparam ADDR_RANGE = 64'h8000;
+    localparam ADDR_RANGE = 64'h40000;
     localparam RANGE_ADDR_WIDTH = log2ceil(ADDR_RANGE);
     localparam OPTIMIZED_ADDR_H = (RANGE_ADDR_WIDTH > PKT_ADDR_W) ||
                                   (RANGE_ADDR_WIDTH == 0) ?
@@ -185,7 +185,7 @@ module bus_sys_addr_router
         // --------------------------------------------------
            
          
-          // ( 0 .. 8000 )
+          // ( 0 .. 40000 )
           src_channel = 2'b1;
           src_data[PKT_DEST_ID_H:PKT_DEST_ID_L] = 0;
 	     

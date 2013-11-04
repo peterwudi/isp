@@ -5,13 +5,13 @@ module mem_write_buffer_avalon_interface (
 	input					reset,
 	
 	// Control inputs and outputs
-	input		[19:0]	write_addr,
+	input		[31:0]	write_addr,
 	input		[31:0]	iData,
 	input					write,
 	output				waitrequest,
 	
 	// Avalon-MM master signals
-	output	[19:0]	master_address,
+	output	[31:0]	master_address,
 	output				master_write,
 	output	[3:0] 	master_byteenable,
 	output	[31:0] 	master_writedata,
