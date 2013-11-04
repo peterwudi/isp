@@ -19,7 +19,7 @@ logic					iValid;
 	
 logic					read_init;
 logic		[31:0]	oData;
-logic					oValid;
+//logic					oValid;
 
 logic					read_empty_rdfifo;
 logic					write_full_wrfifo;

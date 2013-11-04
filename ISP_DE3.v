@@ -395,8 +395,8 @@ ddr2_buffer u8(
 		
 	.read_init(vpg_de),
 	.oData(Read_DATA),
-	.oValid(),	// seems like this is not used, we have to generate data fast enough,
-					// and only put valid data here.
+	// seems like this is not used, we have to generate data fast enough,
+	// and only put valid data here.
 	
 	// Debug
 	.read_empty_rdfifo(),

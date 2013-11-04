@@ -13,7 +13,7 @@ module bus(
 	input					read_init,
 	//input		[18:0]	read_addr,	// multiple of 4
 	output	[31:0]	oData,
-	output				oValid,
+	//output				oValid,
 	
 	output				read_empty_rdfifo,
 	output				write_full_wrfifo,
@@ -33,6 +33,7 @@ wire	[31:0]	ram_oData;
 wire				ram_oValid;
 
 reg				moValid;
+reg	[31:0]	moData;
 
 reg				write;
 wire				write_waitrequest;
@@ -48,7 +49,7 @@ wire	[31:0]	write_fifo_q;
 wire				read_fifo_wrfull;
 wire				read_fifo_rdempty;
 wire				read_fifo_rdreq;
-//wire	[31:0]	read_fifo_q;
+wire	[31:0]	read_fifo_q;
 
 
 assign	read_empty_rdfifo = read_init & read_fifo_rdempty;
@@ -119,9 +120,14 @@ assign read_fifo_rdreq = (~read_fifo_rdempty) & read_init;
 
 always @(posedge dvi_clk) begin
 	// Q data available 1 dvi_clk cycle after rdreq
-	moValid <= read_fifo_rdreq;
+	moValid		<= read_fifo_rdreq;
+	if (moValid == 1) begin
+		moData	<= read_fifo_q;
+	end
 end
-assign oValid = moValid;
+
+assign oData = moData;
+//assign oValid = moValid;
 
 
 ddr2_fifo read_fifo(
@@ -138,7 +144,7 @@ ddr2_fifo read_fifo(
 	.rdclk(dvi_clk),
 	.rdreq(read_fifo_rdreq),
 	
-	.q(oData),
+	.q(read_fifo_q),
 	.rdempty(read_fifo_rdempty),
 	.rdusedw(read_fifo_rdusedw)
 );
