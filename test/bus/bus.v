@@ -30,7 +30,7 @@ reg	[31:0]	read_addr;
 wire				read_waitrequest;
 reg	[1:0]		read_state;
 wire	[31:0]	ram_oData;
-reg				ram_oValid;
+wire				ram_oValid;
 
 reg				moValid;
 
@@ -47,7 +47,7 @@ wire	[31:0]	write_fifo_q;
 
 wire				read_fifo_wrfull;
 wire				read_fifo_rdempty;
-//wire				read_fifo_rdreq;
+wire				read_fifo_rdreq;
 //wire	[31:0]	read_fifo_q;
 
 
@@ -113,12 +113,16 @@ always @(posedge ctrl_clk) begin
 	end
 end	
 	
-	
-always @(posedge ctrl_clk) begin
-	moValid <= (~read_fifo_rdempty) & read_init;
-end
 
+// Don't read when the read FIFO is empty
+assign read_fifo_rdreq = (~read_fifo_rdempty) & read_init;
+
+always @(posedge dvi_clk) begin
+	// Q data available 1 dvi_clk cycle after rdreq
+	moValid <= read_fifo_rdreq;
+end
 assign oValid = moValid;
+
 
 ddr2_fifo read_fifo(
 	.aclr(!reset_n),
@@ -132,7 +136,7 @@ ddr2_fifo read_fifo(
 	
 	// Read (to DVI)
 	.rdclk(dvi_clk),
-	.rdreq(read_init),	// Say we can always read...
+	.rdreq(read_fifo_rdreq),
 	
 	.q(oData),
 	.rdempty(read_fifo_rdempty),
@@ -208,13 +212,15 @@ always @(posedge ctrl_clk) begin
 	end
 end
 
+assign ram_oValid = read & ~read_waitrequest;
+
 // Write side of the read fifo, read from DRAM
 always @(posedge ctrl_clk) begin
 	if (!reset_n) begin
 		read_state	<= 0;
 		read			<= 0;
 		read_addr	<= 'd0;
-		ram_oValid	<= 0;
+		//ram_oValid	<= 0;
 	end
 	else begin
 		case (read_state)
@@ -231,13 +237,13 @@ always @(posedge ctrl_clk) begin
 					read_state	<= 1'b0;
 					read			<= 0;
 				end
-				ram_oValid <= 0;
+				//ram_oValid <= 0;
 			end
 			1'b1: begin
 				if (read_waitrequest == 1) begin
 					read_state	<= 1'b1;
 					read			<= 1;
-					ram_oValid	<= 0;					
+					//ram_oValid	<= 0;					
 				end
 				else begin
 					// Read done, ready for the next read
@@ -247,7 +253,7 @@ always @(posedge ctrl_clk) begin
 					// where to go to.
 					read_state	<= 1'b0;
 					read			<= 0;
-					ram_oValid	<= 1;
+					//ram_oValid	<= 1;
 					
 					if (read_addr < frameSize*4) begin	
 						read_addr	<= read_addr + 4;
