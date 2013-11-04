@@ -381,79 +381,32 @@ Frame_Display u5(
 //						   .mem_we_n_from_the_ddr2(M1_DDR2_we_n),
 //                        
 //                         );
-ddr2_sys u8 (
-	.clk_clk							 (GPIO1_PIXLCLK),
-	.reset_reset_n              (reset_n),
-
-
-	// DDR2
-//	.memory_mem_a               (mem_addr),
-//	.memory_mem_ba              (mem_ba),
-//	.memory_mem_ck              (mem_ck),
-//	.memory_mem_ck_n            (mem_ckn),
-//	.memory_mem_cke             (mem_cke),
-//	.memory_mem_cs_n            (mem_cs_n),
-//	.memory_mem_dm              (mem_dm),
-//	.memory_mem_ras_n           (mem_ras_n),
-//	.memory_mem_cas_n           (mem_cas_n),
-//	.memory_mem_we_n            (mem_we_n),
-//	.memory_mem_dq              (mem_dq),
-//	.memory_mem_dqs             (mem_dqs),
-//	.memory_mem_dqs_n           (mem_dqsn),
-//	.memory_mem_odt             (mem_odt),
-//	.oct_rdn                    (rdn),
-//	.oct_rup                    (rup),
 	
-	// Read
-	.read_control_read_base     (read_addr),
-	.read_control_read_length   ('d4),
-	.read_control_go            (sCCD_DVAL),
-	.read_control_done          (),
-	.read_control_early_done    (),
-	.read_user_read_buffer      (),
-	.read_user_buffer_data      (Read_DATA),
-	.read_user_data_available   (),
+ddr2_buffer u8(
+	.d5m_clk(~GPIO1_PIXLCLK),
+	.ctrl_clk(~GPIO1_PIXLCLK),//use pixclk for now, should use a faster one
+	.dvi_clk(vpg_pclk),
 	
-	// Write
-	.write_control_write_base   (write_addr),
-	.write_control_write_length ('d4),
-	.write_control_go           (sCCD_DVAL),
-	.write_control_done         (),
-	.write_user_write_buffer    (),
-//	.write_user_buffer_data     ({2'b0,sCCD_R[11:2],sCCD_G[11:2],sCCD_B[11:2]}),
-	.write_user_buffer_data     ({2'b0,10'h3FF,20'b0}),
-	.write_user_buffer_full     ()
-);					 
-
-reg	[31:0]	count;
-reg	[29:0]	read_addr;
-reg	[29:0]	write_addr;
-
-
-always @(negedge GPIO1_PIXLCLK) begin
-	if (!reset_n)
-		count <= 0;
-	else begin
-		write_addr <= 0;
-		read_addr	<= 0;
-		count	<= count + 1;
+	.reset_n(reset_n),
 	
-		// Pingpong read/write
-//		if (count < 307200) begin
-//			write_addr	<= count;
-//			read_addr	<= count + 'd307200;
-//		end
-//		else if (count < 307200*2) begin
-//			write_addr	<= count;
-//			read_addr	<= count - 'd307200;
-//		end
-//		else begin
-//			count			<= 0;
-//			read_addr	<= 'd307200;
-//			write_addr	<= 'd0;
-//		end
-	end
-end
+	// Write side
+	.iData({2'b0,sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
+	.iValid(sCCD_DVAL),
+		
+	.read_init(vpg_de),
+	.oData(Read_DATA),
+	.oValid(),	// seems like this is not used, we have to generate data fast enough,
+					// and only put valid data here.
+	
+	// Debug
+	.read_empty_rdfifo(),
+	.write_full_wrfifo(),
+	
+	.write_fifo_wrusedw(),
+	.write_fifo_rdusedw(),
+	.read_fifo_wrusedw(),
+	.read_fifo_rdusedw()
+);
 
 								 
 								 
@@ -548,8 +501,6 @@ assign HSTCC_DVI_TX_CLK = vpg_pclk;
 // Note: only testing switch with unbuffered RGB values from the sensor
 //assign HSTCC_DVI_TX_D = SW[0] ? {sCCD_R[11:4], sCCD_G[11:4], sCCD_B[11:4]} : vpg_data;
 assign HSTCC_DVI_TX_D = SW[0] ? {Read_DATA[29:22], Read_DATA[19:12], Read_DATA[9:2]} : vpg_data;
-
-
 
 // Note: only testing video pattern
 //assign HSTCC_DVI_TX_D = vpg_data;

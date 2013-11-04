@@ -2,7 +2,7 @@ set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_NAME 
 set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0sp1"
 set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "ddr2_sys" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../ddr2_sys.sopcinfo"]
-set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1382844520"
+set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1383597188"
 set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.cmp"]
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.qsys"]
@@ -23,10 +23,10 @@ set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $:
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_agent.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_translator.sv"]
 set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_translator.sv"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_write_port.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_read_port.v"]
 set_global_assignment -library "ddr2_sys" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_onchip_memory2_0.hex"]
 set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_onchip_memory2_0.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_write_buffer.v"]
-set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_read_buffer.v"]
 
 set_global_assignment -entity "ddr2_sys_rsp_xbar_demux" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
 set_global_assignment -entity "ddr2_sys_rsp_xbar_demux" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"

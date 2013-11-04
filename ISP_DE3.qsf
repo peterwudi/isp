@@ -833,6 +833,7 @@ set_global_assignment -name VERILOG_FILE components/ext_pll_ctrl.v
 set_global_assignment -name VERILOG_FILE components/filter.v
 set_global_assignment -name VERILOG_FILE components/demosaic.v
 set_global_assignment -name VERILOG_FILE components/convolution.v
+set_global_assignment -name VERILOG_FILE components/ddr2_buffer.v
 set_global_assignment -name SYSTEMVERILOG_FILE tb.sv
 set_global_assignment -name VERILOG_FILE ISP_DE3.v
 set_global_assignment -name SDC_FILE ISP_DE3.sdc
