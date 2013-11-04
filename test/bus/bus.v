@@ -9,27 +9,30 @@ module bus(
 	// Write side
 	input		[31:0]	iData,
 	input					iValid,
-	//input		[18:0]	write_addr,	// multiple of 4
-	
+		
 	input					read_init,
 	//input		[18:0]	read_addr,	// multiple of 4
 	output	[31:0]	oData,
 	output				oValid,
 	
 	output				read_empty_rdfifo,
-	output				write_full_wrfifo
+	output				write_full_wrfifo,
 	
+	output	[8:0]		write_fifo_wrusedw,
+	output	[8:0]		write_fifo_rdusedw,
+	output	[8:0]		read_fifo_wrusedw,
+	output	[8:0]		read_fifo_rdusedw
 );
 
 
 reg				read;
 reg	[31:0]	read_addr;
 wire				read_waitrequest;
-//reg				moValid;
 reg	[1:0]		read_state;
 wire	[31:0]	ram_oData;
 reg				ram_oValid;
 
+reg				moValid;
 
 reg				write;
 wire				write_waitrequest;
@@ -42,15 +45,18 @@ wire				write_fifo_rdempty;
 reg				write_fifo_rdreq;
 wire	[31:0]	write_fifo_q;
 
-
 wire				read_fifo_wrfull;
 wire				read_fifo_rdempty;
-wire				read_fifo_rdreq;
-wire	[31:0]	read_fifo_q;
+//wire				read_fifo_rdreq;
+//wire	[31:0]	read_fifo_q;
+
 
 assign	read_empty_rdfifo = read_init & read_fifo_rdempty;
 assign	write_full_wrfifo = iValid & write_fifo_wrfull;
 
+
+parameter frameSize = 16;	//640*480;
+parameter readDelay = 64;
 
 bus_sys u0 (
         .clk_clk                    (ctrl_clk),                    //   clk.clk
@@ -77,7 +83,7 @@ ddr2_fifo write_fifo(
 	.wrclk(d5m_clk),
 	.wrreq(iValid),		// No back pressure
 	.wrfull(write_fifo_wrfull),
-	.wrusedw(),
+	.wrusedw(write_fifo_wrusedw),
 	
 	// Read (to DRAM)
 	.rdclk(ctrl_clk),
@@ -85,9 +91,34 @@ ddr2_fifo write_fifo(
 	
 	.q(write_fifo_q),
 	.rdempty(write_fifo_rdempty),
-	.rdusedw()
+	.rdusedw(write_fifo_rdusedw)
 );
 
+// Delay the read to avoid initially empty data being read out
+reg [15:0]	delayCnt;
+reg			readDelayDone;
+
+always @(posedge ctrl_clk) begin
+	if (!reset_n) begin
+		delayCnt			<= 0;
+		readDelayDone	<= 0;
+	end
+	else begin
+		if (delayCnt < readDelay)begin
+			delayCnt <= delayCnt + 1;
+		end
+		else begin
+			readDelayDone <= 1;
+		end
+	end
+end	
+	
+	
+always @(posedge ctrl_clk) begin
+	moValid <= (~read_fifo_rdempty) & read_init;
+end
+
+assign oValid = moValid;
 
 ddr2_fifo read_fifo(
 	.aclr(!reset_n),
@@ -97,7 +128,7 @@ ddr2_fifo read_fifo(
 	.wrclk(ctrl_clk),
 	.wrreq(ram_oValid),
 	.wrfull(read_fifo_wrfull),
-	.wrusedw(),
+	.wrusedw(read_fifo_wrusedw),
 	
 	// Read (to DVI)
 	.rdclk(dvi_clk),
@@ -105,7 +136,7 @@ ddr2_fifo read_fifo(
 	
 	.q(oData),
 	.rdempty(read_fifo_rdempty),
-	.rdusedw()
+	.rdusedw(read_fifo_rdusedw)
 );
 
 // Read side of the write fifo, write into DRAM
@@ -119,14 +150,14 @@ always @(posedge ctrl_clk) begin
 	else begin
 		case (write_state)
 			2'b00: begin
-				if (write_fifo_rdempty == 1) begin
-					// Read from the write fifo
+				if (write_fifo_rdempty == 0) begin
+					// Something is in the FIFO, read
 					write_state			<= 2'b01;
 					write					<= 0;
 					write_fifo_rdreq	<= 1;
 				end
 				else begin
-					// Keep waiting
+					// Nothing is in the FIFO, keep waiting
 					write_state			<= 2'b00;
 					write					<= 0;
 					write_fifo_rdreq	<= 0;
@@ -147,9 +178,13 @@ always @(posedge ctrl_clk) begin
 				end
 				else begin
 					// Write done
-					write_addr			<= write_addr + 4;
-					
-					if (write_fifo_rdempty != 0) begin
+					if (write_addr < frameSize*4) begin
+						write_addr	<= write_addr + 4;
+					end
+					else begin
+						write_addr	<= 0;
+					end
+					if (write_fifo_rdempty == 0) begin
 						// Can read the next data in the fifo
 						write_state			<= 2'b01;
 						write					<= 0;
@@ -184,7 +219,9 @@ always @(posedge ctrl_clk) begin
 	else begin
 		case (read_state)
 			1'b0: begin
-				if (read_fifo_wrfull == 0) begin
+				if (		(read_fifo_wrfull == 0)
+						&& (readDelayDone == 1)) begin
+					// Read FIFO has space, and the read delay is done.
 					// Can write into DRAM
 					read_state	<= 1'b1;
 					read			<= 1;
@@ -211,7 +248,13 @@ always @(posedge ctrl_clk) begin
 					read_state	<= 1'b0;
 					read			<= 0;
 					ram_oValid	<= 1;
-					read_addr	<= read_addr + 4;
+					
+					if (read_addr < frameSize*4) begin	
+						read_addr	<= read_addr + 4;
+					end
+					else begin
+						read_addr	<= 0;
+					end
 				end
 			end
 		endcase

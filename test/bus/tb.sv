@@ -23,7 +23,10 @@ logic					oValid;
 
 logic					read_empty_rdfifo;
 logic					write_full_wrfifo;
-
+logic		[8:0]		write_fifo_wrusedw;
+logic		[8:0]		write_fifo_rdusedw;
+logic		[8:0]		read_fifo_wrusedw;
+logic		[8:0]		read_fifo_rdusedw;
 
 bus dut ( .* );
 
@@ -51,12 +54,12 @@ initial begin
 	@(negedge d5m_clk);
 
 	reset_n = 1'b1;
-	for (int i = 0; i < 16; i++) begin
+	for (int i = 1; i < 17; i++) begin
 		@(negedge d5m_clk);
 	end
 
 	iValid = 1'b1;
-	for (int i = 0; i < 16; i++) begin
+	for (int i = 1; i < 17; i++) begin
 		iData = i;
 		@(negedge d5m_clk);
 	end
