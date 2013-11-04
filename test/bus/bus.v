@@ -247,110 +247,28 @@ always @(posedge ctrl_clk) begin
 				end
 				else begin
 					// Read done, ready for the next read
-					
-					// TODO: See if we can check if the fifo is full here,
-					// then do the same thing as in state 0 to determine
-					// where to go to.
-					read_state	<= 1'b0;
-					read			<= 0;
-					//ram_oValid	<= 1;
-					
+
 					if (read_addr < frameSize*4) begin	
 						read_addr	<= read_addr + 4;
 					end
 					else begin
 						read_addr	<= 0;
 					end
+					
+					if (read_fifo_wrfull == 0) begin
+						// Can write into DRAM
+						read_state	<= 1'b1;
+						read			<= 1;
+					end
+					else begin
+						read_state	<= 1'b0;
+						read			<= 0;
+					end
 				end
 			end
 		endcase
 	end
 end
-
-
-// Write state machine
-// Streaming, no back pressure
-/*
-always @(posedge ctrl_clk) begin
-	if (!reset_n) begin
-		write_state	<= 0;
-		write			<= 0;
-		write_addr	<= 'd0;
-	end
-	else begin
-		case (write_state)
-			1'b0: begin
-				if (iValid == 1) begin
-					// Start writing
-					write_state	<= 1'b1;
-					write			<= 1;
-				end
-				else begin
-					// Keep waiting
-					write_state	<= 1'b0;
-					write			<= 0;
-				end
-			end
-			1'b1: begin
-				if (write_waitrequest == 1) begin
-					// Keep waiting
-					write_state	<= 1'b1;
-					write			<= 1;
-				end
-				else begin
-					// Write done
-					write_state	<= 1'b0;
-					write			<= 0;
-					write_addr	<= write_addr + 4;
-				end
-			end
-		endcase
-	end
-end
-
-
-
-
-
-// Read state machine
-always @(posedge ctrl_clk) begin
-	if (!reset_n) begin
-		read_state	<= 0;
-		read			<= 0;
-		read_addr	<= 'd0;
-	end
-	else begin
-		case (read_state)
-			1'b0: begin
-				if (read_init == 1) begin
-					read_state	<= 1'b1;
-					read			<= 1;
-				end
-				else begin
-					read_state	<= 1'b0;
-					read			<= 0;
-				end
-				moValid		<= 0;
-			end
-			1'b1: begin
-				if (read_waitrequest == 1) begin
-					read_state	<= 1'b1;
-					read			<= 1;
-					moValid		<= 0;					
-				end
-				else begin
-					// Read done, ready for the next read
-					read_state	<= 1'b0;
-					read			<= 0;
-					moValid		<= 1;
-					read_addr	<= read_addr + 4;
-				end
-			end
-		endcase
-	end
-end
-*/
-
 	
 	
 	
