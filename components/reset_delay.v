@@ -64,21 +64,21 @@ begin
 	end
 	else
 	begin
-`ifdef SXGA_1280x1024p60
-		if(Cont!=32'h16FFFFF)
-		Cont	<=	Cont+1;
-		if(Cont>=32'h01FFFFF)
-		oRST_0	<=	1;
-		if(Cont>=32'h02FFFFF)
-		oRST_1	<=	1;
-		if(Cont>=32'h114FFFF)
-		oRST_2	<=	1;
-		if(Cont>=32'h14FFFFF)
-		oRST_3	<=	1;
-		if(Cont>=32'h16FFFFF)
-		oRST_4	<=	1;
-`else
-        if(Cont!=32'h24FFFFF)
+//`ifdef SXGA_1280x1024p60
+//		if(Cont!=32'h16FFFFF)
+//		Cont	<=	Cont+1;
+//		if(Cont>=32'h01FFFFF)
+//		oRST_0	<=	1;
+//		if(Cont>=32'h02FFFFF)
+//		oRST_1	<=	1;
+//		if(Cont>=32'h114FFFF)
+//		oRST_2	<=	1;
+//		if(Cont>=32'h14FFFFF)
+//		oRST_3	<=	1;
+//		if(Cont>=32'h16FFFFF)
+//		oRST_4	<=	1;
+//`else
+      if(Cont!=32'h24FFFFF)
 		Cont	<=	Cont+1;
 		if(Cont>=32'h01FFFFF)
 		oRST_0	<=	1;
@@ -90,7 +90,7 @@ begin
 		oRST_3	<=	1;
 		if(Cont>=32'h24FFFFF)
 		oRST_4	<=	1;
-`endif
+//`endif
 	end
 end
 

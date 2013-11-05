@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="ddr2_sys" kind="ddr2_sys" version="1.0" fabric="QSYS">
  <!-- Format version 13.0sp1 232 (Future versions may contain additional information.) -->
- <!-- 2013.11.04.15:33:09 -->
+ <!-- 2013.11.04.21:58:49 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1383597188</value>
+  <value>1383620328</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -325,12 +325,6 @@ parameters are a RESULT of the module parameters. -->
     <moduleName>write_port_0</moduleName>
     <slaveName>clock_sink</slaveName>
     <name>write_port_0.clock_sink</name>
-   </clockDomainMember>
-   <clockDomainMember>
-    <isBridge>true</isBridge>
-    <moduleName>sysclk</moduleName>
-    <slaveName>in_clk</slaveName>
-    <name>sysclk.in_clk</name>
    </clockDomainMember>
   </interface>
   <interface name="clk_reset" kind="reset_source" version="13.0">
@@ -1161,180 +1155,6 @@ parameters are a RESULT of the module parameters. -->
     <direction>Input</direction>
     <width>1</width>
     <role>reset_req</role>
-   </port>
-  </interface>
- </module>
- <module name="sysclk" kind="altera_clock_bridge" version="13.0" path="sysclk">
-  <!-- Describes a single module. Module parameters are
-the requested settings for a module instance. -->
-  <parameter name="DERIVED_CLOCK_RATE">
-   <type>long</type>
-   <value>50000000</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="EXPLICIT_CLOCK_RATE">
-   <type>long</type>
-   <value>0</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="NUM_CLOCK_OUTPUTS">
-   <type>int</type>
-   <value>1</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <interface name="in_clk" kind="clock_sink" version="13.0">
-   <!-- The connection points exposed by a module instance for the
-particular module parameters. Connection points and their
-parameters are a RESULT of the module parameters. -->
-   <parameter name="externallyDriven">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="ptfSchematicName">
-    <type>java.lang.String</type>
-    <value></value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="deviceFamily">
-    <type>java.lang.String</type>
-    <value>UNKNOWN</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="generateLegacySim">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="clockRateKnown">
-    <type>java.lang.Boolean</type>
-    <value>true</value>
-    <derived>true</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="clockRate">
-    <type>java.lang.Long</type>
-    <value>50000000</value>
-    <derived>true</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <type>clock</type>
-   <isStart>false</isStart>
-   <port>
-    <name>in_clk</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>clk</role>
-   </port>
-  </interface>
-  <interface name="out_clk" kind="clock_source" version="13.0">
-   <!-- The connection points exposed by a module instance for the
-particular module parameters. Connection points and their
-parameters are a RESULT of the module parameters. -->
-   <parameter name="associatedDirectClock">
-    <type>java.lang.String</type>
-    <value>in_clk</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="clockRate">
-    <type>long</type>
-    <value>50000000</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="clockRateKnown">
-    <type>boolean</type>
-    <value>true</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="externallyDriven">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="ptfSchematicName">
-    <type>java.lang.String</type>
-    <value></value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>false</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="deviceFamily">
-    <type>java.lang.String</type>
-    <value>UNKNOWN</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="generateLegacySim">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <type>clock</type>
-   <isStart>true</isStart>
-   <port>
-    <name>out_clk</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>clk</role>
    </port>
   </interface>
  </module>
@@ -2650,79 +2470,28 @@ parameters are a RESULT of the module parameters. -->
   <endModule>onchip_memory2_0</endModule>
   <endConnectionPoint>s1</endConnectionPoint>
  </connection>
- <connection
-   name="clk_50.clk/sysclk.in_clk"
-   kind="clock"
-   version="13.0"
-   start="clk_50.clk"
-   end="sysclk.in_clk">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>clk_50</startModule>
-  <startConnectionPoint>clk</startConnectionPoint>
-  <endModule>sysclk</endModule>
-  <endConnectionPoint>in_clk</endConnectionPoint>
- </connection>
- <plugin>
-  <instanceCount>2</instanceCount>
-  <name>avalon_master</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Master</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
-  <instanceCount>2</instanceCount>
-  <name>avalon</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Avalon Memory Mapped Connection</displayName>
-  <version>13.0</version>
- </plugin>
  <plugin>
   <instanceCount>3</instanceCount>
-  <name>reset</name>
+  <name>clock</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Reset Connection</displayName>
+  <displayName>Clock Connection</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>write_port</name>
+  <name>read_port</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>write_port</displayName>
+  <displayName>read_port</displayName>
   <version>1.0</version>
  </plugin>
  <plugin>
-  <instanceCount>1</instanceCount>
-  <name>clock_source</name>
+  <instanceCount>2</instanceCount>
+  <name>conduit_end</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Clock Output</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>avalon_slave</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Avalon Memory Mapped Slave</displayName>
+  <displayName>Conduit</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2735,6 +2504,22 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
+  <name>reset_source</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Reset Output</displayName>
+  <version>13.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>avalon_slave</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Memory Mapped Slave</displayName>
+  <version>13.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>3</instanceCount>
   <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
@@ -2742,35 +2527,19 @@ parameters are a RESULT of the module parameters. -->
   <version>13.0</version>
  </plugin>
  <plugin>
-  <instanceCount>1</instanceCount>
-  <name>altera_avalon_onchip_memory2</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>On-Chip Memory (RAM or ROM)</displayName>
-  <version>13.0.1.99.2</version>
- </plugin>
- <plugin>
-  <instanceCount>4</instanceCount>
-  <name>clock_sink</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Clock Input</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>read_port</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>read_port</displayName>
-  <version>1.0</version>
- </plugin>
- <plugin>
-  <instanceCount>4</instanceCount>
-  <name>clock</name>
+  <instanceCount>3</instanceCount>
+  <name>reset</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IConnection</subtype>
-  <displayName>Clock Connection</displayName>
+  <displayName>Reset Connection</displayName>
+  <version>13.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>2</instanceCount>
+  <name>avalon_master</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Memory Mapped Master</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2783,10 +2552,18 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>reset_source</name>
+  <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Output</displayName>
+  <displayName>Reset Input</displayName>
+  <version>13.0</version>
+ </plugin>
+ <plugin>
+  <instanceCount>3</instanceCount>
+  <name>clock_sink</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Input</displayName>
   <version>13.0</version>
  </plugin>
  <plugin>
@@ -2799,26 +2576,26 @@ parameters are a RESULT of the module parameters. -->
  </plugin>
  <plugin>
   <instanceCount>1</instanceCount>
-  <name>altera_clock_bridge</name>
+  <name>altera_avalon_onchip_memory2</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>Clock Bridge</displayName>
-  <version>13.0</version>
+  <displayName>On-Chip Memory (RAM or ROM)</displayName>
+  <version>13.0.1.99.2</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>write_port</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>write_port</displayName>
+  <version>1.0</version>
  </plugin>
  <plugin>
   <instanceCount>2</instanceCount>
-  <name>conduit_end</name>
+  <name>avalon</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Conduit</displayName>
-  <version>13.0</version>
- </plugin>
- <plugin>
-  <instanceCount>3</instanceCount>
-  <name>reset_sink</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
-  <displayName>Reset Input</displayName>
+  <subtype>com.altera.entityinterfaces.IConnection</subtype>
+  <displayName>Avalon Memory Mapped Connection</displayName>
   <version>13.0</version>
  </plugin>
  <reportVersion>13.0sp1 232</reportVersion>

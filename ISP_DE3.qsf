@@ -818,8 +818,8 @@ set_global_assignment -name VERILOG_FILE vpg_source/rom_pll_25.v
 set_global_assignment -name VERILOG_FILE vpg_source/pll_reconfig.v
 set_global_assignment -name VERILOG_FILE vpg_source/pattern_gen.v
 set_global_assignment -name VERILOG_FILE vpg_source/gen_pll.v
-set_global_assignment -name VERILOG_FILE components/mem_write_buffer.v
-set_global_assignment -name VERILOG_FILE components/mem_read_buffer.v
+set_global_assignment -name VERILOG_FILE components/mem_write_port.v
+set_global_assignment -name VERILOG_FILE components/mem_read_port.v
 set_global_assignment -name VERILOG_FILE components/ddr2_fifo.v
 set_global_assignment -name VERILOG_FILE components/CCD_Capture.v
 set_global_assignment -name VERILOG_FILE components/sys_pll.v

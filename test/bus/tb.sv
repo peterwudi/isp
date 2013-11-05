@@ -9,16 +9,16 @@ localparam	totalOutBytes	= width * height;
 
 module tb();
 
-logic					d5m_clk;
+logic					GPIO1_PIXLCLK;
 logic					ctrl_clk;
-logic					dvi_clk;
+logic					vpg_pclk;
 logic					reset_n;
 
 logic		[31:0]	iData;
-logic					iValid;
+logic					sCCD_DVAL;
 	
 logic					read_init;
-logic		[31:0]	oData;
+logic		[31:0]	Read_DATA;
 //logic					oValid;
 
 logic					read_empty_rdfifo;
@@ -30,55 +30,55 @@ logic		[8:0]		read_fifo_rdusedw;
 
 bus dut ( .* );
 
-initial	d5m_clk = '1;
+initial	GPIO1_PIXLCLK = '1;
 initial	ctrl_clk = '1;
-initial	dvi_clk = '1;
+initial	vpg_pclk = '1;
 always begin
-	#10		d5m_clk = ~d5m_clk;  	// 50MHz d5m clock
+	#10		GPIO1_PIXLCLK = ~GPIO1_PIXLCLK;  	// 50MHz d5m clock
 end
 always begin
 	#4		ctrl_clk = ~ctrl_clk;		// 125MHz ctrl clock
 end
 always begin
-	#10		dvi_clk = ~dvi_clk;		// 50MHz dvi clock
+	#20		vpg_pclk = ~vpg_pclk;		// 25MHz dvi clock
 end
 
 
 initial begin
 	iData = 'd0;
 	read_init = 1'b0;
-	iValid = 0;
+	sCCD_DVAL = 0;
 	
-	@(negedge d5m_clk);
+	@(negedge GPIO1_PIXLCLK);
 	reset_n = 1'b0;
-	@(negedge d5m_clk);
+	@(negedge GPIO1_PIXLCLK);
 
 	reset_n = 1'b1;
 	for (int i = 1; i < 17; i++) begin
-		@(negedge d5m_clk);
+		@(negedge GPIO1_PIXLCLK);
 	end
 
-	iValid = 1'b1;
+	sCCD_DVAL = 1'b1;
 	for (int i = 1; i < 641; i++) begin
 		iData = i;
 		
 		if (i >= 100) begin
 			read_init <= 1;
 		end
-		@(negedge d5m_clk);
+		@(negedge GPIO1_PIXLCLK);
 	end
 	
-	iValid = 0;
-	@(negedge d5m_clk);
+	sCCD_DVAL = 0;
+	@(negedge GPIO1_PIXLCLK);
 	
 	
 	for (int i = 0; i < 200; i++) begin
 		read_init = 1'b1;
-		@(negedge dvi_clk);
+		@(negedge vpg_pclk);
 	end
 	read_init = 0;
 	
-	@(negedge d5m_clk);
+	@(negedge GPIO1_PIXLCLK);
 	reset_n = 1'b1;
 
 	$stop(0);

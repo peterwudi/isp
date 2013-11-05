@@ -2,7 +2,7 @@ set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_NAME 
 set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0sp1"
 set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
 set_global_assignment -library "ddr2_sys" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../ddr2_sys.sopcinfo"]
-set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1383597188"
+set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1383620328"
 set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.cmp"]
 set_global_assignment -name SYNTHESIS_ONLY_QIP ON
 set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.qsys"]

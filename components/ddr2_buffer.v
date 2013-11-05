@@ -11,9 +11,8 @@ module ddr2_buffer(
 	input					iValid,
 		
 	input					read_init,
-	//input		[18:0]	read_addr,	// multiple of 4
+	input					read_rstn,
 	output	[31:0]	oData,
-	//output				oValid,
 	
 	output				read_empty_rdfifo,
 	output				write_full_wrfifo,
@@ -49,6 +48,7 @@ wire	[31:0]	write_fifo_q;
 wire				read_fifo_wrfull;
 wire				read_fifo_rdempty;
 wire				read_fifo_rdreq;
+wire				read_fifo_wrreq;
 wire	[31:0]	read_fifo_q;
 
 
@@ -57,6 +57,8 @@ assign	write_full_wrfifo = iValid & write_fifo_wrfull;
 
 
 parameter frameSize = 640; //640*480;
+
+// Delay for the write side of the read FIFO, 64 is a random number...
 parameter readDelay = 64;
 
 ddr2_sys u0 (
@@ -73,8 +75,7 @@ ddr2_sys u0 (
         .read_read        (read),        //      .read
         .read_oData       (ram_oData),       //      .oData
         .read_waitrequest   (read_waitrequest)    //      .wait_read
-    );
-
+);
 
 ddr2_fifo write_fifo(
 	.aclr(!reset_n),
@@ -115,8 +116,11 @@ always @(posedge ctrl_clk) begin
 end	
 	
 
-// Don't read when the read FIFO is empty
-assign read_fifo_rdreq = (~read_fifo_rdempty) & read_init;
+// Don't read when the read FIFO is empty, or when read_rstn is low
+assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
+
+assign read_fifo_wrreq = ram_oValid;
+
 
 always @(posedge dvi_clk) begin
 	// Q data available 1 dvi_clk cycle after rdreq
@@ -127,8 +131,6 @@ always @(posedge dvi_clk) begin
 end
 
 assign oData = moData;
-//assign oValid = moValid;
-
 
 ddr2_fifo read_fifo(
 	.aclr(!reset_n),
@@ -136,7 +138,7 @@ ddr2_fifo read_fifo(
 	
 	// Write (from DRAM)
 	.wrclk(ctrl_clk),
-	.wrreq(ram_oValid),
+	.wrreq(read_fifo_wrreq),
 	.wrfull(read_fifo_wrfull),
 	.wrusedw(read_fifo_wrusedw),
 	
@@ -226,7 +228,6 @@ always @(posedge ctrl_clk) begin
 		read_state	<= 0;
 		read			<= 0;
 		read_addr	<= 'd0;
-		//ram_oValid	<= 0;
 	end
 	else begin
 		case (read_state)
@@ -243,13 +244,11 @@ always @(posedge ctrl_clk) begin
 					read_state	<= 1'b0;
 					read			<= 0;
 				end
-				//ram_oValid <= 0;
 			end
 			1'b1: begin
 				if (read_waitrequest == 1) begin
 					read_state	<= 1'b1;
-					read			<= 1;
-					//ram_oValid	<= 0;					
+					read			<= 1;				
 				end
 				else begin
 					// Read done, ready for the next read
