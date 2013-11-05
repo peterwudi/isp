@@ -179,6 +179,10 @@ reg [11:0]	h_pixel_end;
 reg		  	h_sync_polarity;
 reg  	  	vga_h_de;
 
+//h counter gen //
+reg [11:0]h_counter;
+
+
 wire h_de;
 wire [11:0] h_valid_pixel_count;
 wire h_last_pixel;
@@ -187,8 +191,7 @@ assign h_valid_pixel_count = h_counter - h_pixel_start;
 assign h_last_pixel = (h_counter+1 == h_total)?1'b1:1'b0;
 
 
-//h counter gen //
-reg [11:0]h_counter;
+
 
 //	H_Sync, H_Blank Generator, 
 always @(posedge clk or negedge reset_n)
@@ -248,6 +251,9 @@ reg		  v_interlaced;
 reg	  	  gen_field1_sync;
 reg		  f0_to_f1;
 
+//v counter gen
+reg [11:0]v_counter;
+
 wire [11:0] v_field_total;
 wire [11:0] v_field_disp;
 wire [11:0] v_valid_line_count;
@@ -257,8 +263,7 @@ assign v_valid_line_count = v_counter - v_pixel_start;
 assign v_field_disp = (frame_interlaced)?(v_disp >> 1):v_disp;
 assign v_field_total = v_sync+v_bporch+v_field_disp+v_fporch;
 
-//v counter gen
-reg [11:0]v_counter;
+
 
 //	H_Sync, H_Blank Generator, 
 always @(posedge clk or negedge reset_n)

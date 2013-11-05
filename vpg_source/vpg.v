@@ -78,6 +78,11 @@ reg	[3:0]	disp_mode;
 reg [2:0]   timing_change_dur;
 reg			timing_change;
 
+	reg		  pll_reconfig;
+	reg         write_from_rom;
+	wire gen_clk_locked;
+	wire	  pll_busy;
+
 always @ (posedge clk_100 or negedge reset_n)
 begin
 	if (!reset_n)
@@ -222,7 +227,6 @@ end
 //=============== PLL reconfigure
 
 wire gen_clk;
-wire gen_clk_locked;
 
 	wire	  pll_areset; //
 	wire	  pll_configupdate;//
@@ -232,8 +236,8 @@ wire gen_clk_locked;
 	wire	  pll_scandataout;//
 	wire	  pll_scandone;//
 	
-	wire	  pll_busy;
-	reg		  pll_reconfig;
+
+
 
 gen_pll gen_pll_inst(
 	.areset(pll_areset),
@@ -247,6 +251,10 @@ gen_pll gen_pll_inst(
 	.scandataout(pll_scandataout),
 	.scandone(pll_scandone)
 	);
+
+wire 		rom_data;
+wire [7:0]	rom_addr;
+wire 		rom_read;
 	
 
 pll_reconfig pll_reconfig_inst(
@@ -317,6 +325,15 @@ begin
 end
 
 
+wire 		rom_data_25;	
+wire 		rom_data_27;	
+wire 		rom_data_65;	
+wire 		rom_data_108;	
+wire 		rom_data_148;	
+wire 		rom_data_162;	
+
+
+
 rom_selector rom_selector_inst(
 	.data0(rom_data_25),
 	.data1(rom_data_27),
@@ -329,60 +346,52 @@ rom_selector rom_selector_inst(
 	);	
 	
 	
-wire 		rom_data;	
-wire 		rom_data_25;	
-wire 		rom_data_27;	
-wire 		rom_data_65;	
-wire 		rom_data_108;	
-wire 		rom_data_148;	
-wire 		rom_data_162;	
-wire [7:0]	rom_addr;
-wire 		rom_read;
-reg         write_from_rom;
+
+
 	
-	
+
 rom_pll_25 rom_pll_25_inst(
 	.address(rom_addr),
 	.clock(clk_100),
 	.rden(rom_read),
 	.q(rom_data_25)
 	);
-	
-rom_pll_27 rom_pll_27_inst(
-	.address(rom_addr),
-	.clock(clk_100),
-	.rden(rom_read),
-	.q(rom_data_27)
-	);
-	
-rom_pll_65 rom_pll_65_inst(
-	.address(rom_addr),
-	.clock(clk_100),
-	.rden(rom_read),
-	.q(rom_data_65)
-	);
-
-	
-rom_pll_108 rom_pll_108_inst(
-	.address(rom_addr),
-	.clock(clk_100),
-	.rden(rom_read),
-	.q(rom_data_108)
-	);
-	
-rom_pll_148 rom_pll_148_inst(
-	.address(rom_addr),
-	.clock(clk_100),
-	.rden(rom_read),
-	.q(rom_data_148)
-	);
-	
-rom_pll_162 rom_pll_162_inst(
-	.address(rom_addr),
-	.clock(clk_100),
-	.rden(rom_read),
-	.q(rom_data_162)
-	);						
+//	
+//rom_pll_27 rom_pll_27_inst(
+//	.address(rom_addr),
+//	.clock(clk_100),
+//	.rden(rom_read),
+//	.q(rom_data_27)
+//	);
+//	
+//rom_pll_65 rom_pll_65_inst(
+//	.address(rom_addr),
+//	.clock(clk_100),
+//	.rden(rom_read),
+//	.q(rom_data_65)
+//	);
+//
+//	
+//rom_pll_108 rom_pll_108_inst(
+//	.address(rom_addr),
+//	.clock(clk_100),
+//	.rden(rom_read),
+//	.q(rom_data_108)
+//	);
+//	
+//rom_pll_148 rom_pll_148_inst(
+//	.address(rom_addr),
+//	.clock(clk_100),
+//	.rden(rom_read),
+//	.q(rom_data_148)
+//	);
+//	
+//rom_pll_162 rom_pll_162_inst(
+//	.address(rom_addr),
+//	.clock(clk_100),
+//	.rden(rom_read),
+//	.q(rom_data_162)
+//	);						
 
 
 //============ pattern generator: vga timming generator

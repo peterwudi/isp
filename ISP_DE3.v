@@ -381,16 +381,38 @@ Frame_Display u5(
 //						   .mem_we_n_from_the_ddr2(M1_DDR2_we_n),
 //                        
 //                         );
-	
+
+// CRITICAL SECTION FOR DDR2 STARTS
+// =========================================================
+
+//	Prevent from read at starting because of none data in the ddr2
+reg	[15:0]write_cnt;
+always@(posedge ~GPIO1_PIXLCLK)
+	if (~reset_n)
+		write_cnt <= 0;
+	else if ( (sCCD_DVAL) & (write_cnt != 65536) )
+		write_cnt <= write_cnt + 1;
+			                  
+reg	read_rstn;
+always@(posedge ~GPIO1_PIXLCLK)
+	begin
+		if (~reset_n)
+			read_rstn <= 0;
+		else if (write_cnt == 512)
+			read_rstn <= 1;
+end
+
 ddr2_buffer u8(
 	.d5m_clk(~GPIO1_PIXLCLK),
 	.ctrl_clk(~GPIO1_PIXLCLK),//use pixclk for now, should use a faster one
 	.dvi_clk(vpg_pclk),
 	
 	.reset_n(reset_n),
+	.read_rstn(read_rstn),
 	
 	// Write side
 	.iData({2'b0,sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
+	//.iData(32'hFFFFFFFF),
 	.iValid(sCCD_DVAL),
 		
 	.read_init(vpg_de),
@@ -407,6 +429,10 @@ ddr2_buffer u8(
 	.read_fifo_wrusedw(),
 	.read_fifo_rdusedw()
 );
+
+
+// CRITICAL SECTION FOR DDR2 ENDS
+// =========================================================
 
 								 
 								 
@@ -463,8 +489,8 @@ wire [23:0]	vpg_data;
 
 vpg	vpg_inst(
 	.clk_100(pll_100M),
-	//.reset_n(read_rstn & reset_n_dvi),//
-	.reset_n(reset_n_dvi),
+	.reset_n(read_rstn & reset_n_dvi),//
+	//.reset_n(reset_n_dvi),
 	.mode(vpg_mode),
 	.mode_change(1'b0),
 	.disp_color(`COLOR_RGB444),       

@@ -64,6 +64,22 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb -section_id tb.sv
 set_global_assignment -name EDA_TEST_BENCH_FILE tb.sv -section_id tb.sv
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VERILOG_FILE ../../vpg_source/vpg.v
+set_global_assignment -name SOURCE_FILE ../../vpg_source/vpg.h
+set_global_assignment -name VERILOG_FILE ../../vpg_source/vga_time_generator.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_selector.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_162.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_148.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_108.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_74.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_65.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_27.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/rom_pll_25.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/pll_reconfig.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/pattern_gen.v
+set_global_assignment -name VERILOG_FILE ../../vpg_source/gen_pll.v
+set_global_assignment -name VERILOG_FILE ../../components/sys_pll.v
+set_global_assignment -name VERILOG_FILE ../../components/ext_pll_ctrl.v
 set_global_assignment -name QIP_FILE ../../ddr2_sys/synthesis/ddr2_sys.qip
 set_global_assignment -name VERILOG_FILE ../../components/ddr2_buffer.v
 set_global_assignment -name VERILOG_FILE ../../components/ddr2_fifo.v
