@@ -345,10 +345,6 @@ rom_selector rom_selector_inst(
 	.result(rom_data)
 	);	
 	
-	
-
-
-	
 
 rom_pll_25 rom_pll_25_inst(
 	.address(rom_addr),

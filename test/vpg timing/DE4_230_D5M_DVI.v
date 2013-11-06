@@ -292,55 +292,6 @@ wire  [7:0]  counter_inc;
 reg   [7:0]  auto_set_counter;
 reg          conf_wr;
 
-//  Structural coding
-assign clk1_set_wr = 4'd4; //100 MHZ
-assign clk2_set_wr = 4'd4; //100 MHZ
-assign clk3_set_wr = 4'd4; //100 MHZ
-
-assign rstn = BUTTON[0];
-assign counter_max = &auto_set_counter;
-assign counter_inc = auto_set_counter + 1'b1;
-
-always @(posedge OSC_50_BANK2 or negedge rstn)
-	if(!rstn)
-	begin
-		auto_set_counter <= 0;
-		conf_wr <= 0;
-	end 
-	else if (counter_max)
-		conf_wr <= 1;
-	else
-		auto_set_counter <= counter_inc;
-
-
-ext_pll_ctrl ext_pll_ctrl_Inst(
-	.osc_50(OSC_50_BANK2), //50MHZ
-	.rstn(rstn),
-
-	// device 1 (HSMA_REFCLK)
-	.clk1_set_wr(clk1_set_wr),
-	.clk1_set_rd(),
-
-	// device 2 (HSMB_REFCLK)
-	.clk2_set_wr(clk2_set_wr),
-	.clk2_set_rd(),
-
-	// device 3 (PLL_CLKIN/SATA_REFCLK)
-	.clk3_set_wr(clk3_set_wr),
-	.clk3_set_rd(),
-
-	// setting trigger
-	.conf_wr(conf_wr), // 1T 50MHz 
-	.conf_rd(), // 1T 50MHz
-
-	// status 
-	.conf_ready(conf_ready),
-
-	// 2-wire interface 
-	.max_sclk(MAX_I2C_SCLK),
-	.max_sdat(MAX_I2C_SDAT)
-
-);
 
 //=======================================================
 //  Structural coding
@@ -360,17 +311,6 @@ assign DVI_TX_PD_N  =   1'b1;
 //auto start when power on
 assign auto_start = ((BUTTON[0])&&(DLY_RST_3)&&(!DLY_RST_4))? 1'b1:1'b0;
 
-
-
-//Reset module
-Reset_Delay			u2	(	.iCLK(OSC_50_BANK2),
-							.iRST(BUTTON[0]),
-							.oRST_0(DLY_RST_0),
-							.oRST_1(DLY_RST_1),
-							.oRST_2(DLY_RST_2),
-							.oRST_3(DLY_RST_3),
-							.oRST_4(DLY_RST_4)
-						);
 
 
 //system clocks generate

@@ -15,7 +15,10 @@ module ddr2_buffer(
 	output	[31:0]	oData,
 	
 	output				read_empty_rdfifo,
+	output				write_full_rdfifo,
+	output				read_empty_wrfifo,
 	output				write_full_wrfifo,
+	
 	
 	output	[8:0]		write_fifo_wrusedw,
 	output	[8:0]		write_fifo_rdusedw,
@@ -52,7 +55,10 @@ wire				read_fifo_wrreq;
 wire	[31:0]	read_fifo_q;
 
 
-assign	read_empty_rdfifo = read_init & read_fifo_rdempty;
+assign	read_empty_rdfifo = read_fifo_rdreq & read_fifo_rdempty;
+assign	write_full_rdfifo = read_fifo_wrreq & read_fifo_wrfull;
+
+assign	read_empty_wrfifo = write_fifo_rdreq & write_fifo_rdempty;
 assign	write_full_wrfifo = iValid & write_fifo_wrfull;
 
 
@@ -114,12 +120,12 @@ always @(posedge ctrl_clk) begin
 		end
 	end
 end	
-	
+
 
 // Don't read when the read FIFO is empty, or when read_rstn is low
 assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
 
-assign read_fifo_wrreq = ram_oValid;
+assign read_fifo_wrreq = ram_oValid & ~read_fifo_wrfull;
 
 
 always @(posedge dvi_clk) begin

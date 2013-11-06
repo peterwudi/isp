@@ -19,6 +19,7 @@ logic		[31:0]	iData;
 logic					sCCD_DVAL;
 	
 logic		[31:0]	Read_DATA;
+logic					read_init;
 
 logic 				vpg_pclk;
 logic 				vpg_de;
@@ -27,7 +28,10 @@ logic					vpg_vs;
 logic		[23:0]	vpg_data;
 
 logic					read_empty_rdfifo;
+logic					write_full_rdfifo;
+logic					read_empty_wrfifo;
 logic					write_full_wrfifo;
+
 logic		[8:0]		write_fifo_wrusedw;
 logic		[8:0]		write_fifo_rdusedw;
 logic		[8:0]		read_fifo_wrusedw;
@@ -48,14 +52,14 @@ always begin
 	#10		OSC2_50 = ~OSC2_50;		// 50MHz ref clock
 end
 
-
+// Write
 initial begin
 	iData = 'd0;
 	sCCD_DVAL = 0;
 	
-	@(negedge GPIO1_PIXLCLK);
+	@(negedge OSC2_50);
 	reset_n = 1'b0;
-	@(negedge GPIO1_PIXLCLK);
+	@(negedge OSC2_50);
 
 	reset_n = 1'b1;
 	for (int i = 1; i < 17; i++) begin
@@ -70,16 +74,31 @@ initial begin
 	
 	sCCD_DVAL = 0;
 	@(negedge GPIO1_PIXLCLK);
+
+end
+
+// Read
+initial begin
+	read_init = 0;
+	@(negedge OSC2_50);
+	@(negedge OSC2_50);
 	
-	for (int i = 0; i < 600; i++) begin
+	for (int i = 0; i < 1255; i++) begin
+		@(negedge OSC2_50);
+	end
+	
+	for (int i = 0; i < 641; i++) begin
+		read_init = 1;
 		@(negedge vpg_pclk);
 	end
 	
-	@(negedge GPIO1_PIXLCLK);
-	reset_n = 1'b1;
-
+	sCCD_DVAL = 0;
+	@(negedge vpg_pclk);
+	
 	$stop(0);
 end
+	
+
 
 
 

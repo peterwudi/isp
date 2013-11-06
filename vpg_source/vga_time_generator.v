@@ -195,7 +195,7 @@ assign h_last_pixel = (h_counter+1 == h_total)?1'b1:1'b0;
 
 // Taken from vpg.v
 //{h_disp, h_fporch, h_sync, h_bporch} <= {12'd640, 12'd16, 12'd96, 12'd48}; 
-//{v_disp, v_fporch, v_sync, v_bporch} <= {12'd480, 12'd10, 12'd2,  12'd33}; 
+
 //{frame_interlaced, vs_polarity, hs_polarity} <= 3'b000;
 
 //	H_Sync, H_Blank Generator, 
@@ -263,12 +263,15 @@ wire [11:0] v_field_total;
 wire [11:0] v_field_disp;
 wire [11:0] v_valid_line_count;
 wire v_de;
+
+// Row is valid
 assign v_de = (v_counter >= v_pixel_start && v_counter < v_pixel_end)?1'b1:1'b0;
 assign v_valid_line_count = v_counter - v_pixel_start;
-assign v_field_disp = (frame_interlaced)?(v_disp >> 1):v_disp;
-assign v_field_total = v_sync+v_bporch+v_field_disp+v_fporch;
+assign v_field_disp = (frame_interlaced)?(v_disp >> 1):v_disp; // = v_disp = 480
+assign v_field_total = v_sync+v_bporch+v_field_disp+v_fporch; // 525
 
-
+// Taken from vpg.v
+//{v_disp, v_fporch, v_sync, v_bporch} <= {12'd480, 12'd10, 12'd2,  12'd33}; 
 
 //	H_Sync, H_Blank Generator, 
 always @(posedge clk or negedge reset_n)
@@ -283,15 +286,15 @@ begin
 	end
 	else if (timing_change)
 	begin
-		v_pixel_start <= v_sync+v_bporch;
-		v_pixel_end <= v_sync+v_bporch+v_field_disp;
-		v_total <= v_field_total;// + frame_interlaced; 
-		v_sync_polarity <= vs_polarity;
-		v_interlaced <= frame_interlaced;
+		v_pixel_start <= v_sync+v_bporch; // 2+33=35
+		v_pixel_end <= v_sync+v_bporch+v_field_disp;	// 2+33+480 = 515
+		v_total <= v_field_total;// + frame_interlaced; // 525
+		v_sync_polarity <= vs_polarity; // 0
+		v_interlaced <= frame_interlaced; // 0
 		f0_to_f1 <= 1'b0;
 		//
 		v_counter <= 12'h000;
-		vga_vs <= vs_polarity?1'b1:1'b0;
+		vga_vs <= vs_polarity?1'b1:1'b0; // 0
 		vga_v_de <= 1'b0;
 		pixel_y <= 12'hfff;
 		pixel_i_odd_frame <= 1'b0;

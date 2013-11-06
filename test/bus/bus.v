@@ -12,6 +12,8 @@ module bus(
 		
 	output	[31:0]	Read_DATA,
 	
+	//TEST
+	input					read_init,
 	
 	// vpg
 	output 				vpg_pclk,
@@ -21,6 +23,8 @@ module bus(
 	output	[23:0]	vpg_data,
 
 	output				read_empty_rdfifo,
+	output				write_full_rdfifo,
+	output				read_empty_wrfifo,
 	output				write_full_wrfifo,
 	
 	output	[8:0]		write_fifo_wrusedw,
@@ -51,7 +55,7 @@ end
 
 ddr2_buffer u8(
 	.d5m_clk(~GPIO1_PIXLCLK),
-	.ctrl_clk(~GPIO1_PIXLCLK),//use pixclk for now, should use a faster one
+	.ctrl_clk(ctrl_clk),//use pixclk for now, should use a faster one
 	.dvi_clk(vpg_pclk),
 	
 	.reset_n(reset_n),
@@ -62,11 +66,14 @@ ddr2_buffer u8(
 	.iData(iData),
 	.iValid(sCCD_DVAL),
 		
-	.read_init(vpg_de),
+	//.read_init(vpg_de),
+	.read_init(read_init),
 	.oData(Read_DATA),
 	
 	// Debug
 	.read_empty_rdfifo(read_empty_rdfifo),
+	.write_full_rdfifo(write_full_rdfifo),
+	.read_empty_wrfifo(read_empty_wrfifo),
 	.write_full_wrfifo(write_full_wrfifo),
 	
 	.write_fifo_wrusedw(write_fifo_wrusedw),

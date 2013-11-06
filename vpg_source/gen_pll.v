@@ -178,7 +178,7 @@ module gen_pll (
 		altpll_component.self_reset_on_loss_lock = "OFF",
 		altpll_component.using_fbmimicbidir_port = "OFF",
 		altpll_component.width_clock = 10,
-		altpll_component.scan_chain_mif_file = "D:/github/isp/vpg_source/gen_pll.mif";
+		altpll_component.scan_chain_mif_file = "gen_pll.mif";
 
 
 endmodule
