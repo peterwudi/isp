@@ -72,7 +72,7 @@ http://www.epanorama.net/documents/pc/vga_timing.html
 "VGA industry standard" 640x480 pixel mode
 
 example: 640x480@60
-General characteristics
+General characteristicsd
 Clock frequency 25.175 MHz
 Line  frequency 31469 Hz
 Field frequency 59.94 Hz
@@ -186,12 +186,17 @@ reg [11:0]h_counter;
 wire h_de;
 wire [11:0] h_valid_pixel_count;
 wire h_last_pixel;
+
+// Data is valid pixel data
 assign h_de = (h_counter >= h_pixel_start && h_counter < h_pixel_end)?1'b1:1'b0;
+
 assign h_valid_pixel_count = h_counter - h_pixel_start;
 assign h_last_pixel = (h_counter+1 == h_total)?1'b1:1'b0;
 
-
-
+// Taken from vpg.v
+//{h_disp, h_fporch, h_sync, h_bporch} <= {12'd640, 12'd16, 12'd96, 12'd48}; 
+//{v_disp, v_fporch, v_sync, v_bporch} <= {12'd480, 12'd10, 12'd2,  12'd33}; 
+//{frame_interlaced, vs_polarity, hs_polarity} <= 3'b000;
 
 //	H_Sync, H_Blank Generator, 
 always @(posedge clk or negedge reset_n)
@@ -199,20 +204,20 @@ begin
 	if (!reset_n)
 	begin
 		h_counter <= 12'h000;
-		vga_hs <= hs_polarity?1'b1:1'b0;
+		vga_hs <= hs_polarity?1'b1:1'b0;	// 0
 		vga_h_de <= 1'b0;
 		pixel_x <= 12'hfff;
-    end
-    else if (timing_change)
-    begin
-		h_total <= h_disp+h_fporch+h_sync+h_bporch;	
-		h_total_half <= (h_disp+h_fporch+h_sync+h_bporch ) >> 1;	
-		h_pixel_start <= h_sync+h_bporch;
-		h_pixel_end <= h_sync+h_bporch+h_disp;
-		h_sync_polarity <= hs_polarity;
-		//
+   end
+   else if (timing_change)
+   begin
+		h_total <= h_disp+h_fporch+h_sync+h_bporch;	//800
+		h_total_half <= (h_disp+h_fporch+h_sync+h_bporch ) >> 1;	//400
+		h_pixel_start <= h_sync+h_bporch; // B+C = 144
+		h_pixel_end <= h_sync+h_bporch+h_disp; //B+C+D = 784
+		h_sync_polarity <= hs_polarity; // 0
+		
 		h_counter <= 12'h000;
-		vga_hs <= hs_polarity?1'b1:1'b0;
+		vga_hs <= hs_polarity?1'b1:1'b0;	// 0
 		vga_h_de <= 1'b0;
 		pixel_x <= 12'hfff;
 	end
@@ -226,12 +231,12 @@ begin
 			
 	    // h sync generator
 		if (h_counter < h_sync)
-			vga_hs <= h_sync_polarity?1'b1:1'b0;
+			vga_hs <= h_sync_polarity?1'b1:1'b0; // 0
         else					
-			vga_hs <= h_sync_polarity?1'b0:1'b1;
+			vga_hs <= h_sync_polarity?1'b0:1'b1; // 1
 			
 	    // de
-		pixel_x <= (h_de)?h_valid_pixel_count:12'hfff; 
+		pixel_x <= (h_de)?h_valid_pixel_count:12'hfff; // Pixel x coord
 		vga_h_de <= h_de;
 		
     end						

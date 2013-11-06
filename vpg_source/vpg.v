@@ -304,22 +304,22 @@ begin
 			begin  
 				pllconfig_select <= `PLL_25;
 			end
-//		`MODE_720x480: 
-//			begin  // 720x480@60 27MHZ (VIC=2/3, 480P) 16:9
-//				pllconfig_select <= `PLL_27;
-//			end
-//		`MODE_1024x768: begin //1024x768@60 65MHZ (XGA)
-//			pllconfig_select <= `PLL_65;
-//		end
-//		`MODE_1280x1024: begin //1280x1024@60   108MHZ (SXGA) ???check again
-//			pllconfig_select <= `PLL_108;
-//		end
-//		`FHD_1920x1080p60: begin 
-//			pllconfig_select <= `PLL_148;
-//		end
-//		`VESA_1600x1200p60: begin 
-//			pllconfig_select <= `PLL_162;
-//		end
+		`MODE_720x480: 
+			begin  // 720x480@60 27MHZ (VIC=2/3, 480P) 16:9
+				pllconfig_select <= `PLL_27;
+			end
+		`MODE_1024x768: begin //1024x768@60 65MHZ (XGA)
+			pllconfig_select <= `PLL_65;
+		end
+		`MODE_1280x1024: begin //1280x1024@60   108MHZ (SXGA) ???check again
+			pllconfig_select <= `PLL_108;
+		end
+		`FHD_1920x1080p60: begin 
+			pllconfig_select <= `PLL_148;
+		end
+		`VESA_1600x1200p60: begin 
+			pllconfig_select <= `PLL_162;
+		end
 	endcase
 	end
 end
@@ -356,42 +356,42 @@ rom_pll_25 rom_pll_25_inst(
 	.rden(rom_read),
 	.q(rom_data_25)
 	);
-//	
-//rom_pll_27 rom_pll_27_inst(
-//	.address(rom_addr),
-//	.clock(clk_100),
-//	.rden(rom_read),
-//	.q(rom_data_27)
-//	);
-//	
-//rom_pll_65 rom_pll_65_inst(
-//	.address(rom_addr),
-//	.clock(clk_100),
-//	.rden(rom_read),
-//	.q(rom_data_65)
-//	);
-//
-//	
-//rom_pll_108 rom_pll_108_inst(
-//	.address(rom_addr),
-//	.clock(clk_100),
-//	.rden(rom_read),
-//	.q(rom_data_108)
-//	);
-//	
-//rom_pll_148 rom_pll_148_inst(
-//	.address(rom_addr),
-//	.clock(clk_100),
-//	.rden(rom_read),
-//	.q(rom_data_148)
-//	);
-//	
-//rom_pll_162 rom_pll_162_inst(
-//	.address(rom_addr),
-//	.clock(clk_100),
-//	.rden(rom_read),
-//	.q(rom_data_162)
-//	);						
+	
+rom_pll_27 rom_pll_27_inst(
+	.address(rom_addr),
+	.clock(clk_100),
+	.rden(rom_read),
+	.q(rom_data_27)
+	);
+	
+rom_pll_65 rom_pll_65_inst(
+	.address(rom_addr),
+	.clock(clk_100),
+	.rden(rom_read),
+	.q(rom_data_65)
+	);
+
+	
+rom_pll_108 rom_pll_108_inst(
+	.address(rom_addr),
+	.clock(clk_100),
+	.rden(rom_read),
+	.q(rom_data_108)
+	);
+	
+rom_pll_148 rom_pll_148_inst(
+	.address(rom_addr),
+	.clock(clk_100),
+	.rden(rom_read),
+	.q(rom_data_148)
+	);
+	
+rom_pll_162 rom_pll_162_inst(
+	.address(rom_addr),
+	.clock(clk_100),
+	.rden(rom_read),
+	.q(rom_data_162)
+	);						
 
 
 //============ pattern generator: vga timming generator
