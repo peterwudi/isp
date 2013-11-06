@@ -1,0 +1,1357 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2010 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II
+# Version 9.1 Build 350 03/24/2010 Service Pack 2 SJ Full Version
+# Date created = 14:35:01  August 04, 2010
+#
+# -------------------------------------------------------------------------- #
+
+#============================================================
+# Build by Terasic System Builder
+#============================================================
+
+set_global_assignment -name FAMILY "Stratix IV"
+set_global_assignment -name DEVICE EP4SGX230KF40C2
+set_global_assignment -name TOP_LEVEL_ENTITY DE4_230_D5M_DVI
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.1 SP2"
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "14:35:01  AUGUST 04, 2010"
+set_global_assignment -name DEVICE_FILTER_PACKAGE FPGA
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 1152
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 2
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_location_assignment PIN_AF25 -to termination_blk0~_rup_pad
+set_location_assignment PIN_AG25 -to termination_blk0~_rdn_pad
+set_instance_assignment -name IO_STANDARD "1.8 V" -to termination_blk0~_rup_pad
+
+#============================================================
+# CLOCK
+#============================================================
+set_location_assignment PIN_AC35 -to OSC_50_BANK2
+set_instance_assignment -name IO_STANDARD "2.5 V" -to OSC_50_BANK2
+set_location_assignment PIN_AV22 -to OSC_50_BANK3
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OSC_50_BANK3
+set_location_assignment PIN_AV19 -to OSC_50_BANK4
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OSC_50_BANK4
+set_location_assignment PIN_AC6 -to OSC_50_BANK5
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to OSC_50_BANK5
+set_location_assignment PIN_AB6 -to OSC_50_BANK6
+set_instance_assignment -name IO_STANDARD "2.5 V" -to OSC_50_BANK6
+set_location_assignment PIN_A19 -to OSC_50_BANK7
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OSC_50_BANK7
+set_location_assignment PIN_AH19 -to GCLKOUT_FPGA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GCLKOUT_FPGA
+set_location_assignment PIN_A21 -to GCLKIN
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GCLKIN
+set_location_assignment PIN_B22 -to PLL_CLKIN_p
+set_instance_assignment -name IO_STANDARD LVDS -to PLL_CLKIN_p
+
+#============================================================
+# External PLL
+#============================================================
+set_location_assignment PIN_AP24 -to MAX_I2C_SCLK
+set_instance_assignment -name IO_STANDARD "1.8 V" -to MAX_I2C_SCLK
+set_location_assignment PIN_AN22 -to MAX_I2C_SDAT
+set_instance_assignment -name IO_STANDARD "1.8 V" -to MAX_I2C_SDAT
+set_location_assignment PIN_AW32 -to MAX_CONF_D[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to MAX_CONF_D[0]
+set_location_assignment PIN_AG22 -to MAX_CONF_D[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to MAX_CONF_D[1]
+set_location_assignment PIN_AV11 -to MAX_CONF_D[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to MAX_CONF_D[2]
+set_location_assignment PIN_AG17 -to MAX_CONF_D[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to MAX_CONF_D[4]
+
+#============================================================
+# SMA
+#============================================================
+set_location_assignment PIN_B23 -to SMA_CLKIN_p
+set_instance_assignment -name IO_STANDARD LVDS -to SMA_CLKIN_p
+set_location_assignment PIN_M20 -to SMA_CLKOUT_p
+set_instance_assignment -name IO_STANDARD LVDS -to SMA_CLKOUT_p
+
+#============================================================
+# LED x 8
+#============================================================
+set_location_assignment PIN_V28 -to LED[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[0]
+set_location_assignment PIN_W28 -to LED[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[1]
+set_location_assignment PIN_R29 -to LED[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[2]
+set_location_assignment PIN_P29 -to LED[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[3]
+set_location_assignment PIN_N29 -to LED[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[4]
+set_location_assignment PIN_M29 -to LED[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[5]
+set_location_assignment PIN_N30 -to LED[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[6]
+set_location_assignment PIN_M30 -to LED[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to LED[7]
+
+#============================================================
+# BUTTON x 4, EXT_IO and CPU_RESET_n
+#============================================================
+set_location_assignment PIN_AH5 -to BUTTON[0]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to BUTTON[0]
+set_location_assignment PIN_AG5 -to BUTTON[1]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to BUTTON[1]
+set_location_assignment PIN_AG7 -to BUTTON[2]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to BUTTON[2]
+set_location_assignment PIN_AG8 -to BUTTON[3]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to BUTTON[3]
+set_location_assignment PIN_AC11 -to EXT_IO
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to EXT_IO
+set_location_assignment PIN_V34 -to CPU_RESET_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to CPU_RESET_n
+
+#============================================================
+# DIP SWITCH x 8
+#============================================================
+set_location_assignment PIN_AB13 -to SW[0]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[0]
+set_location_assignment PIN_AB12 -to SW[1]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[1]
+set_location_assignment PIN_AB11 -to SW[2]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[2]
+set_location_assignment PIN_AB10 -to SW[3]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[3]
+set_location_assignment PIN_AB9 -to SW[4]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[4]
+set_location_assignment PIN_AC8 -to SW[5]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[5]
+set_location_assignment PIN_AH6 -to SW[6]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[6]
+set_location_assignment PIN_AG6 -to SW[7]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SW[7]
+
+#============================================================
+# SLIDE SWITCH x 4
+#============================================================
+set_location_assignment PIN_J7 -to SLIDE_SW[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SLIDE_SW[0]
+set_location_assignment PIN_K7 -to SLIDE_SW[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SLIDE_SW[1]
+set_location_assignment PIN_AK6 -to SLIDE_SW[2]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to SLIDE_SW[2]
+set_location_assignment PIN_L7 -to SLIDE_SW[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SLIDE_SW[3]
+
+#============================================================
+# SEG7
+#============================================================
+set_location_assignment PIN_L34 -to SEG0_D[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[0]
+set_location_assignment PIN_M34 -to SEG0_D[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[1]
+set_location_assignment PIN_M33 -to SEG0_D[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[2]
+set_location_assignment PIN_H31 -to SEG0_D[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[3]
+set_location_assignment PIN_J33 -to SEG0_D[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[4]
+set_location_assignment PIN_L35 -to SEG0_D[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[5]
+set_location_assignment PIN_K32 -to SEG0_D[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_D[6]
+set_location_assignment PIN_AL34 -to SEG0_DP
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG0_DP
+set_location_assignment PIN_E31 -to SEG1_D[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[0]
+set_location_assignment PIN_F31 -to SEG1_D[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[1]
+set_location_assignment PIN_G31 -to SEG1_D[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[2]
+set_location_assignment PIN_C34 -to SEG1_D[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[3]
+set_location_assignment PIN_C33 -to SEG1_D[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[4]
+set_location_assignment PIN_D33 -to SEG1_D[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[5]
+set_location_assignment PIN_D34 -to SEG1_D[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_D[6]
+set_location_assignment PIN_AL35 -to SEG1_DP
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SEG1_DP
+
+#============================================================
+# Temperature
+#============================================================
+set_location_assignment PIN_AN18 -to TEMP_SMCLK
+set_instance_assignment -name IO_STANDARD "1.8 V" -to TEMP_SMCLK
+set_location_assignment PIN_AP18 -to TEMP_SMDAT
+set_instance_assignment -name IO_STANDARD "1.8 V" -to TEMP_SMDAT
+set_location_assignment PIN_AP19 -to TEMP_INT_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to TEMP_INT_n
+
+#============================================================
+# Current
+#============================================================
+set_location_assignment PIN_AH13 -to CSENSE_SCK
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CSENSE_SCK
+set_location_assignment PIN_AJ13 -to CSENSE_SDI
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CSENSE_SDI
+set_location_assignment PIN_AK14 -to CSENSE_SDO
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CSENSE_SDO
+set_location_assignment PIN_AK13 -to CSENSE_ADC_FO
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CSENSE_ADC_FO
+set_location_assignment PIN_AG14 -to CSENSE_CS_n[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CSENSE_CS_n[0]
+set_location_assignment PIN_AG15 -to CSENSE_CS_n[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CSENSE_CS_n[1]
+
+#============================================================
+# Fan
+#============================================================
+set_location_assignment PIN_AP20 -to FAN_CTRL
+set_instance_assignment -name IO_STANDARD "1.8 V" -to FAN_CTRL
+
+#============================================================
+# EEPROM
+#============================================================
+set_location_assignment PIN_G33 -to EEP_SCL
+set_instance_assignment -name IO_STANDARD "2.5 V" -to EEP_SCL
+set_location_assignment PIN_F33 -to EEP_SDA
+set_instance_assignment -name IO_STANDARD "2.5 V" -to EEP_SDA
+
+#============================================================
+# SDCARD
+#============================================================
+set_location_assignment PIN_AV20 -to SD_CMD
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_CMD
+set_location_assignment PIN_AT19 -to SD_CLK
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_CLK
+set_location_assignment PIN_AH18 -to SD_WP_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_WP_n
+set_location_assignment PIN_AR20 -to SD_DAT[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_DAT[0]
+set_location_assignment PIN_AT20 -to SD_DAT[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_DAT[1]
+set_location_assignment PIN_AU19 -to SD_DAT[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_DAT[2]
+set_location_assignment PIN_AU20 -to SD_DAT[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SD_DAT[3]
+
+#============================================================
+# Ethernet x 4
+#============================================================
+set_location_assignment PIN_U31 -to ETH_RX_p[0]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_RX_p[0]
+set_location_assignment PIN_T30 -to ETH_TX_p[0]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_TX_p[0]
+set_location_assignment PIN_W32 -to ETH_MDIO[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDIO[0]
+set_location_assignment PIN_R30 -to ETH_MDC[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDC[0]
+set_location_assignment PIN_B20 -to ETH_INT_n[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to ETH_INT_n[0]
+set_location_assignment PIN_N33 -to ETH_RX_p[1]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_RX_p[1]
+set_location_assignment PIN_R32 -to ETH_TX_p[1]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_TX_p[1]
+set_location_assignment PIN_J5 -to ETH_MDIO[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDIO[1]
+set_location_assignment PIN_J6 -to ETH_MDC[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDC[1]
+set_location_assignment PIN_AG30 -to ETH_INT_n[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_INT_n[1]
+set_location_assignment PIN_K34 -to ETH_RX_p[2]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_RX_p[2]
+set_location_assignment PIN_M32 -to ETH_TX_p[2]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_TX_p[2]
+set_location_assignment PIN_K5 -to ETH_MDIO[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDIO[2]
+set_location_assignment PIN_K6 -to ETH_MDC[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDC[2]
+set_location_assignment PIN_AE30 -to ETH_INT_n[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_INT_n[2]
+set_location_assignment PIN_J34 -to ETH_RX_p[3]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_RX_p[3]
+set_location_assignment PIN_P31 -to ETH_TX_p[3]
+set_instance_assignment -name IO_STANDARD LVDS -to ETH_TX_p[3]
+set_location_assignment PIN_N8 -to ETH_MDIO[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDIO[3]
+set_location_assignment PIN_N7 -to ETH_MDC[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_MDC[3]
+set_location_assignment PIN_AE31 -to ETH_INT_n[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_INT_n[3]
+set_location_assignment PIN_V29 -to ETH_RST_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_RST_n
+set_location_assignment PIN_AN35 -to ETH_PSE_INT_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_PSE_INT_n
+set_location_assignment PIN_AH33 -to ETH_PSE_RST_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_PSE_RST_n
+set_location_assignment PIN_AH32 -to ETH_PSE_SCK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_PSE_SCK
+set_location_assignment PIN_AN34 -to ETH_PSE_SDA
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ETH_PSE_SDA
+
+#============================================================
+# Flash and SRAM Address/Data Share Bus
+#============================================================
+set_location_assignment PIN_K29 -to FSM_D[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[0]
+set_location_assignment PIN_J30 -to FSM_D[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[1]
+set_location_assignment PIN_K30 -to FSM_D[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[2]
+set_location_assignment PIN_L29 -to FSM_D[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[3]
+set_location_assignment PIN_K31 -to FSM_D[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[4]
+set_location_assignment PIN_E32 -to FSM_D[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[5]
+set_location_assignment PIN_F32 -to FSM_D[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[6]
+set_location_assignment PIN_H32 -to FSM_D[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[7]
+set_location_assignment PIN_B32 -to FSM_D[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[8]
+set_location_assignment PIN_C32 -to FSM_D[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[9]
+set_location_assignment PIN_C35 -to FSM_D[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[10]
+set_location_assignment PIN_D35 -to FSM_D[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[11]
+set_location_assignment PIN_M22 -to FSM_D[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[12]
+set_location_assignment PIN_M28 -to FSM_D[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[13]
+set_location_assignment PIN_C31 -to FSM_D[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[14]
+set_location_assignment PIN_D31 -to FSM_D[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_D[15]
+set_location_assignment PIN_G22 -to FSM_A[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[1]
+set_location_assignment PIN_G23 -to FSM_A[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[2]
+set_location_assignment PIN_A25 -to FSM_A[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[3]
+set_location_assignment PIN_H22 -to FSM_A[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[4]
+set_location_assignment PIN_H23 -to FSM_A[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[5]
+set_location_assignment PIN_J22 -to FSM_A[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[6]
+set_location_assignment PIN_K22 -to FSM_A[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[7]
+set_location_assignment PIN_M21 -to FSM_A[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[8]
+set_location_assignment PIN_J23 -to FSM_A[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[9]
+set_location_assignment PIN_F34 -to FSM_A[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[10]
+set_location_assignment PIN_G35 -to FSM_A[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[11]
+set_location_assignment PIN_E34 -to FSM_A[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[12]
+set_location_assignment PIN_J32 -to FSM_A[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[13]
+set_location_assignment PIN_F35 -to FSM_A[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[14]
+set_location_assignment PIN_C24 -to FSM_A[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[15]
+set_location_assignment PIN_A24 -to FSM_A[16]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[16]
+set_location_assignment PIN_D23 -to FSM_A[17]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[17]
+set_location_assignment PIN_D24 -to FSM_A[18]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[18]
+set_location_assignment PIN_T27 -to FSM_A[19]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[19]
+set_location_assignment PIN_T28 -to FSM_A[20]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[20]
+set_location_assignment PIN_D22 -to FSM_A[21]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[21]
+set_location_assignment PIN_E23 -to FSM_A[22]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[22]
+set_location_assignment PIN_N20 -to FSM_A[23]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[23]
+set_location_assignment PIN_P20 -to FSM_A[24]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[24]
+set_location_assignment PIN_C22 -to FSM_A[25]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FSM_A[25]
+
+#============================================================
+# Flash Control
+#============================================================
+set_location_assignment PIN_G21 -to FLASH_RYBY_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_RYBY_n
+set_location_assignment PIN_E22 -to FLASH_CLK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_CLK
+set_location_assignment PIN_D21 -to FLASH_RESET_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_RESET_n
+set_location_assignment PIN_N21 -to FLASH_OE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_OE_n
+set_location_assignment PIN_R20 -to FLASH_WE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_WE_n
+set_location_assignment PIN_F21 -to FLASH_ADV_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_ADV_n
+set_location_assignment PIN_F23 -to FLASH_CE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to FLASH_CE_n
+
+#============================================================
+# SSRAM Control
+#============================================================
+set_location_assignment PIN_R27 -to SSRAM_BWA_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_BWA_n
+set_location_assignment PIN_N31 -to SSRAM_BWB_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_BWB_n
+set_location_assignment PIN_M31 -to SSRAM_CLK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_CLK
+set_location_assignment PIN_H34 -to SSRAM_OE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_OE_n
+set_location_assignment PIN_L31 -to SSRAM_WE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_WE_n
+set_location_assignment PIN_N28 -to SSRAM_CKE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_CKE_n
+set_location_assignment PIN_R28 -to SSRAM_CE_n
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_CE_n
+set_location_assignment PIN_H35 -to SSRAM_ADV
+set_instance_assignment -name IO_STANDARD "2.5 V" -to SSRAM_ADV
+
+#============================================================
+# 3-Ports High-Speed USB OTG
+#============================================================
+set_location_assignment PIN_AF16 -to OTG_D[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[0]
+set_location_assignment PIN_AJ14 -to OTG_D[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[1]
+set_location_assignment PIN_AD15 -to OTG_D[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[2]
+set_location_assignment PIN_AE15 -to OTG_D[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[3]
+set_location_assignment PIN_AE16 -to OTG_D[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[4]
+set_location_assignment PIN_AH14 -to OTG_D[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[5]
+set_location_assignment PIN_AM13 -to OTG_D[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[6]
+set_location_assignment PIN_AN15 -to OTG_D[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[7]
+set_location_assignment PIN_AP15 -to OTG_D[8]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[8]
+set_location_assignment PIN_AG18 -to OTG_D[9]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[9]
+set_location_assignment PIN_AG19 -to OTG_D[10]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[10]
+set_location_assignment PIN_AM19 -to OTG_D[11]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[11]
+set_location_assignment PIN_AN19 -to OTG_D[12]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[12]
+set_location_assignment PIN_AV16 -to OTG_D[13]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[13]
+set_location_assignment PIN_AT17 -to OTG_D[14]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[14]
+set_location_assignment PIN_AV17 -to OTG_D[15]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[15]
+set_location_assignment PIN_AU17 -to OTG_D[16]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[16]
+set_location_assignment PIN_AW18 -to OTG_D[17]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[17]
+set_location_assignment PIN_AT18 -to OTG_D[18]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[18]
+set_location_assignment PIN_AU18 -to OTG_D[19]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[19]
+set_location_assignment PIN_AR19 -to OTG_D[20]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[20]
+set_location_assignment PIN_AW20 -to OTG_D[21]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[21]
+set_location_assignment PIN_AW21 -to OTG_D[22]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[22]
+set_location_assignment PIN_AF19 -to OTG_D[23]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[23]
+set_location_assignment PIN_AE19 -to OTG_D[24]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[24]
+set_location_assignment PIN_AE18 -to OTG_D[25]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[25]
+set_location_assignment PIN_AD19 -to OTG_D[26]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[26]
+set_location_assignment PIN_G13 -to OTG_D[27]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[27]
+set_location_assignment PIN_M16 -to OTG_D[28]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[28]
+set_location_assignment PIN_M27 -to OTG_D[29]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[29]
+set_location_assignment PIN_K27 -to OTG_D[30]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[30]
+set_location_assignment PIN_L26 -to OTG_D[31]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_D[31]
+set_location_assignment PIN_K26 -to OTG_A[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[1]
+set_location_assignment PIN_P25 -to OTG_A[2]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[2]
+set_location_assignment PIN_N25 -to OTG_A[3]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[3]
+set_location_assignment PIN_R24 -to OTG_A[4]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[4]
+set_location_assignment PIN_P24 -to OTG_A[5]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[5]
+set_location_assignment PIN_M25 -to OTG_A[6]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[6]
+set_location_assignment PIN_L25 -to OTG_A[7]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[7]
+set_location_assignment PIN_N23 -to OTG_A[8]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[8]
+set_location_assignment PIN_K28 -to OTG_A[9]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[9]
+set_location_assignment PIN_A29 -to OTG_A[10]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[10]
+set_location_assignment PIN_J27 -to OTG_A[11]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[11]
+set_location_assignment PIN_G26 -to OTG_A[12]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[12]
+set_location_assignment PIN_F26 -to OTG_A[13]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[13]
+set_location_assignment PIN_G28 -to OTG_A[14]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[14]
+set_location_assignment PIN_B26 -to OTG_A[15]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[15]
+set_location_assignment PIN_D17 -to OTG_A[16]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[16]
+set_location_assignment PIN_F16 -to OTG_A[17]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_A[17]
+set_location_assignment PIN_P19 -to OTG_CS_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_CS_n
+set_location_assignment PIN_AH20 -to OTG_DC_DACK
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_DC_DACK
+set_location_assignment PIN_AP21 -to OTG_DC_DREQ
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_DC_DREQ
+set_location_assignment PIN_AT22 -to OTG_DC_IRQ
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_DC_IRQ
+set_location_assignment PIN_AT21 -to OTG_HC_DACK
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_HC_DACK
+set_location_assignment PIN_AN21 -to OTG_HC_DREQ
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_HC_DREQ
+set_location_assignment PIN_AJ20 -to OTG_HC_IRQ
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_HC_IRQ
+set_location_assignment PIN_N19 -to OTG_OE_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_OE_n
+set_location_assignment PIN_AU22 -to OTG_RESET_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_RESET_n
+set_location_assignment PIN_AR22 -to OTG_WE_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to OTG_WE_n
+
+#============================================================
+# DDR2 SODIMM, DDR2 SODIMM_0
+#============================================================
+set_location_assignment PIN_AW34 -to M1_DDR2_dq[4]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[4]
+set_location_assignment PIN_AV32 -to M1_DDR2_dq[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[0]
+set_location_assignment PIN_AW33 -to M1_DDR2_dq[5]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[5]
+set_location_assignment PIN_AV31 -to M1_DDR2_dq[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[1]
+set_location_assignment PIN_AW31 -to M1_DDR2_dm[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[0]
+set_location_assignment PIN_AW30 -to M1_DDR2_dqsn[0]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[0]
+set_location_assignment PIN_AV29 -to M1_DDR2_dqs[0]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[0]
+set_location_assignment PIN_AW28 -to M1_DDR2_dq[6]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[6]
+set_location_assignment PIN_AW27 -to M1_DDR2_dq[7]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[7]
+set_location_assignment PIN_AW29 -to M1_DDR2_dq[2]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[2]
+set_location_assignment PIN_AV28 -to M1_DDR2_dq[3]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[3]
+set_location_assignment PIN_AM25 -to M1_DDR2_dq[12]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[12]
+set_location_assignment PIN_AN25 -to M1_DDR2_dq[13]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[13]
+set_location_assignment PIN_AP25 -to M1_DDR2_dq[8]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[8]
+set_location_assignment PIN_AV26 -to M1_DDR2_dq[9]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[9]
+set_location_assignment PIN_AW26 -to M1_DDR2_dm[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[1]
+set_location_assignment PIN_AU26 -to M1_DDR2_dqsn[1]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[1]
+set_location_assignment PIN_AP28 -to M1_DDR2_clk[0]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_clk[0]
+set_location_assignment PIN_AT26 -to M1_DDR2_dqs[1]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[1]
+set_location_assignment PIN_AR28 -to M1_DDR2_clk_n[0]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_clk_n[0]
+set_location_assignment PIN_AU25 -to M1_DDR2_dq[10]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[10]
+set_location_assignment PIN_AR25 -to M1_DDR2_dq[14]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[14]
+set_location_assignment PIN_AT25 -to M1_DDR2_dq[11]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[11]
+set_location_assignment PIN_AN24 -to M1_DDR2_dq[15]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[15]
+set_location_assignment PIN_AN23 -to M1_DDR2_dq[16]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[16]
+set_location_assignment PIN_AM23 -to M1_DDR2_dq[20]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[20]
+set_location_assignment PIN_AP23 -to M1_DDR2_dq[17]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[17]
+set_location_assignment PIN_AR23 -to M1_DDR2_dq[21]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[21]
+set_location_assignment PIN_AU24 -to M1_DDR2_dqsn[2]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[2]
+set_location_assignment PIN_AT24 -to M1_DDR2_dqs[2]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[2]
+set_location_assignment PIN_AU23 -to M1_DDR2_dm[2]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[2]
+set_location_assignment PIN_AL22 -to M1_DDR2_dq[18]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[18]
+set_location_assignment PIN_AT23 -to M1_DDR2_dq[22]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[22]
+set_location_assignment PIN_AM22 -to M1_DDR2_dq[19]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[19]
+set_location_assignment PIN_AL21 -to M1_DDR2_dq[23]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[23]
+set_location_assignment PIN_AJ22 -to M1_DDR2_dq[24]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[24]
+set_location_assignment PIN_AK24 -to M1_DDR2_dq[28]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[28]
+set_location_assignment PIN_AH23 -to M1_DDR2_dq[25]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[25]
+set_location_assignment PIN_AJ23 -to M1_DDR2_dq[29]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[29]
+set_location_assignment PIN_AH22 -to M1_DDR2_dm[3]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[3]
+set_location_assignment PIN_AL23 -to M1_DDR2_dqsn[3]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[3]
+set_location_assignment PIN_AK23 -to M1_DDR2_dqs[3]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[3]
+set_location_assignment PIN_AF22 -to M1_DDR2_dq[26]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[26]
+set_location_assignment PIN_AF23 -to M1_DDR2_dq[30]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[30]
+set_location_assignment PIN_AE23 -to M1_DDR2_dq[27]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[27]
+set_location_assignment PIN_AE22 -to M1_DDR2_dq[31]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[31]
+set_location_assignment PIN_AT28 -to M1_DDR2_cke[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_cke[0]
+set_location_assignment PIN_AK27 -to M1_DDR2_cke[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_cke[1]
+set_location_assignment PIN_AT29 -to M1_DDR2_addr[15]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[15]
+set_location_assignment PIN_AP27 -to M1_DDR2_ba[2]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_ba[2]
+set_location_assignment PIN_AU29 -to M1_DDR2_addr[14]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[14]
+set_location_assignment PIN_AP26 -to M1_DDR2_addr[12]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[12]
+set_location_assignment PIN_AU28 -to M1_DDR2_addr[11]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[11]
+set_location_assignment PIN_AN27 -to M1_DDR2_addr[9]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[9]
+set_location_assignment PIN_AT27 -to M1_DDR2_addr[7]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[7]
+set_location_assignment PIN_AL27 -to M1_DDR2_addr[8]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[8]
+set_location_assignment PIN_AU27 -to M1_DDR2_addr[6]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[6]
+set_location_assignment PIN_AK26 -to M1_DDR2_addr[5]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[5]
+set_location_assignment PIN_AN26 -to M1_DDR2_addr[4]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[4]
+set_location_assignment PIN_AM26 -to M1_DDR2_addr[3]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[3]
+set_location_assignment PIN_AW23 -to M1_DDR2_addr[2]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[2]
+set_location_assignment PIN_AL25 -to M1_DDR2_addr[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[1]
+set_location_assignment PIN_AV23 -to M1_DDR2_addr[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[0]
+set_location_assignment PIN_AJ26 -to M1_DDR2_addr[10]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[10]
+set_location_assignment PIN_AD25 -to M1_DDR2_ba[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_ba[1]
+set_location_assignment PIN_AH26 -to M1_DDR2_ba[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_ba[0]
+set_location_assignment PIN_AE21 -to M1_DDR2_ras_n
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_ras_n
+set_location_assignment PIN_AK25 -to M1_DDR2_we_n
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_we_n
+set_location_assignment PIN_AG21 -to M1_DDR2_cs_n[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_cs_n[0]
+set_location_assignment PIN_AJ25 -to M1_DDR2_cas_n
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_cas_n
+set_location_assignment PIN_AG20 -to M1_DDR2_odt[0]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_odt[0]
+set_location_assignment PIN_AE25 -to M1_DDR2_cs_n[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_cs_n[1]
+set_location_assignment PIN_AD21 -to M1_DDR2_addr[13]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_addr[13]
+set_location_assignment PIN_AE24 -to M1_DDR2_odt[1]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_odt[1]
+set_location_assignment PIN_AK17 -to M1_DDR2_dq[32]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[32]
+set_location_assignment PIN_AG16 -to M1_DDR2_dq[36]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[36]
+set_location_assignment PIN_AM17 -to M1_DDR2_dq[33]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[33]
+set_location_assignment PIN_AH17 -to M1_DDR2_dq[37]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[37]
+set_location_assignment PIN_AL16 -to M1_DDR2_dqsn[4]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[4]
+set_location_assignment PIN_AL17 -to M1_DDR2_dm[4]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[4]
+set_location_assignment PIN_AK16 -to M1_DDR2_dqs[4]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[4]
+set_location_assignment PIN_AF17 -to M1_DDR2_dq[38]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[38]
+set_location_assignment PIN_AH16 -to M1_DDR2_dq[34]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[34]
+set_location_assignment PIN_AE17 -to M1_DDR2_dq[39]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[39]
+set_location_assignment PIN_AJ16 -to M1_DDR2_dq[35]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[35]
+set_location_assignment PIN_AN17 -to M1_DDR2_dq[44]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[44]
+set_location_assignment PIN_AR17 -to M1_DDR2_dq[40]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[40]
+set_location_assignment PIN_AP17 -to M1_DDR2_dq[45]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[45]
+set_location_assignment PIN_AN16 -to M1_DDR2_dq[41]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[41]
+set_location_assignment PIN_AR16 -to M1_DDR2_dqsn[5]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[5]
+set_location_assignment PIN_AT16 -to M1_DDR2_dm[5]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[5]
+set_location_assignment PIN_AP16 -to M1_DDR2_dqs[5]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[5]
+set_location_assignment PIN_AU16 -to M1_DDR2_dq[42]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[42]
+set_location_assignment PIN_AU15 -to M1_DDR2_dq[46]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[46]
+set_location_assignment PIN_AW16 -to M1_DDR2_dq[43]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[43]
+set_location_assignment PIN_AT15 -to M1_DDR2_dq[47]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[47]
+set_location_assignment PIN_AW11 -to M1_DDR2_dq[48]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[48]
+set_location_assignment PIN_AW14 -to M1_DDR2_dq[52]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[52]
+set_location_assignment PIN_AW12 -to M1_DDR2_dq[49]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[49]
+set_location_assignment PIN_AV14 -to M1_DDR2_dq[53]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[53]
+set_location_assignment PIN_AE20 -to M1_DDR2_clk[1]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_clk[1]
+set_location_assignment PIN_AF20 -to M1_DDR2_clk_n[1]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_clk_n[1]
+set_location_assignment PIN_AW13 -to M1_DDR2_dqsn[6]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[6]
+set_location_assignment PIN_AV13 -to M1_DDR2_dqs[6]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[6]
+set_location_assignment PIN_AU14 -to M1_DDR2_dm[6]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[6]
+set_location_assignment PIN_AT14 -to M1_DDR2_dq[50]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[50]
+set_location_assignment PIN_AU11 -to M1_DDR2_dq[54]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[54]
+set_location_assignment PIN_AU12 -to M1_DDR2_dq[51]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[51]
+set_location_assignment PIN_AT12 -to M1_DDR2_dq[55]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[55]
+set_location_assignment PIN_AP13 -to M1_DDR2_dq[56]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[56]
+set_location_assignment PIN_AR14 -to M1_DDR2_dq[60]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[60]
+set_location_assignment PIN_AN14 -to M1_DDR2_dq[57]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[57]
+set_location_assignment PIN_AP14 -to M1_DDR2_dq[61]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[61]
+set_location_assignment PIN_AN13 -to M1_DDR2_dm[7]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dm[7]
+set_location_assignment PIN_AT13 -to M1_DDR2_dqsn[7]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqsn[7]
+set_location_assignment PIN_AR13 -to M1_DDR2_dqs[7]
+set_instance_assignment -name IO_STANDARD "DIFFERENTIAL 1.8-V SSTL CLASS I" -to M1_DDR2_dqs[7]
+set_location_assignment PIN_AL15 -to M1_DDR2_dq[58]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[58]
+set_location_assignment PIN_AM14 -to M1_DDR2_dq[59]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[59]
+set_location_assignment PIN_AL14 -to M1_DDR2_dq[62]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[62]
+set_location_assignment PIN_AL13 -to M1_DDR2_dq[63]
+set_instance_assignment -name IO_STANDARD "SSTL-18 CLASS I" -to M1_DDR2_dq[63]
+set_location_assignment PIN_AG24 -to M1_DDR2_SDA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to M1_DDR2_SDA
+set_location_assignment PIN_AH24 -to M1_DDR2_SCL
+set_instance_assignment -name IO_STANDARD "1.8 V" -to M1_DDR2_SCL
+set_location_assignment PIN_AV25 -to M1_DDR2_SA[0]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to M1_DDR2_SA[0]
+set_location_assignment PIN_AW25 -to M1_DDR2_SA[1]
+set_instance_assignment -name IO_STANDARD "1.8 V" -to M1_DDR2_SA[1]
+
+
+#============================================================
+# GPIO_0, GPIO_1 connect to D5M - 5M Pixel Camera
+#============================================================
+set_location_assignment PIN_AW5 -to D5M_PIXLCLK
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_PIXLCLK
+set_location_assignment PIN_AW8 -to D5M_D[11]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[11]
+set_location_assignment PIN_AV10 -to D5M_D[10]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[10]
+set_location_assignment PIN_AV8 -to D5M_D[9]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[9]
+set_location_assignment PIN_AW10 -to D5M_D[8]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[8]
+set_location_assignment PIN_AU10 -to D5M_D[7]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[7]
+set_location_assignment PIN_AU8 -to D5M_D[6]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[6]
+set_location_assignment PIN_AP8 -to D5M_D[5]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[5]
+set_location_assignment PIN_AT10 -to D5M_D[4]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[4]
+set_location_assignment PIN_AU6 -to D5M_D[3]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[3]
+set_location_assignment PIN_AT6 -to D5M_D[2]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[2]
+set_location_assignment PIN_AU7 -to D5M_D[1]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[1]
+set_location_assignment PIN_AR5 -to D5M_D[0]
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_D[0]
+set_location_assignment PIN_AN7 -to D5M_XCLKIN
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_XCLKIN
+set_location_assignment PIN_AN6 -to D5M_ESETn
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_ESETn
+set_location_assignment PIN_AM6 -to D5M_TRIGGER
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_TRIGGER
+set_location_assignment PIN_AL5 -to D5M_STROBE
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_STROBE
+set_location_assignment PIN_AL9 -to D5M_LVAL
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_LVAL
+set_location_assignment PIN_AK9 -to D5M_FVAL
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_FVAL
+set_location_assignment PIN_AJ6 -to D5M_SDATA
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_SDATA
+set_location_assignment PIN_AJ10 -to D5M_SCLK
+set_instance_assignment -name IO_STANDARD "3.0-V PCI-X" -to D5M_SCLK
+
+#============================================================
+# HSMC-B, HSMC-B connect to None
+#============================================================
+set_location_assignment PIN_AC26 -to DVI_RX_D[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[0]
+set_location_assignment PIN_AC31 -to DVI_RX_D[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[14]
+set_location_assignment PIN_AD26 -to DVI_RX_D[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[1]
+set_location_assignment PIN_AC32 -to DVI_RX_D[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[15]
+set_location_assignment PIN_AB27 -to DVI_RX_D[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[2]
+set_location_assignment PIN_AJ32 -to DVI_RX_D[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[13]
+set_location_assignment PIN_AB28 -to DVI_RX_D[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[3]
+set_location_assignment PIN_AK33 -to DVI_RX_D[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[12]
+set_location_assignment PIN_AB30 -to DVI_RX_D[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[4]
+set_location_assignment PIN_AH34 -to DVI_RX_D[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[11]
+set_location_assignment PIN_AB31 -to DVI_RX_D[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[5]
+set_location_assignment PIN_AH35 -to DVI_RX_D[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[10]
+set_location_assignment PIN_AD27 -to DVI_RX_D[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[6]
+set_location_assignment PIN_AJ34 -to DVI_RX_D[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[9]
+set_location_assignment PIN_AE27 -to DVI_RX_D[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[7]
+set_location_assignment PIN_AJ35 -to DVI_RX_D[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[8]
+set_location_assignment PIN_AD28 -to DVI_RX_CTL[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_CTL[1]
+set_location_assignment PIN_AK34 -to DVI_RX_D[23]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[23]
+set_location_assignment PIN_AD29 -to DVI_RX_HS
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_HS
+set_location_assignment PIN_AK35 -to DVI_RX_D[22]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[22]
+set_location_assignment PIN_AE28 -to DVI_RX_VS
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_VS
+set_location_assignment PIN_AN30 -to DVI_RX_D[21]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[21]
+set_location_assignment PIN_AE29 -to DVI_RX_DE
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_DE
+set_location_assignment PIN_AP30 -to DVI_RX_D[20]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[20]
+set_location_assignment PIN_AE26 -to DVI_RX_CTL[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_CTL[3]
+set_location_assignment PIN_AM34 -to DVI_RX_D[19]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[19]
+set_location_assignment PIN_AF26 -to DVI_RX_CTL[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_CTL[2]
+set_location_assignment PIN_AM35 -to DVI_RX_D[18]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[18]
+set_location_assignment PIN_AG31 -to DVI_RX_DDCSDA
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_DDCSDA
+set_location_assignment PIN_AM31 -to DVI_RX_D[17]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[17]
+set_location_assignment PIN_AG32 -to DVI_RX_DDCSCL
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_DDCSCL
+set_location_assignment PIN_AN31 -to DVI_RX_D[16]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_D[16]
+set_location_assignment PIN_AG29 -to DVI_EDID_WP
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_EDID_WP
+set_location_assignment PIN_AN33 -to DVI_RX_SCDT
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_SCDT
+set_location_assignment PIN_AP34 -to DVI_TX_D[17]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[17]
+set_location_assignment PIN_AG28 -to DVI_TX_D[16]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[16]
+set_location_assignment PIN_AB34 -to DVI_RX_CLK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_RX_CLK
+set_location_assignment PIN_AC28 -to DVI_TX_D[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[12]
+set_location_assignment PIN_AP32 -to DVI_TX_D[18]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[18]
+set_location_assignment PIN_AC29 -to DVI_TX_D[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[13]
+set_location_assignment PIN_AR32 -to DVI_TX_D[19]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[19]
+set_location_assignment PIN_AJ29 -to DVI_TX_D[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[14]
+set_location_assignment PIN_AR31 -to DVI_TX_D[20]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[20]
+set_location_assignment PIN_AK29 -to DVI_TX_D[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[15]
+set_location_assignment PIN_AT30 -to DVI_TX_D[21]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[21]
+set_location_assignment PIN_AD30 -to DVI_TX_D[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[11]
+set_location_assignment PIN_AT33 -to DVI_TX_D[22]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[22]
+set_location_assignment PIN_AD31 -to DVI_TX_D[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[10]
+set_location_assignment PIN_AU33 -to DVI_TX_D[23]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[23]
+set_location_assignment PIN_AK32 -to DVI_TX_D[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[9]
+set_location_assignment PIN_AU34 -to DVI_TX_DKEN
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_DKEN
+set_location_assignment PIN_AL32 -to DVI_TX_D[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[8]
+set_location_assignment PIN_AV34 -to DVI_TX_HS
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_HS
+set_location_assignment PIN_AG27 -to DVI_TX_D[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[7]
+set_location_assignment PIN_AT32 -to DVI_TX_VS
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_VS
+set_location_assignment PIN_AH27 -to DVI_TX_D[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[6]
+set_location_assignment PIN_AU32 -to DVI_TX_CTL[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_CTL[3]
+set_location_assignment PIN_AK31 -to DVI_TX_D[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[5]
+set_location_assignment PIN_AT31 -to DVI_TX_CTL[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_CTL[2]
+set_location_assignment PIN_AL31 -to DVI_TX_D[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[4]
+set_location_assignment PIN_AU31 -to DVI_TX_CTL[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_CTL[1]
+set_location_assignment PIN_AJ31 -to DVI_TX_D[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[3]
+set_location_assignment PIN_AP35 -to DVI_TX_HTPLG
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_HTPLG
+set_location_assignment PIN_AH30 -to DVI_TX_D[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[2]
+set_location_assignment PIN_AR35 -to DVI_TX_PD_N
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_PD_N
+set_location_assignment PIN_AL29 -to DVI_TX_D[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[1]
+set_location_assignment PIN_AN32 -to DVI_TX_MSEN
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_MSEN
+set_location_assignment PIN_AM29 -to DVI_TX_D[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_D[0]
+set_location_assignment PIN_AP33 -to DVI_TX_ISEL
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_ISEL
+set_location_assignment PIN_AK30 -to DVI_TX_DE
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_DE
+set_location_assignment PIN_AT34 -to DVI_TX_SDA
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_SDA
+set_location_assignment PIN_AL30 -to DVI_TX_DDCSDA
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_DDCSDA
+set_location_assignment PIN_AR34 -to DVI_TX_SCL
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_SCL
+set_location_assignment PIN_AG34 -to DVI_TX_CLK
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_CLK
+set_location_assignment PIN_AG35 -to DVI_TX_DDCSCL
+set_instance_assignment -name IO_STANDARD "2.5 V" -to DVI_TX_DDCSCL
+
+#============================================================
+# HSMC I2C
+#============================================================
+set_location_assignment PIN_L19 -to HSMC_SCL
+set_instance_assignment -name IO_STANDARD "1.8 V" -to HSMC_SCL
+set_location_assignment PIN_M19 -to HSMC_SDA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to HSMC_SDA
+
+#============================================================
+# End of pin assignments by Terasic System Builder
+#============================================================
+
+
+set_global_assignment -name MISC_FILE "D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/DE4_230_CAMERA.dpf"
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE stp1.stp
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_odt[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_odt[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_clk[0]
+set_instance_assignment -name TREAT_BIDIR_AS_OUTPUT ON -to M1_DDR2_clk[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_clk[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_clk_n[0]
+set_instance_assignment -name TREAT_BIDIR_AS_OUTPUT ON -to M1_DDR2_clk_n[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_clk_n[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_cs_n[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_cs_n[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_cke[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_cke[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[7]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[8]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[9]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[10]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[11]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[12]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[13]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_addr[14]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_ba[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_ba[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_ba[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_ras_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_cas_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to M1_DDR2_we_n
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[0]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[0]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[1]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[2]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[2]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[3]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[3]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[4]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[4]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[5]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[5]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[6]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[6]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[7]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[7]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[8]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[8]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[9]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[9]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[10]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[10]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[11]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[11]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[12]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[12]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[13]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[13]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[14]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[14]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[15]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[15]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[16]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[16]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[17]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[17]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[18]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[18]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[19]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[19]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[20]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[20]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[21]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[21]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[22]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[22]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[23]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[23]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[24]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[24]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[25]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[25]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[26]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[26]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[27]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[27]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[28]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[28]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[29]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[29]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[30]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[30]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[31]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[31]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[32]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[32]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[33]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[33]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[34]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[34]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[35]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[35]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[36]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[36]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[37]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[37]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[38]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[38]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[39]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[39]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[40]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[40]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[41]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[41]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[42]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[42]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[43]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[43]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[44]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[44]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[45]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[45]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[46]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[46]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[47]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[47]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[48]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[48]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[49]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[49]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[50]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[50]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[51]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[51]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[52]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[52]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[53]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[53]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[54]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[54]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[55]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[55]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[56]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[56]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[57]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[57]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[58]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[58]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[59]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[59]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[60]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[60]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[61]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[61]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[62]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[62]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[63]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dq[63]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[0]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[0]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[1]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[2]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[2]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[3]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[3]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[4]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[4]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[5]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[5]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[6]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[6]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[7]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqs[7]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[0]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[0]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[1]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[2]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[2]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[3]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[3]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[4]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[4]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[5]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[5]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[6]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[6]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[7]
+set_instance_assignment -name INPUT_TERMINATION "PARALLEL 50 OHM WITH CALIBRATION" -to M1_DDR2_dqsn[7]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[0]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[1]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[2]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[3]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[4]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[5]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[6]
+set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to M1_DDR2_dm[7]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[0]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[1]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[2]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[3]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[4]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[5]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[6]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[7]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[8]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[9]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[10]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[11]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[12]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[13]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[14]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[15]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[16]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[17]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[18]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[19]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[20]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[21]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[22]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[23]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[24]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[25]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[26]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[27]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[28]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[29]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[30]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[31]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[32]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[33]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[34]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[35]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[36]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[37]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[38]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[39]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[40]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[41]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[42]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[43]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[44]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[45]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[46]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[47]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[48]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[49]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[50]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[51]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[52]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[53]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[54]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[55]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[56]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[57]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[58]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[59]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[60]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[61]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[62]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dq[63]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[0]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[1]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[2]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[3]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[4]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[5]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[6]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqs[7]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[0]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[1]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[2]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[3]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[4]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[5]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[6]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dqsn[7]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[0]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[1]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[2]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[3]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[4]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[5]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[6]
+set_instance_assignment -name OUTPUT_ENABLE_GROUP 3078784 -to M1_DDR2_dm[7]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[0] -to M1_DDR2_dq[0..7]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[0] -to M1_DDR2_dm[0]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[0] -to M1_DDR2_dqs[0]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[1] -to M1_DDR2_dq[8..15]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[1] -to M1_DDR2_dm[1]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[1] -to M1_DDR2_dqs[1]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[2] -to M1_DDR2_dq[16..23]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[2] -to M1_DDR2_dm[2]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[2] -to M1_DDR2_dqs[2]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[3] -to M1_DDR2_dq[24..31]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[3] -to M1_DDR2_dm[3]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[3] -to M1_DDR2_dqs[3]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[4] -to M1_DDR2_dq[32..39]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[4] -to M1_DDR2_dm[4]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[4] -to M1_DDR2_dqs[4]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[5] -to M1_DDR2_dq[40..47]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[5] -to M1_DDR2_dm[5]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[5] -to M1_DDR2_dqs[5]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[6] -to M1_DDR2_dq[48..55]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[6] -to M1_DDR2_dm[6]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[6] -to M1_DDR2_dqs[6]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[7] -to M1_DDR2_dq[56..63]
+set_instance_assignment -name DQ_GROUP 9 -from M1_DDR2_dqs[7] -to M1_DDR2_dm[7]
+set_instance_assignment -name DQSB_DQS_PAIR ON -from M1_DDR2_dqsn[7] -to M1_DDR2_dqs[7]
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name MISC_FILE "E:/D5M/cd/Demonstration/DE4_230_D5M_DVI/DE4_230_D5M_DVI.dpf"
+set_global_assignment -name SYSTEMVERILOG_FILE tb.sv
+set_global_assignment -name SDC_FILE DE4_230_CAMERA.SDC
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
+set_global_assignment -name QIP_FILE Line_Buffer1.qip
+set_global_assignment -name VERILOG_FILE de4_230_d5m_dvi.v
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
+set_global_assignment -name EDA_TIME_SCALE "1 ns" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
+set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH tb.sv -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_NAME tb.sv -section_id eda_simulation
+set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id tb.sv
+set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb -section_id tb.sv
+set_global_assignment -name EDA_TEST_BENCH_FILE tb.sv -section_id tb.sv
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

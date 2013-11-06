@@ -1,0 +1,52 @@
+Altera SOPC Builder Version 9.12 Build 350
+Copyright (c) 1999-2009 Altera Corporation.  All rights reserved.
+
+
+No .sopc_builder configuration file(!)
+# 2010.07.19 09:53:59 (*) mk_custom_sdk starting
+# 2010.07.19 09:53:59 (*) Reading project D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/ddr2_multi_port.ptf.
+
+# 2010.07.19 09:53:59 (*) Finding all CPUs
+# 2010.07.19 09:53:59 (*) Finding all peripherals
+
+# 2010.07.19 09:53:59 (*) Finding software components
+# 2010.07.19 09:53:59 (*) (Legacy SDK Generation Skipped)
+# 2010.07.19 09:53:59 (*) (All TCL Script Generation Skipped)
+# 2010.07.19 09:53:59 (*) (No Libraries Built)
+# 2010.07.19 09:53:59 (*) (Contents Generation Skipped)
+# 2010.07.19 09:53:59 (*) mk_custom_sdk finishing
+# 2010.07.19 09:53:59 (*) Starting generation for system: ddr2_multi_port.
+
+...
+
+# 2010.07.19 09:54:00 (*) Running Generator Program for ddr2
+
+# 2010.07.19 09:54:00 (*) Running Generator Program for ddr2_multi_port_burst_0
+
+# 2010.07.19 09:54:00 (*) Running Generator Program for ddr2_multi_port_burst_1
+
+.
+
+# 2010.07.19 09:54:01 (*) Running Test Generator Program for ddr2
+
+# 2010.07.19 09:54:01 (*) Making arbitration and system (top) modules.
+
+# 2010.07.19 09:54:08 (*) Generating Quartus symbol for top level: ddr2_multi_port
+
+# 2010.07.19 09:54:08 (*) Symbol D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/ddr2_multi_port.bsf already exists, no need to regenerate
+# 2010.07.19 09:54:08 (*) Creating command-line system-generation script: D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/ddr2_multi_port_generation_script
+
+# 2010.07.19 09:54:08 (*) Running setup for HDL simulator: modelsim
+
+
+# 2010.07.19 09:54:08 (*) Completed generation for system: ddr2_multi_port.
+# 2010.07.19 09:54:08 (*) THE FOLLOWING SYSTEM ITEMS HAVE BEEN GENERATED:
+  SOPC Builder database : D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/ddr2_multi_port.ptf 
+  System HDL Model : D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/ddr2_multi_port.v 
+  System Generation Script : D:/Home/User/Desktop/current_work/DE4/CodeGenerated/DE4/DE4_230_CAMERA/ddr2_multi_port_generation_script 
+
+
+# 2010.07.19 09:54:08 (*) SUCCESS: SYSTEM GENERATION COMPLETED.
+
+
+Press 'Exit' to exit.

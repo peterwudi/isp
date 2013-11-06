@@ -1,0 +1,8 @@
+set_global_assignment -name VERILOG_FILE Write_Port0.v
+ set_global_assignment -name VERILOG_FILE DDR2_SODIMM_Write_Port.v
+ set_global_assignment -name TCL_FILE DDR2_SODIMM_Write_Port_hw.tcl
+set_global_assignment -name TCL_FILE DDR2_SODIMM_Read_Port_hw.tcl
+set_global_assignment -name VERILOG_FILE DDR2_SODIMM_Read_Port.v
+ set_global_assignment -name VERILOG_FILE Read_Port0.v
+ set_global_assignment -name SOPC_BUILDER_SIGNATURE_ID E0CB4EC7F44600000129E86691D7 
+ 
