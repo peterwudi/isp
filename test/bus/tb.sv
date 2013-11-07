@@ -12,8 +12,10 @@ module tb();
 logic					OSC2_50;
 logic					GPIO1_PIXLCLK;
 logic					ctrl_clk;
+//logic					dvi_clk;
 
 logic					reset_n;
+logic					new_frame;
 
 logic		[31:0]	iData;
 logic					sCCD_DVAL;
@@ -42,9 +44,15 @@ bus dut ( .* );
 initial	GPIO1_PIXLCLK = '1;
 initial	ctrl_clk = '1;
 initial	OSC2_50 = '1;
+//initial	dvi_clk = '1;
+
 always begin
 	#20		GPIO1_PIXLCLK = ~GPIO1_PIXLCLK;  	// 25MHz d5m clock
 end
+//always begin
+//	#10		dvi_clk = ~dvi_clk;  	// 25MHz d5m clock
+//end
+
 always begin
 	#5		ctrl_clk = ~ctrl_clk;		// 100MHz ctrl clock
 end
@@ -62,10 +70,11 @@ initial begin
 	@(negedge OSC2_50);
 
 	reset_n = 1'b1;
-	for (int i = 1; i < 17; i++) begin
-		@(negedge GPIO1_PIXLCLK);
-	end
-
+	
+//	for (int i = 1; i < 17; i++) begin
+//		@(negedge GPIO1_PIXLCLK);
+//	end
+	
 	sCCD_DVAL = 1'b1;
 	for (int i = 1; i < 641; i++) begin
 		iData = i;
@@ -80,19 +89,25 @@ end
 // Read
 initial begin
 	read_init = 0;
+	new_frame = 0;
 	@(negedge OSC2_50);
 	@(negedge OSC2_50);
 	
-	for (int i = 0; i < 1255; i++) begin
+//	for (int i = 0; i < 1255; i++) begin
+//		@(negedge OSC2_50);
+//	end
+
+	for (int i = 0; i < 1400; i++) begin
 		@(negedge OSC2_50);
 	end
 	
+	new_frame = 1;
 	for (int i = 0; i < 641; i++) begin
 		read_init = 1;
 		@(negedge vpg_pclk);
+		new_frame = 0;
 	end
 	
-	sCCD_DVAL = 0;
 	@(negedge vpg_pclk);
 	
 	$stop(0);

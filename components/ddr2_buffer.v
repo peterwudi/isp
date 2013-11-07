@@ -5,6 +5,7 @@ module ddr2_buffer(
 	input					dvi_clk,
 	
 	input					reset_n,
+	input					new_frame,
 	
 	// Write side
 	input		[31:0]	iData,
@@ -51,7 +52,7 @@ wire	[31:0]	write_fifo_q;
 wire				read_fifo_wrfull;
 wire				read_fifo_rdempty;
 wire				read_fifo_rdreq;
-wire				read_fifo_wrreq;
+reg				read_fifo_wrreq;
 wire	[31:0]	read_fifo_q;
 
 
@@ -103,29 +104,23 @@ ddr2_fifo write_fifo(
 );
 
 // Delay the read to avoid initially empty data being read out
-reg [15:0]	delayCnt;
-reg			readDelayDone;
-
-always @(posedge ctrl_clk) begin
-	if (!reset_n) begin
-		delayCnt			<= 0;
-		readDelayDone	<= 0;
-	end
-	else begin
-		if (delayCnt < readDelay)begin
-			delayCnt <= delayCnt + 1;
-		end
-		else begin
-			readDelayDone <= 1;
-		end
-	end
-end	
-
-
-// Don't read when the read FIFO is empty, or when read_rstn is low
-assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
-
-assign read_fifo_wrreq = ram_oValid & ~read_fifo_wrfull;
+//reg [15:0]	delayCnt;
+//reg			readDelayDone;
+//
+//always @(posedge ctrl_clk) begin
+//	if (!reset_n) begin
+//		delayCnt			<= 0;
+//		readDelayDone	<= 0;
+//	end
+//	else begin
+//		if (delayCnt < readDelay)begin
+//			delayCnt <= delayCnt + 1;
+//		end
+//		else begin
+//			readDelayDone <= 1;
+//		end
+//	end
+//end	
 
 
 always @(posedge dvi_clk) begin
@@ -133,6 +128,9 @@ always @(posedge dvi_clk) begin
 	moValid		<= read_fifo_rdreq;
 	if (moValid == 1) begin
 		moData	<= read_fifo_q;
+	end
+	else begin
+		moData	<= 'd0;
 	end
 end
 
@@ -226,7 +224,13 @@ always @(posedge ctrl_clk) begin
 	end
 end
 
-assign ram_oValid = read & ~read_waitrequest;
+//assign ram_oValid = read & ~read_waitrequest;
+//assign read_fifo_wrreq = ram_oValid & ~read_fifo_wrfull & read_init;
+// Don't read when the read FIFO is empty, or when read_rstn is low
+assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
+
+
+reg	frame_done;
 
 // Write side of the read fifo, read from DRAM
 always @(posedge ctrl_clk) begin
@@ -234,50 +238,71 @@ always @(posedge ctrl_clk) begin
 		read_state	<= 0;
 		read			<= 0;
 		read_addr	<= 'd0;
+		frame_done	<= 0;
+		read_fifo_wrreq	<= 0;
 	end
 	else begin
-		case (read_state)
-			1'b0: begin
-				if (		(read_fifo_wrfull == 0)
-						&& (readDelayDone == 1)) begin
-					// Read FIFO has space, and the read delay is done.
-					// Can write into DRAM
-					read_state	<= 1'b1;
-					read			<= 1;
-				end
-				else begin
-					// Keep waiting
-					read_state	<= 1'b0;
-					read			<= 0;
-				end
-			end
-			1'b1: begin
-				if (read_waitrequest == 1) begin
-					read_state	<= 1'b1;
-					read			<= 1;				
-				end
-				else begin
-					// Read done, ready for the next read
-
-					if (read_addr < (frameSize-1)*4) begin	
-						read_addr	<= read_addr + 4;
-					end
-					else begin
-						read_addr	<= 0;
-					end
-					
-					if (read_fifo_wrfull == 0) begin
-						// Can write into DRAM
-						read_state	<= 1'b1;
+		if (new_frame == 1) begin
+			read_state	<= 0;
+			read			<= 0;
+			read_addr	<= 'd0;
+			frame_done	<= 0;
+			read_fifo_wrreq	<= 0;	
+		end
+		else begin
+			case (read_state)
+				2'b00: begin
+					read_fifo_wrreq	<= 0;
+					if (		(read_fifo_wrfull == 0)
+							&& (frame_done == 0)) begin
+						// Read FIFO has space.
+						// Can write into FIFO
+						read_state	<= 2'b01;
 						read			<= 1;
 					end
 					else begin
-						read_state	<= 1'b0;
+						// Keep waiting
+						read_state	<= 2'b00;
 						read			<= 0;
 					end
 				end
-			end
-		endcase
+				2'b01: begin
+					read_fifo_wrreq	<= 0;
+					if (read_waitrequest == 1) begin
+						read_state	<= 2'b01;
+						read			<= 1;				
+					end
+					else begin
+						// Get addr for the next read
+						if (read_addr < (frameSize-1)*4) begin	
+							read_addr	<= read_addr + 4;
+						end
+						else begin
+							read_addr	<= 0;
+							frame_done	<= 1;
+						end
+						
+						// Write the read FIFO
+						read_state	<= 2'b10;
+						read			<= 0;
+					end
+				end
+				2'b10: begin
+					// Read done, need to write into the read FIFO	
+					read_fifo_wrreq	<= 1;
+					
+					if (read_fifo_wrfull == 0) begin
+						// Can read DRAM again
+						read_state	<= 2'b01;
+						read			<= 1;
+					end
+					else begin
+						read_state	<= 2'b00;
+						read			<= 0;
+					end
+				end
+			endcase
+		end
 	end
 end
 	

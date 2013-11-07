@@ -4,7 +4,10 @@ module bus(
 	input					GPIO1_PIXLCLK,
 	input					ctrl_clk,
 	
+	//input					dvi_clk,
+	
 	input					reset_n,
+	input					new_frame,
 	
 	// Write side
 	input		[31:0]	iData,
@@ -59,7 +62,8 @@ ddr2_buffer u8(
 	.dvi_clk(vpg_pclk),
 	
 	.reset_n(reset_n),
-	.read_rstn(read_rstn),
+	.new_frame(new_frame),
+	
 	
 	// Write side
 	//.iData({2'b0,sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
@@ -68,6 +72,7 @@ ddr2_buffer u8(
 		
 	//.read_init(vpg_de),
 	.read_init(read_init),
+	.read_rstn(read_rstn),
 	.oData(Read_DATA),
 	
 	// Debug
