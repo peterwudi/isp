@@ -277,10 +277,21 @@ always @(posedge ctrl_clk) begin
 						read_fifo_wrreq	<= 0;
 					end
 					else begin
-						// Write the read FIFO
-						read_state	<= 2'b10;
-						read			<= 0;
-						read_fifo_wrreq	<= 1;
+						if (read_fifo_wrfull == 1) begin
+							// FIFO is full, the data just read cannot
+							// be written to the read FIFO, go back to
+							// initial state to wait, don't increment
+							// read addr
+							read_state	<= 2'b00;
+							read			<= 0;
+							read_fifo_wrreq	<= 0;
+						end
+						else begin
+							// Have space in the read FIFO, write
+							read_state	<= 2'b10;
+							read			<= 0;
+							read_fifo_wrreq	<= 1;
+						end
 					end
 				end
 				2'b10: begin
