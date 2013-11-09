@@ -93,22 +93,39 @@ initial begin
 	@(negedge OSC2_50);
 	@(negedge OSC2_50);
 	
-//	for (int i = 0; i < 1255; i++) begin
-//		@(negedge OSC2_50);
-//	end
-
-	for (int i = 0; i < 1400; i++) begin
+	
+	// Use this to wait until gen_clk is locked.
+	// In reallity there's no read_init, use vga_de,
+	// which should be high after it's locked and skipped
+	// the first several rows.
+	for (int i = 0; i < 1255; i++) begin
 		@(negedge OSC2_50);
 	end
 	
 	new_frame = 1;
-	for (int i = 0; i < 641; i++) begin
-		read_init = 1;
-		@(negedge vpg_pclk);
-		new_frame = 0;
+	read_init = 1;
+	// Need 2 cycles for a valid data to be read
+	@(negedge vpg_pclk);
+	new_frame = 0;
+	@(negedge vpg_pclk);
+					
+	for (int j = 0; j < 20; j++) begin
+		for (int i = 0; i < 32; i++) begin
+			read_init = 1;
+			@(negedge vpg_pclk);
+			new_frame = 0;
+		end
+		
+		// Wait for say 10 cycles of front/back porch etc.
+		for (int i = 0; i < 32; i++) begin
+			read_init = 0;
+			@(negedge vpg_pclk);
+		end
 	end
 	
-	@(negedge vpg_pclk);
+	for (int i = 0; i < 16; i++) begin
+		@(negedge vpg_pclk);
+	end
 	
 	$stop(0);
 end

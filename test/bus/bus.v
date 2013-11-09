@@ -56,7 +56,11 @@ always@(posedge ~GPIO1_PIXLCLK)
 			read_rstn <= 1;
 end	
 
-ddr2_buffer u8(
+parameter frameSize = 32*20;
+
+ddr2_buffer  #(.frameSize(frameSize))
+u8
+(
 	.d5m_clk(~GPIO1_PIXLCLK),
 	.ctrl_clk(ctrl_clk),//use pixclk for now, should use a faster one
 	.dvi_clk(vpg_pclk),
