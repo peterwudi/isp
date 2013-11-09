@@ -7,7 +7,8 @@ module bus(
 	//input					dvi_clk,
 	
 	input					reset_n,
-	input					new_frame,
+	input					wr_new_frame,
+	input					rd_new_frame,
 	
 	// Write side
 	input		[31:0]	iData,
@@ -66,7 +67,8 @@ u8
 	.dvi_clk(vpg_pclk),
 	
 	.reset_n(reset_n),
-	.new_frame(new_frame),
+	.wr_new_frame(wr_new_frame),
+	.rd_new_frame(rd_new_frame),
 	
 	
 	// Write side

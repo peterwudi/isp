@@ -5,7 +5,8 @@ module ddr2_buffer(
 	input					dvi_clk,
 	
 	input					reset_n,
-	input					new_frame,
+	input					wr_new_frame,
+	input					rd_new_frame,
 	
 	// Write side
 	input		[31:0]	iData,
@@ -104,23 +105,23 @@ ddr2_fifo write_fifo(
 );
 
 // Delay the read to avoid initially empty data being read out
-//reg [15:0]	delayCnt;
-//reg			readDelayDone;
-//
-//always @(posedge ctrl_clk) begin
-//	if (!reset_n) begin
-//		delayCnt			<= 0;
-//		readDelayDone	<= 0;
-//	end
-//	else begin
-//		if (delayCnt < readDelay)begin
-//			delayCnt <= delayCnt + 1;
-//		end
-//		else begin
-//			readDelayDone <= 1;
-//		end
-//	end
-//end	
+reg [15:0]	delayCnt;
+reg			wr_to_rd_delay_done;
+
+always @(posedge ctrl_clk) begin
+	if ((~reset_n) | (wr_new_frame)) begin
+		delayCnt			<= 0;
+		wr_to_rd_delay_done	<= 0;
+	end
+	else begin
+		if (delayCnt < readDelay)begin
+			delayCnt <= delayCnt + 1;
+		end
+		else begin
+			wr_to_rd_delay_done <= 1;
+		end
+	end
+end	
 
 
 always @(posedge dvi_clk) begin
@@ -242,10 +243,12 @@ always @(posedge ctrl_clk) begin
 		read_fifo_wrreq	<= 0;
 	end
 	else begin
-		if (new_frame == 1) begin
+		if (rd_new_frame == 1) begin
 			read_state	<= 0;
 			read			<= 0;
-			read_addr	<= 'd0;
+			
+			// Don't reset read_addr
+			//read_addr	<= 'd0;
 			frame_done	<= 0;
 			read_fifo_wrreq	<= 0;	
 		end
@@ -254,7 +257,8 @@ always @(posedge ctrl_clk) begin
 				2'b00: begin
 					read_fifo_wrreq	<= 0;
 					if (		(read_fifo_wrfull == 0)
-							&& (frame_done == 0)) begin
+							&& (frame_done == 0)
+							&& (wr_to_rd_delay_done == 1)) begin
 						// Read FIFO has space.
 						// Can write into FIFO
 						read_state	<= 2'b01;
@@ -267,29 +271,29 @@ always @(posedge ctrl_clk) begin
 					end
 				end
 				2'b01: begin
-					read_fifo_wrreq	<= 0;
 					if (read_waitrequest == 1) begin
 						read_state	<= 2'b01;
-						read			<= 1;				
+						read			<= 1;
+						read_fifo_wrreq	<= 0;
 					end
 					else begin
-						// Get addr for the next read
-						if (read_addr < (frameSize-1)*4) begin	
-							read_addr	<= read_addr + 4;
-						end
-						else begin
-							read_addr	<= 0;
-							frame_done	<= 1;
-						end
-						
 						// Write the read FIFO
 						read_state	<= 2'b10;
 						read			<= 0;
+						read_fifo_wrreq	<= 1;
 					end
 				end
 				2'b10: begin
-					// Read done, need to write into the read FIFO	
-					read_fifo_wrreq	<= 1;
+					read_fifo_wrreq	<= 0;
+					
+					// Get addr for the next read
+					if (read_addr < (frameSize-1)*4) begin	
+						read_addr	<= read_addr + 4;
+					end
+					else begin
+						read_addr	<= 0;
+						frame_done	<= 1;
+					end					
 					
 					if (read_fifo_wrfull == 0) begin
 						// Can read DRAM again
