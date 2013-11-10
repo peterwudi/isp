@@ -6,17 +6,17 @@ module convolution
 	input i_valid,
 	input i_done,
 	
-	input unsigned	[7:0]		i_data [2:0],
+	input unsigned	[23:0]	i_data,
 	
 	output 						o_valid,
 	output						o_img_done,
 	output signed	[34:0]	o_data
 );
 
-localparam	kernel_size		= 3;
+parameter	kernel_size		= 3;
 
-localparam	pipeline_depth = 8;
-localparam	mult1Res_delay = 3;
+parameter	pipeline_depth = 8;
+parameter	mult1Res_delay = 3;
 
 // Use 16-bit values
 //	Kernel for sharpen (flipped)
@@ -77,9 +77,9 @@ always @(posedge clk) begin
 	end
 	else begin
 		// Get new inputs
-		window[0][0]	<= i_data[0];
-		window[1][0]	<= i_data[1];
-		window[2][0]	<= i_data[2];
+		window[0][0]	<= i_data[23:16];
+		window[1][0]	<= i_data[15:8];
+		window[2][0]	<= i_data[7:0];
 		
 		delay_3[0]		<= window[1][2];
 		delay_3[1]		<= window[2][0];
