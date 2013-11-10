@@ -11,14 +11,14 @@ module tb();
 
 
 // Input/output of the filter
-logic clk;
-logic reset;
-logic pipeline_rotate;
-logic o_valid;
-logic o_done;
-
-logic unsigned [7:0]		i_data;
-logic unsigned	[7:0]		o_data;
+logic 	clk;
+logic 	reset;
+logic		iValid;
+logic		oValid;
+logic		oDone;
+	
+logic	unsigned [23:0]	iData;
+logic	unsigned	[23:0]	oData;
 
 
 // Input/output array from file
@@ -29,12 +29,13 @@ logic unsigned	[7:0]		o_g_data_arr [totalOutBytes - 1:0];
 logic unsigned	[7:0]		i_b_data_arr [totalInBytes - 1:0];
 logic unsigned	[7:0]		o_b_data_arr [totalOutBytes - 1:0];
 
-logic unsigned	[7:0]		o_golden_out;
+logic unsigned	[23:0]	o_golden_out;
 
-filter dut ( .* );
+processing dut ( .* );
 
 initial clk = '1;
 always #2.5 clk = ~clk;  // 200 MHz clock
+
 
 // Producer
 initial begin
@@ -88,85 +89,36 @@ initial begin
 	$fclose(g_inFile);
 	$fclose(b_inFile);
 	
-	pipeline_rotate = 1'b0;
-	i_data = 'd0;
+	iValid = 1'b0;
+	iData = 'd0;
 	
 	reset = 1'b1;
 	@(negedge clk);
 	reset = 1'b0;	
 	
-	
-	// R
+	// RGB
 	for (int i = 0; i < totalInBytes; i++) begin
 		@(negedge clk);
-		i_data	= i_r_data_arr[i];
-
-		pipeline_rotate	= 1'b1;
+		iData	= {i_r_data_arr[i], i_g_data_arr[i], i_b_data_arr[i]};
+		iValid	= 1'b1;
 	end
 
 	// Reset
 	while(1) begin
 		@(negedge clk);
-		if (o_done == 0) begin
-			pipeline_rotate	= 1'b1;
+		if (oDone == 0) begin
+			iValid	= 1'b1;
 		end
 		else begin
 			// Image done, reset the filter
-			pipeline_rotate	= 1'b0;
-			reset					= 1'b1;
+			iValid	= 1'b0;
+			reset		= 1'b1;
 			break;
 		end
 	end
 	
 	@(negedge clk);
 	reset = 1'b0;
-
-	// G
-	for (int i = 0; i < totalInBytes; i++) begin
-		@(negedge clk);
-		i_data	= i_g_data_arr[i];
-
-		pipeline_rotate	= 1'b1;
-	end
-	
-	// Reset
-	while(1) begin
-		@(negedge clk);
-		if (o_done == 0) begin
-			pipeline_rotate	= 1'b1;
-		end
-		else begin
-			// Image done, reset the filter
-			pipeline_rotate	= 1'b0;
-			reset					= 1'b1;
-			break;
-		end
-	end
-	
-	@(negedge clk);
-	reset = 1'b0;
-	
-	// B
-	for (int i = 0; i < totalInBytes; i++) begin
-		@(negedge clk);
-		i_data	= i_b_data_arr[i];
-
-		pipeline_rotate	= 1'b1;
-	end
-	
-	// Reset
-	while(1) begin
-		@(negedge clk);
-		if (o_done == 0) begin
-			pipeline_rotate	= 1'b1;
-		end
-		else begin
-			// Image done, reset the filter
-			pipeline_rotate	= 1'b0;
-			reset					= 1'b1;
-			break;
-		end
-	end
 	
 	@(negedge clk);
 	reset = 1'b0;
@@ -200,7 +152,7 @@ initial begin
 	
 	o_golden_out = 8'b0;
 	
-	// R
+	// RGB
 	for (int i = 0; i < totalOutBytes; i++) begin
 		real v1;
 		real v2;
@@ -208,13 +160,13 @@ initial begin
 		
 		// Wait for a valid output
 		@(posedge clk);
-		while (!o_valid) begin
+		while (!oValid) begin
 			@(posedge clk);
 		end
 		
 		@(negedge clk);  // Give time for o_out to be updated.
-		v1 = real'(o_data);
-		o_golden_out = o_r_data_arr[i];
+		v1 = real'(oData);
+		o_golden_out = {o_r_data_arr[i], o_g_data_arr[i], o_b_data_arr[i]};
 		v2 = real'(o_golden_out);
 		diff = (v1 - v2);
 		
@@ -229,93 +181,13 @@ initial begin
 	
 	$display("RMS Error: %f", rms);
 	if (rms > 10) begin
-		$display("<R> Average RMS Error is above 10 units - something is probably wrong");
+		$display("Average RMS Error is above 10 units - something is probably wrong");
 	end
 	else begin
-		$display("<R> Error is within 10 units - great success!!");
+		$display("Error is within 10 units - great success!!");
 	end
 	
 	rms = 0;
-	
-	// G
-	for (int i = 0; i < totalOutBytes; i++) begin
-		real v1;
-		real v2;
-		real diff;
-		
-		// Wait for a valid output
-		@(posedge clk);
-		while (!o_valid) begin
-			@(posedge clk);
-		end
-		
-		@(negedge clk);  // Give time for o_out to be updated.
-		v1 = real'(o_data);
-		o_golden_out = o_g_data_arr[i];
-		v2 = real'(o_golden_out);
-		diff = (v1 - v2);
-		
-		rms += diff*diff;
-		if (diff != 0) begin
-			$display("<G> diff: %f, rms: %f, o_out: %f, golden: %f, at time: ", diff, rms, v1, v2, $time);
-			tmp += 1;
-		end
-		
-		// Debug
-		if (tmp == 5) begin
-			$stop(0);
-		end
-	end
-	
-	rms /= totalOutBytes;
-	rms = rms ** (0.5);
-	
-	$display("RMS Error: %f", rms);
-	if (rms > 10) begin
-		$display("<G> Average RMS Error is above 10 units - something is probably wrong");
-	end
-	else begin
-		$display("<G> Error is within 10 units - great success!!");
-	end
-	
-	rms = 0;
-	
-	// B
-	for (int i = 0; i < totalOutBytes; i++) begin
-		real v1;
-		real v2;
-		real diff;
-		
-		// Wait for a valid output
-		@(posedge clk);
-		while (!o_valid) begin
-			@(posedge clk);
-		end
-		
-		@(negedge clk);  // Give time for o_out to be updated.
-		v1 = real'(o_data);
-		o_golden_out = o_b_data_arr[i];
-		v2 = real'(o_golden_out);
-		diff = (v1 - v2);
-		
-		rms += diff*diff;
-		if (diff != 0) begin
-			$display("<B> diff: %f, rms: %f, o_out: %f, golden: %f, at time: ", diff, rms, v1, v2, $time);
-		end
-	end
-	
-	rms /= totalOutBytes;
-	rms = rms ** (0.5);
-	
-	$display("RMS Error: %f", rms);
-	if (rms > 10) begin
-		$display("<B> Average RMS Error is above 10 units - something is probably wrong");
-	end
-	else begin
-		$display("<B> Error is within 10 units - great success!!");
-	end
-	
-	
 	
 	$stop(0);
 end
