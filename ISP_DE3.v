@@ -402,32 +402,61 @@ always@(posedge ~GPIO1_PIXLCLK)
 			read_rstn <= 1;
 end
 
-ddr2_buffer u8(
+parameter frameSize = 32*20;
+
+// APPARENTLY THIS DOESN'T WORK!
+reg wr_new_frame;
+reg rd_new_frame;
+
+always @(posedge GPIO1_PIXLCLK) begin
+	if (~reset_n) begin
+		wr_new_frame <= 0;
+		rd_new_frame <= 0;
+	end
+	else begin
+		if (X_Cont == 0 && Y_Cont == 0) begin
+			rd_new_frame <= 0;
+		end
+		else if (X_Cont != 0) begin
+			rd_new_frame <= 1;
+		end
+	end
+end
+//==============================================
+
+
+ddr2_buffer  #(.frameSize(frameSize))
+u8
+(
 	.d5m_clk(~GPIO1_PIXLCLK),
-	.ctrl_clk(~GPIO1_PIXLCLK),//use pixclk for now, should use a faster one
+	.ctrl_clk(OSC2_50),//use 50MHz for now, should use a faster one
 	.dvi_clk(vpg_pclk),
 	
 	.reset_n(reset_n),
-	.read_rstn(read_rstn),
+	.wr_new_frame(SW[1]),
+	.rd_new_frame(SW[2]),
+	
 	
 	// Write side
 	.iData({2'b0,sCCD_R[11:2], sCCD_G[11:2], sCCD_B[11:2]}),
-	//.iData(32'hFFFFFFFF),
+	//.iData(iData),
 	.iValid(sCCD_DVAL),
 		
 	.read_init(vpg_de),
+	//.read_init(read_init),
+	.read_rstn(read_rstn),
 	.oData(Read_DATA),
-	// seems like this is not used, we have to generate data fast enough,
-	// and only put valid data here.
 	
 	// Debug
-	.read_empty_rdfifo(),
-	.write_full_wrfifo(),
+	.read_empty_rdfifo(read_empty_rdfifo),
+	.write_full_rdfifo(write_full_rdfifo),
+	.read_empty_wrfifo(read_empty_wrfifo),
+	.write_full_wrfifo(write_full_wrfifo),
 	
-	.write_fifo_wrusedw(),
-	.write_fifo_rdusedw(),
-	.read_fifo_wrusedw(),
-	.read_fifo_rdusedw()
+	.write_fifo_wrusedw(write_fifo_wrusedw),
+	.write_fifo_rdusedw(write_fifo_rdusedw),
+	.read_fifo_wrusedw(read_fifo_wrusedw),
+	.read_fifo_rdusedw(read_fifo_rdusedw)
 );
 
 
