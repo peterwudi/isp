@@ -7,8 +7,8 @@ module bus(
 	//input					dvi_clk,
 	
 	input					reset_n,
-	input					wr_new_frame,
-	input					rd_new_frame,
+	//input					wr_new_frame,
+	//input					rd_new_frame,
 	
 	// Write side
 	input		[31:0]	iData,
@@ -56,6 +56,54 @@ always@(posedge ~GPIO1_PIXLCLK)
 		else if (write_cnt == 512)
 			read_rstn <= 1;
 end	
+
+
+reg	wr_new_frame;
+reg	pre_sCCD_DVAL;
+
+always @(posedge GPIO1_PIXLCLK) begin
+	if (~reset_n) begin
+		wr_new_frame	<= 0;
+		pre_sCCD_DVAL	<= 0;
+	end
+	else begin
+		pre_sCCD_DVAL	<= sCCD_DVAL;
+		
+		case ({pre_sCCD_DVAL, sCCD_DVAL})
+			2'b01: begin
+				wr_new_frame	<= 1;
+			end
+			default: begin
+				wr_new_frame	<= 0;
+			end
+		endcase
+	end
+end
+
+reg	rd_new_frame;
+reg	pre_vpg_de;
+
+always @(posedge vpg_pclk) begin
+	if (~reset_n) begin
+		rd_new_frame	<= 0;
+		pre_vpg_de		<= 0;
+	end
+	else begin
+		//pre_vpg_de	<= vpg_de;
+		pre_vpg_de	<= read_init;
+		
+		//case ({pre_vpg_de, vpg_de})
+		case ({pre_vpg_de, read_init})
+			2'b01: begin
+				rd_new_frame	<= 1;
+			end
+			default: begin
+				rd_new_frame	<= 0;
+			end
+		endcase
+	end
+end
+
 
 parameter frameSize = 32*20;
 

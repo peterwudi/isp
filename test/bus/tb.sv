@@ -15,8 +15,8 @@ logic					ctrl_clk;
 //logic					dvi_clk;
 
 logic					reset_n;
-logic					wr_new_frame;
-logic					rd_new_frame;
+//logic					wr_new_frame;
+//logic					rd_new_frame;
 
 logic		[31:0]	iData;
 logic					sCCD_DVAL;
@@ -65,7 +65,7 @@ end
 initial begin
 	iData = 'd0;
 	sCCD_DVAL = 0;
-	wr_new_frame = 0;
+	//wr_new_frame = 0;
 	
 	@(negedge OSC2_50);
 	reset_n = 1'b0;
@@ -78,11 +78,11 @@ initial begin
 //	end
 	
 	sCCD_DVAL = 1'b1;
-	wr_new_frame = 1;
+	//wr_new_frame = 1;
 	for (int i = 1; i < 641; i++) begin
 		iData = i;
 		@(negedge GPIO1_PIXLCLK);
-		wr_new_frame = 0;
+		//wr_new_frame = 0;
 	end
 	
 	sCCD_DVAL = 0;
@@ -93,7 +93,7 @@ end
 // Read
 initial begin
 	read_init = 0;
-	rd_new_frame = 0;
+	//rd_new_frame = 0;
 	@(negedge OSC2_50);
 	@(negedge OSC2_50);
 	
@@ -106,17 +106,17 @@ initial begin
 		@(negedge OSC2_50);
 	end
 	
-	rd_new_frame = 1;
+	//rd_new_frame = 1;
 	read_init = 1;
 	// Need 1 cycles for a valid data to be read
 	@(negedge vpg_pclk);
-	rd_new_frame = 0;
+	//rd_new_frame = 0;
 					
 	for (int j = 0; j < 20; j++) begin
 		for (int i = 0; i < 32; i++) begin
 			read_init = 1;
 			@(negedge vpg_pclk);
-			rd_new_frame = 0;
+			//rd_new_frame = 0;
 		end
 		
 		// Wait for say 10 cycles of front/back porch etc.
