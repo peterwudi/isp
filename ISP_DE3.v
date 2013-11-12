@@ -402,28 +402,54 @@ always@(posedge ~GPIO1_PIXLCLK)
 			read_rstn <= 1;
 end
 
-parameter frameSize = 32*20;
 
-// APPARENTLY THIS DOESN'T WORK!
-reg wr_new_frame;
-reg rd_new_frame;
+reg	wr_new_frame;
+reg	pre_sCCD_DVAL;
 
 always @(posedge GPIO1_PIXLCLK) begin
 	if (~reset_n) begin
-		wr_new_frame <= 0;
-		rd_new_frame <= 0;
+		wr_new_frame	<= 0;
+		pre_sCCD_DVAL	<= 0;
 	end
 	else begin
-		if (X_Cont == 0 && Y_Cont == 0) begin
-			rd_new_frame <= 0;
-		end
-		else if (X_Cont != 0) begin
-			rd_new_frame <= 1;
-		end
+		pre_sCCD_DVAL	<= sCCD_DVAL;
+		
+		case ({pre_sCCD_DVAL, sCCD_DVAL})
+			2'b01: begin
+				wr_new_frame	<= 1;
+			end
+			default: begin
+				wr_new_frame	<= 0;
+			end
+		endcase
 	end
 end
-//==============================================
 
+reg	rd_new_frame;
+reg	pre_vpg_de;
+
+always @(posedge vpg_pclk) begin
+	if (~reset_n) begin
+		rd_new_frame	<= 0;
+		pre_vpg_de		<= 0;
+	end
+	else begin
+		pre_vpg_de	<= vpg_de;
+		//pre_vpg_de	<= read_init;
+		
+		case ({pre_vpg_de, vpg_de})
+		//case ({pre_vpg_de, read_init})
+			2'b01: begin
+				rd_new_frame	<= 1;
+			end
+			default: begin
+				rd_new_frame	<= 0;
+			end
+		endcase
+	end
+end
+
+parameter frameSize = 32*20;
 
 ddr2_buffer  #(.frameSize(frameSize))
 u8
@@ -433,8 +459,8 @@ u8
 	.dvi_clk(vpg_pclk),
 	
 	.reset_n(reset_n),
-	.wr_new_frame(SW[1]),
-	.rd_new_frame(SW[2]),
+	.wr_new_frame(wr_new_frame),
+	.rd_new_frame(rd_new_frame),
 	
 	
 	// Write side
