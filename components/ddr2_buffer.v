@@ -34,7 +34,6 @@ reg	[31:0]	read_addr;
 wire				read_waitrequest;
 reg	[1:0]		read_state;
 wire	[31:0]	ram_oData;
-wire				ram_oValid;
 
 reg				moValid;
 reg	[31:0]	moData;
@@ -55,7 +54,7 @@ wire				read_fifo_rdempty;
 wire				read_fifo_rdreq;
 reg				read_fifo_wrreq;
 wire	[31:0]	read_fifo_q;
-
+reg	[31:0]	read_fifo_wrdata;
 
 assign	read_empty_rdfifo = read_fifo_rdreq & read_fifo_rdempty;
 assign	write_full_rdfifo = read_fifo_wrreq & read_fifo_wrfull;
@@ -139,7 +138,7 @@ assign oData = moData;
 
 ddr2_fifo read_fifo(
 	.aclr(!reset_n),
-	.data(ram_oData),
+	.data(read_fifo_wrdata),
 	
 	// Write (from DRAM)
 	.wrclk(ctrl_clk),
@@ -225,11 +224,8 @@ always @(posedge ctrl_clk) begin
 	end
 end
 
-//assign ram_oValid = read & ~read_waitrequest;
-//assign read_fifo_wrreq = ram_oValid & ~read_fifo_wrfull & read_init;
 // Don't read when the read FIFO is empty, or when read_rstn is low
 assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
-
 
 reg	frame_done;
 
@@ -241,6 +237,7 @@ always @(posedge ctrl_clk) begin
 		read_addr	<= 'd0;
 		frame_done	<= 0;
 		read_fifo_wrreq	<= 0;
+		read_fifo_wrdata	<= 'b0;
 	end
 	else begin
 		if (rd_new_frame == 1) begin
@@ -277,6 +274,8 @@ always @(posedge ctrl_clk) begin
 						read_fifo_wrreq	<= 0;
 					end
 					else begin
+						// Register the data
+						read_fifo_wrdata	<= ram_oData;
 						if (read_fifo_wrfull == 1) begin
 							// FIFO is full, the data just read cannot
 							// be written to the read FIFO, go back to

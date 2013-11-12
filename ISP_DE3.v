@@ -449,7 +449,7 @@ always @(posedge vpg_pclk) begin
 	end
 end
 
-parameter frameSize = 32*20;
+parameter frameSize = 640*320;
 
 ddr2_buffer  #(.frameSize(frameSize))
 u8
