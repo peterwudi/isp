@@ -4,12 +4,8 @@ module bus(
 	input					GPIO1_PIXLCLK,
 	input					ctrl_clk,
 	
-	//input					dvi_clk,
-	
 	input					reset_n,
-	//input					wr_new_frame,
-	//input					rd_new_frame,
-	
+
 	// Write side
 	input		[31:0]	iData,
 	input					sCCD_DVAL,
@@ -17,11 +13,13 @@ module bus(
 	output	[31:0]	Read_DATA,
 	
 	//TEST
-	input					read_init,
+	input					vpg_de,
+	input					rCCD_FVAL,
+	//input					read_init,
 	
 	// vpg
 	output 				vpg_pclk,
-	output 				vpg_de,
+	//output 				vpg_de,
 	output				vpg_hs,
 	output				vpg_vs,
 	output	[23:0]	vpg_data,
@@ -57,53 +55,110 @@ always@(posedge ~GPIO1_PIXLCLK)
 			read_rstn <= 1;
 end	
 
-
-reg	wr_new_frame;
-reg	pre_sCCD_DVAL;
+// Only asserted for 1 cycle at the 1st valid pixel
+// Used to signal the buffer to start read_dealy counter
+reg			wr_new_frame;
+reg	[1:0]	frame_wr_state;
+reg			pre_rCCD_FVAL;
+reg			pre_sCCD_DVAL;
 
 always @(posedge GPIO1_PIXLCLK) begin
 	if (~reset_n) begin
 		wr_new_frame	<= 0;
-		pre_sCCD_DVAL	<= 0;
+		frame_wr_state	<= 'b0;
+		pre_rCCD_FVAL	<= 0;
 	end
 	else begin
+		pre_rCCD_FVAL	<= rCCD_FVAL;
 		pre_sCCD_DVAL	<= sCCD_DVAL;
 		
-		case ({pre_sCCD_DVAL, sCCD_DVAL})
+		case (frame_wr_state)
+			2'b00: begin
+				// Initial, wait for FVAL to go high
+				if (		(pre_rCCD_FVAL == 0)
+						&&	(rCCD_FVAL == 1))
+				begin
+					frame_wr_state	<= 2'b01;
+				end
+				else begin
+					frame_wr_state	<= 2'b00;
+				end
+			end
 			2'b01: begin
-				wr_new_frame	<= 1;
+				// A new frame is started, wait for DVAL to go high
+				if (		(pre_sCCD_DVAL == 0)
+						&&	(sCCD_DVAL == 1))
+				begin
+					frame_wr_state	<= 2'b10;
+					wr_new_frame	<= 1;
+				end
+				else begin
+					frame_wr_state	<= 2'b01;
+				end
+			end
+			2'b10: begin
+				// Deassert the wr_new_frame signal
+				wr_new_frame	<= 0;
+				frame_wr_state	<= 2'b00;
 			end
 			default: begin
 				wr_new_frame	<= 0;
+				frame_wr_state	<= 2'b00;
 			end
 		endcase
 	end
 end
 
-reg	rd_new_frame;
-reg	pre_vpg_de;
+// A soft reset, mostly used to count number of pixels
+// to generate the frame_done signal
+reg			rd_new_frame;
+reg	[1:0]	frame_rd_state;
+reg			pre_vpg_de;
+wire			frame_read_done;
 
 always @(posedge vpg_pclk) begin
 	if (~reset_n) begin
 		rd_new_frame	<= 0;
 		pre_vpg_de		<= 0;
+		frame_rd_state	<= 'b0;
 	end
 	else begin
-		//pre_vpg_de	<= vpg_de;
-		pre_vpg_de	<= read_init;
+		pre_vpg_de	<= vpg_de;
 		
-		//case ({pre_vpg_de, vpg_de})
-		case ({pre_vpg_de, read_init})
+		case (frame_rd_state)
+			2'b00: begin
+				// Initial state, wait for the first vpg_de to be high
+				if (		(pre_vpg_de == 0)
+						&&	(vpg_de	== 1))
+				begin
+					rd_new_frame	<= 1;
+					frame_rd_state	<= 2'b01;
+				end
+				else begin
+					// Wait
+					frame_rd_state	<= 2'b00;
+				end
+			end
 			2'b01: begin
-				rd_new_frame	<= 1;
+				// Deassert rd_new_frame, wait for frame_read_done
+				rd_new_frame	<= 0;
+				frame_rd_state	<= 2'b10;
+			end
+			2'b10: begin
+				if (frame_read_done == 1) begin
+					frame_rd_state	<= 2'b00;
+				end
+				else begin
+					frame_rd_state	<= 2'b10;
+				end
 			end
 			default: begin
 				rd_new_frame	<= 0;
+				frame_rd_state	<= 2'b00;
 			end
 		endcase
 	end
 end
-
 
 parameter frameSize = 32*20;
 
@@ -124,10 +179,11 @@ u8
 	.iData(iData),
 	.iValid(sCCD_DVAL),
 		
-	//.read_init(vpg_de),
-	.read_init(read_init),
+	.read_init(vpg_de),
+	//.read_init(read_init),
 	.read_rstn(read_rstn),
 	.oData(Read_DATA),
+	.frame_read_done(frame_read_done),
 	
 	// Debug
 	.read_empty_rdfifo(read_empty_rdfifo),
@@ -193,7 +249,8 @@ vpg	vpg_inst(
 	.mode_change(1'b0),
 	.disp_color(`COLOR_RGB444),       
 	.vpg_pclk(vpg_pclk),
-	.vpg_de(vpg_de),
+	//.vpg_de(vpg_de),
+	.vpg_de(),
 	.vpg_hs(vpg_hs),
 	.vpg_vs(vpg_vs),
 	.vpg_r(vpg_data[23:16]), //

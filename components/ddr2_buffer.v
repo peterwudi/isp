@@ -15,6 +15,7 @@ module ddr2_buffer(
 	input					read_init,
 	input					read_rstn,
 	output	[31:0]	oData,
+	output				frame_read_done,
 	
 	output				read_empty_rdfifo,
 	output				write_full_rdfifo,
@@ -227,11 +228,13 @@ end
 // Don't read when the read FIFO is empty, or when read_rstn is low
 assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
 
-reg	frame_done;
+reg		frame_done;
+assign	frame_read_done = frame_done;
 
 // Write side of the read fifo, read from DRAM
 always @(posedge ctrl_clk) begin
-	if (!reset_n) begin
+	if (		(!reset_n)
+			||	(!read_rstn)) begin
 		read_state	<= 0;
 		read			<= 0;
 		read_addr	<= 'd0;
@@ -281,6 +284,10 @@ always @(posedge ctrl_clk) begin
 							// be written to the read FIFO, go back to
 							// initial state to wait, don't increment
 							// read addr
+							//
+							// NOTE: This could lead to a warning saying
+							// read is chaged when waitrequest is high, but
+							// it's OK because the data is discarded
 							read_state	<= 2'b00;
 							read			<= 0;
 							read_fifo_wrreq	<= 0;
