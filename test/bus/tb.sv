@@ -50,7 +50,7 @@ always begin
 end
 
 always begin
-	#5		ctrl_clk = ~ctrl_clk;		// 100MHz ctrl clock
+	#4		ctrl_clk = ~ctrl_clk;		// 100MHz ctrl clock
 end
 always begin
 	#10		OSC2_50 = ~OSC2_50;		// 50MHz ref clock
@@ -65,9 +65,9 @@ initial begin
 	sCCD_DVAL = 0;
 	rCCD_FVAL = 0;
 	
-	@(negedge OSC2_50);
+	@(negedge GPIO1_PIXLCLK);
 	reset_n = 1'b0;
-	@(negedge OSC2_50);
+	@(negedge GPIO1_PIXLCLK);
 
 	reset_n = 1'b1;
 	
@@ -94,7 +94,10 @@ initial begin
 			@(negedge GPIO1_PIXLCLK);
 		end
 		
-		break;
+		// Do 2 rows
+		if (j == 1) begin
+			break;
+		end
 	end
 	
 	sCCD_DVAL = 0;
@@ -115,45 +118,42 @@ initial begin
 	// In reallity there's no read_init, use vga_de,
 	// which should be high after it's locked and skipped
 	// the first several rows.
-	for (int i = 0; i < 1550; i++) begin
+	for (int i = 0; i < 1560; i++) begin
 		@(negedge OSC2_50);
 	end
 	
-	// Do 1 row first
-	hs = 1;
-	while (1) begin
-		//if (vpg_hs == 1) begin
-		if (hs == 1) begin
-			// vpg_de is high 48 cycles after vpg_hs
-			for (int i = 0; i < 48; i++) begin
-				@(negedge vpg_pclk);
+	for (int j = 0; j < height; j++) begin
+		hs = 1;
+		while (1) begin
+			//if (vpg_hs == 1) begin
+			if (hs == 1) begin
+				// vpg_de is high 48 cycles after vpg_hs
+				for (int i = 0; i < 48; i++) begin
+					@(negedge vpg_pclk);
+				end
+				vpg_de = 1;
+				break;
 			end
-			vpg_de = 1;
+		end
+
+		for (int i = 0; i < 640; i++) begin
+			// vpg_de high for 640 cycles
+			@(negedge vpg_pclk);
+		end
+		vpg_de = 0;
+						
+		for (int i = 0; i < 16; i++) begin
+			@(negedge vpg_pclk);
+		end
+	
+		// Do 2 rows
+		if (j == 1) begin
 			break;
 		end
 	end
-
-	for (int i = 0; i < 640; i++) begin
-		// vpg_de high for 640 cycles
-		@(negedge vpg_pclk);
-	end
-	vpg_de = 0;
-					
-//	for (int j = 0; j < height; j++) begin
-//		for (int i = 0; i < width; i++) begin
-//			read_init = 1;
-//			@(negedge vpg_pclk);
-//		end
-//		
-//		// Wait for say 32 cycles of front/back porch etc.
-//		for (int i = 0; i < 32; i++) begin
-//			read_init = 0;
-//			@(negedge vpg_pclk);
-//		end
-//	end
 	
 	for (int i = 0; i < 16; i++) begin
-		@(negedge vpg_pclk);
+			@(negedge vpg_pclk);
 	end
 	
 	$stop(0);

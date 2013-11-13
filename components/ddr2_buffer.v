@@ -52,7 +52,7 @@ wire	[31:0]	write_fifo_q;
 
 wire				read_fifo_wrfull;
 wire				read_fifo_rdempty;
-wire				read_fifo_rdreq;
+reg				read_fifo_rdreq;
 reg				read_fifo_wrreq;
 wire	[31:0]	read_fifo_q;
 reg	[31:0]	read_fifo_wrdata;
@@ -226,8 +226,6 @@ always @(posedge ctrl_clk) begin
 end
 
 // Don't read when the read FIFO is empty, or when read_rstn is low
-assign read_fifo_rdreq = (~read_fifo_rdempty) & read_rstn & read_init;
-
 reg		frame_done;
 assign	frame_read_done = frame_done;
 
@@ -240,17 +238,21 @@ always @(posedge ctrl_clk) begin
 		read_addr	<= 'd0;
 		frame_done	<= 0;
 		read_fifo_wrreq	<= 0;
+		read_fifo_rdreq	<= 0;
 		read_fifo_wrdata	<= 'b0;
 	end
 	else begin
+		read_fifo_rdreq	<= (~read_fifo_rdempty) & read_init;
+
 		if (rd_new_frame == 1) begin
 			read_state	<= 0;
 			read			<= 0;
 			
 			// Don't reset read_addr
-			//read_addr	<= 'd0;
+			// Don't reset read_fifo_rdreq because this only
+			// concerns the write side of the read FIFO
 			frame_done	<= 0;
-			read_fifo_wrreq	<= 0;	
+			read_fifo_wrreq	<= 0;
 		end
 		else begin
 			case (read_state)
@@ -271,32 +273,39 @@ always @(posedge ctrl_clk) begin
 					end
 				end
 				2'b01: begin
-					if (read_waitrequest == 1) begin
-						read_state	<= 2'b01;
-						read			<= 1;
-						read_fifo_wrreq	<= 0;
+					if (frame_done == 1) begin
+						read_state	<= 2'b00;
+					
+						// don't care what read is
 					end
 					else begin
-						// Register the data
-						read_fifo_wrdata	<= ram_oData;
-						if (read_fifo_wrfull == 1) begin
-							// FIFO is full, the data just read cannot
-							// be written to the read FIFO, go back to
-							// initial state to wait, don't increment
-							// read addr
-							//
-							// NOTE: This could lead to a warning saying
-							// read is chaged when waitrequest is high, but
-							// it's OK because the data is discarded
-							read_state	<= 2'b00;
-							read			<= 0;
+						if (read_waitrequest == 1) begin
+							read_state	<= 2'b01;
+							read			<= 1;
 							read_fifo_wrreq	<= 0;
 						end
 						else begin
-							// Have space in the read FIFO, write
-							read_state	<= 2'b10;
-							read			<= 0;
-							read_fifo_wrreq	<= 1;
+							// Register the data
+							read_fifo_wrdata	<= ram_oData;
+							if (read_fifo_wrfull == 1) begin
+								// FIFO is full, the data just read cannot
+								// be written to the read FIFO, go back to
+								// initial state to wait, don't increment
+								// read addr
+								//
+								// NOTE: This could lead to a warning saying
+								// read is chaged when waitrequest is high, but
+								// it's OK because the data is discarded
+								read_state	<= 2'b00;
+								read			<= 0;
+								read_fifo_wrreq	<= 0;
+							end
+							else begin
+								// Have space in the read FIFO, write
+								read_state	<= 2'b10;
+								read			<= 0;
+								read_fifo_wrreq	<= 1;
+							end
 						end
 					end
 				end

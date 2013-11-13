@@ -1,0 +1,66 @@
+set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_NAME "Qsys"
+set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0sp1"
+set_global_assignment -entity "ddr2_sys" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -library "ddr2_sys" -name SOPCINFO_FILE [file join $::quartus(qip_path) "../../ddr2_sys.sopcinfo"]
+set_instance_assignment -entity "ddr2_sys" -library "ddr2_sys" -name SLD_INFO "QSYS_NAME ddr2_sys HAS_SOPCINFO 1 GENERATION_ID 1384319506"
+set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.cmp"]
+set_global_assignment -name SYNTHESIS_ONLY_QIP ON
+set_global_assignment -library "ddr2_sys" -name MISC_FILE [file join $::quartus(qip_path) "../../ddr2_sys.qsys"]
+
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "ddr2_sys.v"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_rsp_xbar_demux.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_arbitrator.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_cmd_xbar_mux.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_cmd_xbar_demux.sv"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_reset_controller.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_reset_synchronizer.v"]
+set_global_assignment -library "ddr2_sys" -name SDC_FILE [file join $::quartus(qip_path) "submodules/altera_reset_controller.sdc"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_id_router.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_addr_router.sv"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_avalon_sc_fifo.v"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_agent.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_burst_uncompressor.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_agent.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_slave_translator.sv"]
+set_global_assignment -library "ddr2_sys" -name SYSTEMVERILOG_FILE [file join $::quartus(qip_path) "submodules/altera_merlin_master_translator.sv"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_write_port.v"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/mem_read_port.v"]
+set_global_assignment -library "ddr2_sys" -name SOURCE_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_onchip_memory2_0.hex"]
+set_global_assignment -library "ddr2_sys" -name VERILOG_FILE [file join $::quartus(qip_path) "submodules/ddr2_sys_onchip_memory2_0.v"]
+
+set_global_assignment -entity "ddr2_sys_rsp_xbar_demux" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
+set_global_assignment -entity "ddr2_sys_rsp_xbar_demux" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_rsp_xbar_demux" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_cmd_xbar_mux" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_multiplexer"
+set_global_assignment -entity "ddr2_sys_cmd_xbar_mux" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_cmd_xbar_mux" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_cmd_xbar_demux" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_demultiplexer"
+set_global_assignment -entity "ddr2_sys_cmd_xbar_demux" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_cmd_xbar_demux" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_reset_controller" -library "ddr2_sys" -name IP_TOOL_NAME "altera_reset_controller"
+set_global_assignment -entity "altera_reset_controller" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_reset_controller" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_id_router" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_router"
+set_global_assignment -entity "ddr2_sys_id_router" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_id_router" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_addr_router" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_router"
+set_global_assignment -entity "ddr2_sys_addr_router" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "ddr2_sys_addr_router" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_avalon_sc_fifo" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_sc_fifo"
+set_global_assignment -entity "altera_avalon_sc_fifo" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_avalon_sc_fifo" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_merlin_slave_agent" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_slave_agent"
+set_global_assignment -entity "altera_merlin_slave_agent" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_merlin_slave_agent" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_merlin_master_agent" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_master_agent"
+set_global_assignment -entity "altera_merlin_master_agent" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_merlin_master_agent" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_merlin_slave_translator" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_slave_translator"
+set_global_assignment -entity "altera_merlin_slave_translator" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_merlin_slave_translator" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "altera_merlin_master_translator" -library "ddr2_sys" -name IP_TOOL_NAME "altera_merlin_master_translator"
+set_global_assignment -entity "altera_merlin_master_translator" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0"
+set_global_assignment -entity "altera_merlin_master_translator" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -entity "ddr2_sys_onchip_memory2_0" -library "ddr2_sys" -name IP_TOOL_NAME "altera_avalon_onchip_memory2"
+set_global_assignment -entity "ddr2_sys_onchip_memory2_0" -library "ddr2_sys" -name IP_TOOL_VERSION "13.0.1.99.2"
+set_global_assignment -entity "ddr2_sys_onchip_memory2_0" -library "ddr2_sys" -name IP_TOOL_ENV "Qsys"
