@@ -10,7 +10,7 @@ module rowMult_3x3
 	output wire	[37:0]	row_o
 );
 
-multAdd_18x18 multADD_rowRes
+multAdd_4_18x18 multADD_rowRes
 (
 	.clock0(clk),
 	.dataa_0(iX),
@@ -29,9 +29,12 @@ module matrixmult_3x3
 	input wire						clk,
 	input wire						reset,
 	input signed	[17:0]		iX, iY, iZ,
+	input								iValid,
 	input	signed	[18*9-1:0]	coef,
 	
-	output signed	[37:0]		oA, oB, oC
+	output signed	[37:0]		oA, oB, oC,
+	output							oValid,
+	output							oDone
 );
 
 /*
@@ -42,7 +45,33 @@ oB	=	coef	X	iY
 oC					iZ
 */
 
-wire	[37:0] moA
+localparam	pipelineDepth = 3;
+reg	validPipeline [pipelineDepth-1:0];
+
+genvar i;
+generate
+	for (i = 1; i < pipelineDepth; i = i+1) begin: a
+		always @(posedge clk) begin
+			if(reset) begin
+				validPipeline[i]	<= 0;
+			end
+			else begin
+				validPipeline[i]	<= validPipeline[i-1];
+			end
+		end
+	end
+endgenerate
+			
+always @(posedge clk) begin
+	if(reset) begin
+		validPipeline[0]	<= 0;
+	end
+	else begin
+		validPipeline[0]	<= iValid;
+	end
+end
+
+assign oValid = validPipeline[pipelineDepth-1];
 
 rowMult_3x3 resA
 (

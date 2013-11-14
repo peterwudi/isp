@@ -4,13 +4,16 @@ module processing(
 	input 	clk,
 	input 	reset,
 	input		iValid,
-	output	oValid,
+	
 	output	oDone,
 	
-	output	[17:0] y, cb, cr,
+	output	signed	[17:0]	y, cb, cr,
+	output							yccValid,
+	output							yccDone,
 	
 	input		unsigned [23:0]	iData,
-	output	unsigned	[23:0]	oData
+	output	unsigned	[23:0]	oData,
+	output							oValid
 );
 
 
@@ -39,7 +42,8 @@ wire	[37:0]	moA, moB, moC;
 matrixmult_3x3 rgb2ycc
 (
 	.clk(clk),
-	.reset(clk),
+	.reset(reset),
+	.iValid(iValid),
 	.iX({10'b0, iData[23:16]}),
 	.iY({10'b0, iData[15:8]}),
 	.iZ({10'b0, iData[7:0]}),
@@ -48,7 +52,9 @@ matrixmult_3x3 rgb2ycc
 	
 	.oA(moA),
 	.oB(moB),
-	.oC(moC)
+	.oC(moC),
+	.oValid(yccValid),
+	.oDone(yccDone)
 );
 
 // 18bits int x (18bits with 17 bits after the decimal point)
