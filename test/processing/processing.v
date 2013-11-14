@@ -1,19 +1,36 @@
 
 module processing(
 
-	input 	clk,
-	input 	reset,
-	input		iValid,
+	input 							clk,
+	input 							reset,
+	input								iValid,
+	input		unsigned [23:0]	iData,
 	
-	output	oDone,
+	output	unsigned	[23:0]	oDataFilter,
+	output							oValidFilter,
+	output							oDoneFilter,
 	
 	output	signed	[17:0]	y, cb, cr,
-	output							yccValid,
-	output							yccDone,
+	output							oValidYcc,
+	output							oDoneYcc
 	
-	input		unsigned [23:0]	iData,
-	output	unsigned	[23:0]	oData,
-	output							oValid
+
+);
+
+parameter	width			= 320;
+parameter	height		= 240;
+parameter	frameSize	= width * height;
+
+filter_fifo filter
+(
+	.clk(clk),
+	.reset(reset | oDoneFilter),
+	.iValid(iValid),
+	.oValid(oValidFilter),
+	.oDone(oDoneFilter),
+	
+	.iData(iData),
+	.oData(oDataFilter)
 );
 
 
@@ -39,27 +56,23 @@ localparam signed [9*18-1:0] rgb2ycc_coef =
 
 wire	[37:0]	moA, moB, moC;
 
-parameter	width			= 320;
-parameter	height		= 240;
-parameter	frameSize	= width * height;
-
 matrixmult_3x3 #(.frameSize(frameSize))
 rgb2ycc
 (
 	.clk(clk),
-	.reset(reset | yccDone),
-	.iValid(iValid),
-	.iX({10'b0, iData[23:16]}),
-	.iY({10'b0, iData[15:8]}),
-	.iZ({10'b0, iData[7:0]}),
+	.reset(reset | oDoneYcc),
+	.iValid(oValidFilter),
+	.iX({10'b0, oDataFilter[23:16]}),
+	.iY({10'b0, oDataFilter[15:8]}),
+	.iZ({10'b0, oDataFilter[7:0]}),
 	
 	.coef(rgb2ycc_coef),
 	
 	.oA(moA),
 	.oB(moB),
 	.oC(moC),
-	.oValid(yccValid),
-	.oDone(yccDone)
+	.oValid(oValidYcc),
+	.oDone(oDoneYcc)
 );
 
 // 18bits int x (18bits with 17 bits after the decimal point)
@@ -68,21 +81,6 @@ rgb2ycc
 assign	y	= moA[25:8];
 assign	cb	= moB[25:8];
 assign	cr	= moC[25:8];
-
-
-/*
-filter_fifo filter
-(
-	.clk(clk),
-	.reset(reset),
-	.iValid(iValid),
-	.oValid(oValid),
-	.oDone(oDone),
-	
-	.iData(iData),
-	.oData(oData)
-);
-*/
 
 
 

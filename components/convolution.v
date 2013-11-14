@@ -13,10 +13,10 @@ module convolution
 	output signed	[34:0]	o_data
 );
 
-parameter	kernel_size		= 3;
+localparam	kernel_size		= 3;
 
-parameter	pipeline_depth = 8;
-parameter	mult1Res_delay = 3;
+localparam	pipeline_depth = 9;
+localparam	mult1Res_delay = 3;
 
 // Use 16-bit values
 //	Kernel for sharpen (flipped)
