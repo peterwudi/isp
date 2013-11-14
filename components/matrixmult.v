@@ -45,6 +45,29 @@ oB	=	coef	X	iY
 oC					iZ
 */
 
+parameter	frameSize = 320*240;
+
+reg	[31:0]	pixelCnt;
+reg				moDone;
+
+always @(posedge clk) begin
+	if (reset) begin
+		pixelCnt	<= 'b0;
+		moDone	<= 0;
+	end
+	else if (oValid) begin
+		if (pixelCnt < frameSize) begin
+			pixelCnt	<= pixelCnt+1;
+		end
+		else begin
+			pixelCnt	<= 0;
+			moDone	<= 1;
+		end
+	end
+end
+
+assign oDone = moDone;
+
 localparam	pipelineDepth = 3;
 reg	validPipeline [pipelineDepth-1:0];
 

@@ -39,10 +39,15 @@ localparam signed [9*18-1:0] rgb2ycc_coef =
 
 wire	[37:0]	moA, moB, moC;
 
-matrixmult_3x3 rgb2ycc
+parameter	width			= 320;
+parameter	height		= 240;
+parameter	frameSize	= width * height;
+
+matrixmult_3x3 #(.frameSize(frameSize))
+rgb2ycc
 (
 	.clk(clk),
-	.reset(reset),
+	.reset(reset | yccDone),
 	.iValid(iValid),
 	.iX({10'b0, iData[23:16]}),
 	.iY({10'b0, iData[15:8]}),

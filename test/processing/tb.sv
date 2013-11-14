@@ -19,6 +19,7 @@ logic		oDone;
 
 logic	signed	[17:0]	y, cb, cr;
 logic							yccValid;
+logic							yccDone;
 
 logic	unsigned [23:0]	iData;
 logic	unsigned	[23:0]	oData;
@@ -37,7 +38,8 @@ logic unsigned	[17:0]	crMatrix [totalOutBytes-1:0];
 
 logic unsigned	[53:0]	o_golden_out;
 
-processing dut ( .* );
+processing #(.width(width),	.height(height))
+dut ( .* );
 
 initial clk = '1;
 always #2.5 clk = ~clk;  // 200 MHz clock
@@ -113,8 +115,6 @@ initial begin
 		iData	= {rOrig[i], gOrig[i], bOrig[i]};
 		iValid	= 1'b1;
 	end
-
-	iValid = 0;
 	
 	// Need iValid to be high to keep the pipeline moving
 	while(1) begin
@@ -123,9 +123,10 @@ initial begin
 			iValid	= 1'b1;
 		end
 		else begin
-			// Image done, reset
+			// Image done, ycc should be automatically reset
+			// .(reset|yccDone)
 			iValid	= 1'b0;
-			reset		= 1'b1;
+			//reset		= 1'b1;
 			break;
 		end
 	end
@@ -244,6 +245,10 @@ initial begin
 //	else begin
 //		$display("Error is within 10 units - great success!!");
 //	end
+	
+	for (int i = 0; i < 10; i++) begin
+		@(negedge clk);
+	end
 	
 	rms = 0;
 	
