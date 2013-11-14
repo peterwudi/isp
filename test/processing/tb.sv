@@ -24,7 +24,6 @@ logic	signed	[17:0]	y, cb, cr;
 logic							oValidYcc;
 logic							oDoneYcc;
 
-
 // Input/output array from file
 logic unsigned	[7:0]		rOrig [totalInFilter - 1:0];
 logic unsigned	[7:0]		gOrig [totalInFilter - 1:0];
