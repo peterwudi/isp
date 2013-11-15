@@ -95,22 +95,22 @@ begin
 		case ({y[0], x[0]})
 			2'b00: begin
 				moR	<=	tap0;
-				moG	<=	r_tap0 + tap1;
+				moG	<=	(r_tap0 + tap1) >> 1;
 				moB	<=	r_tap1;
 			end
 			2'b01: begin
 				moR	<=	r_tap0;
-				moG	<=	tap0 + r_tap1;
+				moG	<=	(tap0 + r_tap1) >> 1;
 				moB	<=	tap1;
 			end
 			2'b10: begin
 				moR	<=	tap1;
-				moG	<=	r_tap1 + tap0;
+				moG	<=	(r_tap1 + tap0) >> 1;
 				moB	<=	r_tap0;
 			end
 			2'b11: begin
 				moR	<=	r_tap1;
-				moG	<=	tap1 + r_tap0;
+				moG	<=	(tap1 + r_tap0) >> 1;
 				moB	<=	tap0;
 			end
 		endcase
