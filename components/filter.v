@@ -10,11 +10,11 @@ module filter_fifo
 	output	unsigned	[23:0]	oData
 );
 
-parameter	img_width	= 320;
-parameter	img_height	= 240;
-
-parameter	row_pipeline_depth = img_width + 2;
+parameter	width	= 320;
+parameter	height	= 240;
 parameter	kernel_size	= 3;
+
+localparam	row_pipeline_depth = width + 2;
 
 // For odd x odd kernels, need (kernel_size-1)/2 rows
 // of 0's before and after the actual image.
@@ -41,7 +41,7 @@ reg			img_done;
 reg	[12:0] row_cnt;
 
 // Regs to detect whether an image is done
-// NOTE: this is NOT img_height
+// NOTE: this is NOT height
 reg	[12:0] rows_done;
 
 
@@ -106,7 +106,7 @@ always @(posedge clk) begin
 			
 			rows_done <= rows_done + 1;
 			
-			if (rows_done < img_height + 2*rows_needed_before_proc) begin
+			if (rows_done < height + 2*rows_needed_before_proc) begin
 				img_done		<= 1'b0;
 			end
 			else begin

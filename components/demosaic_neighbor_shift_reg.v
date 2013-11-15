@@ -37,17 +37,26 @@
 `timescale 1 ps / 1 ps
 // synopsys translate_on
 module demosaic_neighbor_shift_reg (
+	clken,
 	clock,
 	shiftin,
 	shiftout,
 	taps0x,
 	taps1x);
 
+	input	  clken;
 	input	  clock;
 	input	[7:0]  shiftin;
 	output	[7:0]  shiftout;
 	output	[7:0]  taps0x;
 	output	[7:0]  taps1x;
+`ifndef ALTERA_RESERVED_QIS
+// synopsys translate_off
+`endif
+	tri1	  clken;
+`ifndef ALTERA_RESERVED_QIS
+// synopsys translate_on
+`endif
 
 	wire [7:0] sub_wire0;
 	wire [15:0] sub_wire1;
@@ -59,13 +68,13 @@ module demosaic_neighbor_shift_reg (
 
 	altshift_taps	ALTSHIFT_TAPS_component (
 				.clock (clock),
+				.clken (clken),
 				.shiftin (shiftin),
 				.shiftout (sub_wire0),
 				.taps (sub_wire1)
 				// synopsys translate_off
 				,
-				.aclr (),
-				.clken ()
+				.aclr ()
 				// synopsys translate_on
 				);
 	defparam
@@ -83,7 +92,7 @@ endmodule
 // CNX file retrieval info
 // ============================================================
 // Retrieval info: PRIVATE: ACLR NUMERIC "0"
-// Retrieval info: PRIVATE: CLKEN NUMERIC "0"
+// Retrieval info: PRIVATE: CLKEN NUMERIC "1"
 // Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "1"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix III"
 // Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "2"
@@ -98,11 +107,13 @@ endmodule
 // Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "2"
 // Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "320"
 // Retrieval info: CONSTANT: WIDTH NUMERIC "8"
+// Retrieval info: USED_PORT: clken 0 0 0 0 INPUT VCC "clken"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
 // Retrieval info: USED_PORT: shiftin 0 0 8 0 INPUT NODEFVAL "shiftin[7..0]"
 // Retrieval info: USED_PORT: shiftout 0 0 8 0 OUTPUT NODEFVAL "shiftout[7..0]"
 // Retrieval info: USED_PORT: taps0x 0 0 8 0 OUTPUT NODEFVAL "taps0x[7..0]"
 // Retrieval info: USED_PORT: taps1x 0 0 8 0 OUTPUT NODEFVAL "taps1x[7..0]"
+// Retrieval info: CONNECT: @clken 0 0 0 0 clken 0 0 0 0
 // Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
 // Retrieval info: CONNECT: @shiftin 0 0 8 0 shiftin 0 0 8 0
 // Retrieval info: CONNECT: shiftout 0 0 8 0 @shiftout 0 0 8 0

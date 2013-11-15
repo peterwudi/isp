@@ -21,7 +21,24 @@ parameter	width			= 320;
 parameter	height		= 240;
 parameter	frameSize	= width * height;
 
-filter_fifo filter
+/*
+demosaic_neighbor #(.width(width), .height(height))
+demosaic
+(
+
+
+
+
+
+)
+*/
+
+
+
+
+
+filter_fifo #(.width(width), .height(height), .kernel_size(3))
+filter
 (
 	.clk(clk),
 	.reset(reset | oDoneFilter),
