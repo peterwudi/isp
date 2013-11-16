@@ -60,6 +60,8 @@ begin
 		moValid	<=	0;
 		moDone	<=	0;
 		cnt		<= 'b0;
+		x			<= 0;
+		y			<= 0;
 	end
 	else begin
 		r_tap0	<=	tap0;
@@ -69,14 +71,12 @@ begin
 			cnt	<= cnt + 1;
 		end
 		else begin
-			cnt	<= 0;
-			oDone	<= 1;
+			cnt		<= 0;
+			moDone	<= 1;
 		end
 		
-		if (cnt < width * 2) begin
-			// Haven't filled the fifo yet
-			moValid	<= 0;
-			
+		if (cnt > width * 2) begin
+			// Only start counter after the first 2 empty rows
 			if (x < width) begin
 				x	<= x + 1;
 			end
@@ -85,11 +85,14 @@ begin
 				y	<= y + 1;
 			end
 		end
-		else begin
+		
+		if (cnt < (width*2+1)) begin
+			// Haven't filled the fifo yet
+			moValid	<= 0;
+		end
+		else begin	
 			// Outputs valid
 			moValid	<= 1;
-			x			<= 0;
-			y			<= 0;
 		end
 
 		case ({y[0], x[0]})

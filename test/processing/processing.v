@@ -4,10 +4,10 @@ module processing(
 	input 							clk,
 	input 							reset,
 	input								iValid,
-	input		unsigned [23:0]	iData,
+	input		unsigned [7:0]		iData,
 	
 	// Demosaic
-	output	unsigned	[23:0]	oR, oG, oB,
+	output	unsigned	[7:0]		oR, oG, oB,
 	output							oValidDemosaic,
 	output							oDoneDemosaic,
 	
@@ -32,7 +32,7 @@ demosaic
 (
 	.clk(clk),
 	.iData(iData),
-	.reset(reset),
+	.reset(reset | oDoneDemosaic),
 	.iValid(iValid),
 	
 	.oR(oR),
