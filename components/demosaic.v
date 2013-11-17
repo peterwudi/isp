@@ -66,7 +66,7 @@ begin
 		x			<= 0;
 		y			<= 0;
 	end
-	else begin
+	else if (iValid) begin
 		r_tap0	<=	{1'b0, selectedTap0};
 		r_tap1	<=	{1'b0, tap1};
 		
@@ -74,11 +74,12 @@ begin
 			cnt	<= cnt + 1;
 		end
 		else begin
-			cnt		<= 0;
-			moDone	<= 1;
+			cnt	<= 0;
 		end
 		
-		if (cnt > width * 2) begin
+		moDone	<= (cnt == totalCycles - 1) ? 1:0;
+		
+		if (cnt >= width * 2) begin
 			// Only start counter after the first 2 empty rows
 			if (x < width - 1) begin
 				x	<= x + 1;
@@ -89,11 +90,11 @@ begin
 			end
 		end
 		
-		if (cnt < (width*2+1)) begin
+		if (cnt < width*2) begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end
-		else if (cnt <= totalCycles) begin	
+		else if (cnt < totalCycles) begin	
 			// Outputs valid
 			moValid	<= 1;
 		end
