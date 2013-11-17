@@ -31,6 +31,7 @@ logic							oValidYcc;
 logic							oDoneYcc;
 
 // Input/output array from file
+// Use filter data size to test filter only!
 logic unsigned	[7:0]		rOrig [totalInFilter - 1:0];
 logic unsigned	[7:0]		gOrig [totalInFilter - 1:0];
 logic unsigned	[7:0]		bOrig [totalInFilter - 1:0];
@@ -90,6 +91,11 @@ initial begin
 			end
 		end
 		else begin
+			// Debug
+			if (i == totalPixels-1)begin
+				i = totalPixels-1;
+			end
+			
 			// Odd row, R G R G ......
 			if ((i % width) % 2 == 0) begin
 				// Even col
@@ -98,6 +104,11 @@ initial begin
 			else begin
 				raw[i] = gOrig[i];
 			end
+			
+			// Debug
+			if (i > totalPixels - 3) begin
+				$display("i = %d, gOrig[i] = %d, raw[i] = %d", i, gOrig[i], raw[i]);
+			end			
 		end
 	end
 		
@@ -138,10 +149,10 @@ initial begin
 	@(negedge clk);
 	@(negedge clk);
 	reset = 1'b0;	
+	@(negedge clk);
 	
 	// RGB
-	for (int i = 0; i < totalInFilter; i++) begin
-		@(negedge clk);
+	for (int i = 0; i < totalPixels; i++) begin
 		//iData	= {rOrig[i], gOrig[i], bOrig[i]};
 		iData = raw[i];
 		
@@ -149,6 +160,7 @@ initial begin
 		iG	= gOrig[i];
 		iB	= bOrig[i];
 		iValid	= 1'b1;
+		@(negedge clk);
 	end
 	
 	iData = 'b0;
@@ -174,7 +186,7 @@ initial begin
 	reset = 1'b0;
 end
 
-logic signed	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
+logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
 
 // Demosaic Consumer
 initial begin
@@ -219,8 +231,8 @@ initial begin
 		bDiff = (oB - g_demosaic_b);
 		
 		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<Demosaic> rDiff: %f, gDiff: %f, bDiff: %f, at time: ",
-						rDiff, gDiff, bDiff, $time);
+			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+						oR, g_demosaic_r, oG, g_demosaic_g, oB, g_demosaic_b, $time);
 			failed = 1;
 		end
 	end
