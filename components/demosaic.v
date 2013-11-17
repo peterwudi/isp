@@ -93,7 +93,7 @@ begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end
-		else if (cnt < totalCycles) begin	
+		else if (cnt <= totalCycles) begin	
 			// Outputs valid
 			moValid	<= 1;
 		end
