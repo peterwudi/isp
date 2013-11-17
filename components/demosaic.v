@@ -125,6 +125,9 @@ begin
 			end
 		endcase
 	end
+	else begin
+		moValid <= 0;
+	end
 end
 
 endmodule

@@ -161,6 +161,15 @@ initial begin
 		iB	= bOrig[i];
 		iValid	= 1'b1;
 		@(negedge clk);
+		
+		if ((i%width) == width - 1) begin
+			// Boundary in between rows
+			for (int j = 0; j < 16; j++) begin
+				iValid = 0;
+				@(negedge clk);
+			end
+		end
+		
 	end
 	
 	iData = 'b0;
