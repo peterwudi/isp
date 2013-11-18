@@ -198,7 +198,7 @@ always @(posedge clk) begin
 		o_valid_pipeline[0]	<= 1'b0;
 		o_done_pipeline[0]	<= 1'b0;
 	end
-	else begin
+	else if (iValid) begin
 		// Pass the signals
 		o_valid_pipeline[0]	<= conv_o_valid;
 		o_done_pipeline[0]	<= conv_o_done;
@@ -245,7 +245,7 @@ generate
 				o_valid_pipeline[i]	<= 1'b0;
 				o_done_pipeline[i]	<= 1'b0;
 			end
-			else begin
+			else if (iValid) begin
 				o_valid_pipeline[i]	<= o_valid_pipeline[i-1];
 				o_done_pipeline[i]	<= o_done_pipeline[i-1];
 			end
@@ -255,7 +255,9 @@ endgenerate
 
 
 assign	oDone		= o_done_pipeline[cycles_post_proc - 1];
-assign	oValid	= o_valid_pipeline[cycles_post_proc - 1];
+
+// oValid only when the pipeline is still moving
+assign	oValid	= (valid == 1) ? o_valid_pipeline[cycles_post_proc - 1] : 0;
 assign	oData		= {res_r, res_g, res_b};
 
 

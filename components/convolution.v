@@ -76,23 +76,25 @@ always @(posedge clk) begin
 		img_done[0]		<= 0;
 	end
 	else begin
-		// Get new inputs
-		window[0][0]	<= i_data[23:16];
-		window[1][0]	<= i_data[15:8];
-		window[2][0]	<= i_data[7:0];
-		
-		delay_3[0]		<= window[1][2];
-		delay_3[1]		<= window[2][0];
-		delay_3[2]		<= window[2][1];
-		delay_3[3]		<= window[2][2];
-		
-		valid[0]			<= i_valid;
-		img_done[0]		<= i_done;
-		
-		// Produce valid results
-		mult1Res_r[0]	<= mult1Res;
-		mult3Res_r		<= mult3Res;
-		out				<=	mult3Res_r + mult1Res_r[mult1Res_delay - 1];
+		if (i_valid) begin
+			// Get new inputs
+			window[0][0]	<= i_data[23:16];
+			window[1][0]	<= i_data[15:8];
+			window[2][0]	<= i_data[7:0];
+			
+			delay_3[0]		<= window[1][2];
+			delay_3[1]		<= window[2][0];
+			delay_3[2]		<= window[2][1];
+			delay_3[3]		<= window[2][2];
+			
+			valid[0]			<= i_valid;
+			img_done[0]		<= i_done;
+			
+			// Produce valid results
+			mult1Res_r[0]	<= mult1Res;
+			mult3Res_r		<= mult3Res;
+			out				<=	mult3Res_r + mult1Res_r[mult1Res_delay - 1];
+		end
 	end
 end
 

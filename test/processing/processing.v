@@ -54,8 +54,7 @@ parameter	kernelSize					= 3;
 localparam	boundaryWidth				= (kernelSize-1)/2;
 localparam	rows_needed_before_proc = (kernelSize-1)/2;
 localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth);
-//localparam	endSkipPixelCnt			= (rows_needed_before_proc+height)*(width+boundaryWidth*2);
-//localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
+localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 reg				[31:0]	skipCnt;
 reg							skipCntEn;
@@ -128,27 +127,46 @@ always @ (posedge clk) begin
 		end
 		else begin
 			// Actual data
-			iDataFilter		<= {oR, oG, oB};
+			iDataFilter		<= (oValidDemosaic == 1) ? {oR, oG, oB} : 'b0;
 			iValidFilter	<= oValidDemosaic;
 		end
 	end
 end
 
+reg				filterPipelineEn;
+reg	[31:0]	filterInputCnt;
 
-//
-//filter_fifo #(.width(width), .height(height), .kernel_size(kernelSize))
-//filter
-//(
-//	.clk(clk),
-//	.reset(reset | oDoneFilter),
-//	.iValid(iValid),
-//	.oValid(oValidFilter),
-//	.oDone(oDoneFilter),
-//	
-//	.iData(iData),
-//	.oData(oDataFilter)
-//);
-//
+always @(posedge clk) begin
+	if (reset | oDoneFilter) begin
+		filterPipelineEn	<= 0;
+		filterInputCnt		<= 'b0;
+	end
+	else begin
+		if (iValidFilter | filterPipelineEn) begin
+			filterInputCnt	<= filterInputCnt + 1;
+		end
+		
+		if (filterInputCnt >= totalPixelCnt) begin
+			// Input is finished, need to keep enabling the filter pipeline
+			filterPipelineEn	<= 1;
+		end
+	end
+end
+
+
+filter_fifo #(.width(width), .height(height), .kernel_size(kernelSize))
+filter
+(
+	.clk(clk),
+	.reset(reset | oDoneFilter),
+	.iValid(iValidFilter | filterPipelineEn),
+	.oValid(oValidFilter),
+	.oDone(oDoneFilter),
+	
+	.iData(iDataFilter),
+	.oData(oDataFilter)
+);
+
 
 // 18-bit singed fixed point number, 9 bits
 // before/after the decimal point
