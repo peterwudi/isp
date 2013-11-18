@@ -59,7 +59,6 @@ localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth);
 
 reg				[31:0]	skipCnt;
 reg							skipCntEn;
-reg							skip;
 
 reg							iValidFilter;
 reg	unsigned	[2:0]		boundaryCnt;
@@ -78,7 +77,6 @@ always @ (posedge clk) begin
 	if (reset) begin
 		skipCnt			<= 'b0;
 		skipCntEn		<= 0;
-		skip				<= 0;
 		iValidFilter	<= 0;
 		boundaryCnt		<= 'b0;
 		iDataFilter		<= 'b0;
@@ -100,17 +98,10 @@ always @ (posedge clk) begin
 			end
 		end
 		
-		if (skipCntEn)
-		begin
-			// The rows before and after the active frame
-			skip	<= 1;
-		end
-		else begin
-			skip	<= 0;
+		if (!skipCntEn) begin
 			// At start/end boundary
 			if (demosaicCnt == startBoundary) begin
-				if (		(xCnt == 0) && (yCnt == 0)
-						|| (xCnt != 0) && (yCnt == height - 1)) begin
+				if ((xCnt == 0) && (yCnt == 0)) begin
 					// The first pixel OR the last pixel, just need 1 boundary
 					boundaryCnt		<= (kernelSize-1)/2;
 				end
@@ -125,7 +116,7 @@ always @ (posedge clk) begin
 			end
 		end
 		
-		if (skip) begin
+		if (skipCntEn) begin
 			iDataFilter		<= 'b0;
 			iValidFilter	<=	1;
 		end

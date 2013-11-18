@@ -89,7 +89,12 @@ begin
 			end
 			else begin
 				x	<= 0;
-				y	<= y + 1;
+				if (y < height - 1) begin
+					y	<= y + 1;
+				end
+				else begin
+					y	<= 0;
+				end
 			end
 		end
 		

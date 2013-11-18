@@ -200,14 +200,15 @@ initial begin
 			@(negedge clk);
 		end
 		
-		for (int j = 0; j < 16; j++) begin
-			iValid = 0;
-			if (oDoneDemosaic == 1) begin
-				break;
-			end
-			@(negedge clk);
+		if (oDoneDemosaic == 1) begin
+			break;
 		end
 		
+		for (int j = 0; j < 16; j++) begin
+			iValid = 0;
+			
+			@(negedge clk);
+		end	
 	end
 	
 	@(negedge clk);
