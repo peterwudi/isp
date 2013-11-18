@@ -59,11 +59,14 @@ localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundary
 
 reg				[31:0]	skipCnt;
 reg							skipCntEn;
+reg							skip;
 
 reg							iValidFilter;
 reg	unsigned	[2:0]		boundaryCnt;
 reg				[23:0]	iDataFilter;
 reg	unsigned	[31:0]	startBoundary;
+
+
 
 // Test
 assign	iRFilter			= iDataFilter[23:16];
@@ -75,6 +78,7 @@ always @ (posedge clk) begin
 	if (reset) begin
 		skipCnt			<= 'b0;
 		skipCntEn		<= 0;
+		skip				<= 0;
 		iValidFilter	<= 0;
 		boundaryCnt		<= 'b0;
 		iDataFilter		<= 'b0;
@@ -101,10 +105,10 @@ always @ (posedge clk) begin
 						||	(skipCnt > endSkipPixelCnt)))
 		begin
 			// The rows before and after the active frame
-			iDataFilter		<= 'b0;
-			iValidFilter	<=	1;
+			skip	<= 1;
 		end
 		else begin
+			skip	<= 0;
 			// At start/end boundary
 			if (demosaicCnt == startBoundary) begin
 				if (		(xCnt == 0) && (yCnt == 0)
@@ -123,7 +127,11 @@ always @ (posedge clk) begin
 			end
 		end
 		
-		if (boundaryCnt > 0) begin
+		if (skip) begin
+			iDataFilter		<= 'b0;
+			iValidFilter	<=	1;
+		end
+		else if (boundaryCnt > 0) begin
 			// Need to add boundary to the input
 			iDataFilter		<= 'b0;
 			iValidFilter	<=	1;
