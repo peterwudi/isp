@@ -1,16 +1,15 @@
 
 module demosaic_neighbor
 (
-	input				clk,
-	input		[7:0]	iData,
-	input				reset,
-	input				iValid,
+	input					clk,
+	input		[7:0]		iData,
+	input					reset,
+	input					iValid,
 	
-	output	[7:0]	oR,
-	output	[7:0]	oG,
-	output	[7:0]	oB,
-	output			oValid,
-	output			oDone
+	output	[7:0]		oR, oG, oB,
+	output	[31:0]	xCnt, yCnt, demosaicCnt,
+	output				oValid,
+	output				oDone
 );
 
 wire	unsigned	[7:0]	tap0;
@@ -47,6 +46,10 @@ localparam	totalCycles	= width*(height+2);
 
 // Pixel counter
 reg	[31:0]	cnt, x, y;
+
+assign	xCnt			= x;
+assign	yCnt			= y;
+assign	demosaicCnt = cnt;
 
 // Last row, set all pixel values to 0
 assign	selectedTap0 = (cnt <= width*(height+1)) ? tap0 : 'b0;

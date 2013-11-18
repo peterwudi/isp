@@ -3,6 +3,7 @@ module processing(
 
 	input 							clk,
 	input 							reset,
+	input								newFrame,
 	input								iValid,
 	input		unsigned [7:0]		iData,
 	
@@ -10,6 +11,10 @@ module processing(
 	output	unsigned	[7:0]		oR, oG, oB,
 	output							oValidDemosaic,
 	output							oDoneDemosaic,
+	
+	// Test
+	output	unsigned	[7:0]		iRFilter, iGFilter, iBFilter,
+	output							o_iValidFilter,
 	
 	// Filter
 	output	unsigned	[23:0]	oDataFilter,
@@ -26,6 +31,7 @@ parameter	width			= 320;
 parameter	height		= 240;
 parameter	frameSize	= width * height;
 
+wire	[31:0]	xCnt, yCnt, demosaicCnt;
 
 demosaic_neighbor #(.width(width), .height(height))
 demosaic
@@ -38,12 +44,102 @@ demosaic
 	.oR(oR),
 	.oG(oG),
 	.oB(oB),
+	.xCnt(xCnt),
+	.yCnt(yCnt),
+	.demosaicCnt(demosaicCnt),
 	.oValid(oValidDemosaic),
 	.oDone(oDoneDemosaic)
 );
+parameter	kernelSize					= 3;
+localparam	boundaryWidth				= (kernelSize-1)/2;
+localparam	rows_needed_before_proc = (kernelSize-1)/2;
+localparam	startSkipPixelCnt			= rows_needed_before_proc*(width+boundaryWidth);
+localparam	endSkipPixelCnt			= (rows_needed_before_proc+height)*(width+boundaryWidth);
+localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth);
+
+reg				[31:0]	skipCnt;
+reg							skipCntEn;
+
+reg							iValidFilter;
+reg	unsigned	[2:0]		boundaryCnt;
+reg				[23:0]	iDataFilter;
+reg	unsigned	[31:0]	startBoundary;
+
+// Test
+assign	iRFilter			= iDataFilter[23:16];
+assign	iGFilter 		= iDataFilter[15:8];
+assign	iBFilter 		= iDataFilter[7:0];
+assign	o_iValidFilter = iValidFilter;
+
+always @ (posedge clk) begin
+	if (reset) begin
+		skipCnt			<= 'b0;
+		skipCntEn		<= 0;
+		iValidFilter	<= 0;
+		boundaryCnt		<= 'b0;
+		iDataFilter		<= 'b0;
+		startBoundary	<= width*2-1-boundaryWidth;
+	end
+	else begin
+		if (newFrame) begin
+			skipCntEn	<= 1;
+		end
+		else begin
+			//	TODO: if kernel size is large, is it possible, that there's
+			// not enough time to insert the blanks?
+			if ((skipCnt < totalPixelCnt) && skipCntEn) begin
+				skipCnt		<= skipCnt + 1;
+			end
+			else begin
+				skipCnt		<= 'b0;
+				skipCntEn	<= 0;
+			end
+		end
+		
+		if (		skipCntEn
+				&&	(		(skipCnt < startSkipPixelCnt)
+						||	(skipCnt > endSkipPixelCnt)))
+		begin
+			// The rows before and after the active frame
+			iDataFilter		<= 'b0;
+			iValidFilter	<=	1;
+		end
+		else begin
+			// At start/end boundary
+			if (demosaicCnt == startBoundary) begin
+				if (		(xCnt == 0) && (yCnt == 0)
+						|| (xCnt != 0) && (yCnt == height - 1)) begin
+					// The first pixel OR the last pixel, just need 1 boundary
+					boundaryCnt		<= (kernelSize-1)/2;
+				end
+				else begin
+					// Need 2 boundaries, 1 at the end and the other at the beginning
+					// of the next row.
+					// NOTE: the kernelSize should be an odd number
+					boundaryCnt		<= kernelSize-1;
+				end
+				
+				startBoundary	<= startBoundary + width;
+			end
+		end
+		
+		if (boundaryCnt > 0) begin
+			// Need to add boundary to the input
+			iDataFilter		<= 'b0;
+			iValidFilter	<=	1;
+			boundaryCnt		<= boundaryCnt - 1;
+		end
+		else begin
+			// Actual data
+			iDataFilter		<= {oR, oG, oB};
+			iValidFilter	<= oValidDemosaic;
+		end
+	end
+end
+
 
 //
-//filter_fifo #(.width(width), .height(height), .kernel_size(3))
+//filter_fifo #(.width(width), .height(height), .kernel_size(kernelSize))
 //filter
 //(
 //	.clk(clk),

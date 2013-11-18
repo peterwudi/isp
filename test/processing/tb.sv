@@ -12,6 +12,7 @@ module tb();
 // Input/output of the ISP
 logic 						clk;
 logic 						reset;
+logic							newFrame;
 logic							iValid;
 logic	unsigned [7:0]		iData;
 
@@ -19,6 +20,10 @@ logic	unsigned [7:0]		iData;
 logic	unsigned [7:0]		oR, oG, oB;
 logic							oValidDemosaic;
 logic							oDoneDemosaic;
+
+// Test
+logic	unsigned	[7:0]		iRFilter, iGFilter, iBFilter;
+logic							o_iValidFilter;
 
 // Filter
 logic	unsigned	[23:0]	oDataFilter;
@@ -31,21 +36,31 @@ logic							oValidYcc;
 logic							oDoneYcc;
 
 // Input/output array from file
-// Use filter data size to test filter only!
+
+// NOTE: Use filter data size to test filter only!
 logic unsigned	[7:0]		rOrig [totalInFilter - 1:0];
 logic unsigned	[7:0]		gOrig [totalInFilter - 1:0];
 logic unsigned	[7:0]		bOrig [totalInFilter - 1:0];
-// This is RAW data
+
+// RAW data
 logic unsigned	[7:0]		raw	[totalInFilter - 1:0];
 
+// Demosaic output
 logic unsigned	[7:0]		rDemosaic [totalPixels-1:0];
 logic unsigned	[7:0]		gDemosaic [totalPixels-1:0];
 logic unsigned	[7:0]		bDemosaic [totalPixels-1:0];
 
+// Demosaic output with boundary
+logic unsigned	[7:0]		o_irFilter [totalPixels-1:0];
+logic unsigned	[7:0]		o_igFilter [totalPixels-1:0];
+logic unsigned	[7:0]		o_ibFilter [totalPixels-1:0];
+
+// Filter output
 logic unsigned	[7:0]		rFilter [totalPixels-1:0];
 logic unsigned	[7:0]		gFilter [totalPixels-1:0];
 logic unsigned	[7:0]		bFilter [totalPixels-1:0];
 
+// Matrix output
 logic unsigned	[17:0]	yMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	cbMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	crMatrix [totalPixels-1:0];
@@ -90,12 +105,7 @@ initial begin
 				raw[i] = bOrig[i];
 			end
 		end
-		else begin
-			// Debug
-			if (i == totalPixels-1)begin
-				i = totalPixels-1;
-			end
-			
+		else begin			
 			// Odd row, R G R G ......
 			if ((i % width) % 2 == 0) begin
 				// Even col
@@ -144,12 +154,18 @@ initial begin
 	
 	iValid = 1'b0;
 	iData = 'd0;
+	newFrame = 0;
 	
 	reset = 1'b1;
 	@(negedge clk);
 	@(negedge clk);
 	reset = 1'b0;	
 	@(negedge clk);
+	newFrame = 1;
+	for (int i = 0; i < 32; i++) begin
+		@(negedge clk);
+		newFrame = 0;
+	end
 	
 	// RGB
 	for (int i = 0; i < totalPixels; i++) begin
@@ -208,36 +224,72 @@ initial begin
 	r_outFile = $fopen("demosaicROut", "r");
 	g_outFile = $fopen("demosaicGOut", "r");
 	b_outFile = $fopen("demosaicBOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", rDemosaic[i]);
+//		out2 = $fscanf(g_outFile, "%d", gDemosaic[i]);
+//		out3 = $fscanf(b_outFile, "%d", bDemosaic[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+
+	for (int i = 0; i < totalInFilter; i++) begin
 		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", rDemosaic[i]);
-		out2 = $fscanf(g_outFile, "%d", gDemosaic[i]);
-		out3 = $fscanf(b_outFile, "%d", bDemosaic[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+		if (		(i < width + 2)
+			 ||	(i > totalInFilter - width - 2)
+			 ||	((i % (width + 2)) == 0)
+			 ||	((i % (width + 2)) == (width + 1)))
+		begin
+			o_irFilter[i] = 8'b0;
+			o_igFilter[i] = 8'b0;
+			o_ibFilter[i] = 8'b0;
+		end
+		else begin
+			// Read from file
+			out1 = $fscanf(r_outFile, "%d", o_irFilter[i]);
+			out2 = $fscanf(g_outFile, "%d", o_igFilter[i]);
+			out3 = $fscanf(b_outFile, "%d", o_ibFilter[i]);
+			
+			// Debug
+//			if (i > 76000) begin
+//				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
+//							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
+//			end
+		end
 	end
+
 	$fclose(r_outFile);
 	$fclose(g_outFile);
 	$fclose(b_outFile);
 	
-	for (int i = 0; i < totalPixels; i++) begin
+	//for (int i = 0; i < totalPixels; i++) begin
+	for (int i = 0; i < totalInFilter; i++) begin
 		real rDiff;
 		real gDiff;
 		real bDiff;
 		
 		// Wait for a valid output
 		@(negedge clk);
-		while (!oValidDemosaic) begin
+		//while (!oValidDemosaic) begin
+		while (!o_iValidFilter) begin
 			@(negedge clk);
 		end
 		
-		g_demosaic_r 	= rDemosaic[i];
-		g_demosaic_g	= gDemosaic[i];
-		g_demosaic_b	= bDemosaic[i];
+//		g_demosaic_r 	= rDemosaic[i];
+//		g_demosaic_g	= gDemosaic[i];
+//		g_demosaic_b	= bDemosaic[i];
+
+		g_demosaic_r 	= o_irFilter[i];
+		g_demosaic_g	= o_igFilter[i];
+		g_demosaic_b	= o_ibFilter[i];
 		
-		rDiff = (oR - g_demosaic_r);
-		gDiff = (oG - g_demosaic_g);
-		bDiff = (oB - g_demosaic_b);
+//		rDiff = (oR - g_demosaic_r);
+//		gDiff = (oG - g_demosaic_g);
+//		bDiff = (oB - g_demosaic_b);
+
+		rDiff = (iRFilter - g_demosaic_r);
+		gDiff = (iGFilter - g_demosaic_g);
+		bDiff = (iBFilter - g_demosaic_b);
 		
 		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
 			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
