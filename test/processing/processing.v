@@ -53,9 +53,9 @@ demosaic
 parameter	kernelSize					= 3;
 localparam	boundaryWidth				= (kernelSize-1)/2;
 localparam	rows_needed_before_proc = (kernelSize-1)/2;
-localparam	startSkipPixelCnt			= rows_needed_before_proc*(width+boundaryWidth);
-localparam	endSkipPixelCnt			= (rows_needed_before_proc+height)*(width+boundaryWidth);
-localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth);
+localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth);
+//localparam	endSkipPixelCnt			= (rows_needed_before_proc+height)*(width+boundaryWidth*2);
+//localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 reg				[31:0]	skipCnt;
 reg							skipCntEn;
@@ -82,16 +82,16 @@ always @ (posedge clk) begin
 		iValidFilter	<= 0;
 		boundaryCnt		<= 'b0;
 		iDataFilter		<= 'b0;
-		startBoundary	<= width*2-1-boundaryWidth;
+		startBoundary	<= width*(rows_needed_before_proc+1);
 	end
 	else begin
-		if (newFrame) begin
+		if (newFrame|oDoneDemosaic) begin
 			skipCntEn	<= 1;
 		end
 		else begin
 			//	TODO: if kernel size is large, is it possible, that there's
 			// not enough time to insert the blanks?
-			if ((skipCnt < totalPixelCnt) && skipCntEn) begin
+			if ((skipCnt < skipPixelCnt) && skipCntEn) begin
 				skipCnt		<= skipCnt + 1;
 			end
 			else begin
@@ -100,9 +100,7 @@ always @ (posedge clk) begin
 			end
 		end
 		
-		if (		skipCntEn
-				&&	(		(skipCnt < startSkipPixelCnt)
-						||	(skipCnt > endSkipPixelCnt)))
+		if (skipCntEn)
 		begin
 			// The rows before and after the active frame
 			skip	<= 1;

@@ -51,9 +51,9 @@ logic unsigned	[7:0]		gDemosaic [totalPixels-1:0];
 logic unsigned	[7:0]		bDemosaic [totalPixels-1:0];
 
 // Demosaic output with boundary
-logic unsigned	[7:0]		o_irFilter [totalPixels-1:0];
-logic unsigned	[7:0]		o_igFilter [totalPixels-1:0];
-logic unsigned	[7:0]		o_ibFilter [totalPixels-1:0];
+logic unsigned	[7:0]		o_irFilter [totalInFilter-1:0];
+logic unsigned	[7:0]		o_igFilter [totalInFilter-1:0];
+logic unsigned	[7:0]		o_ibFilter [totalInFilter-1:0];
 
 // Filter output
 logic unsigned	[7:0]		rFilter [totalPixels-1:0];
@@ -190,18 +190,24 @@ initial begin
 	
 	iData = 'b0;
 	
+	
 	// Need iValid to be high to keep the pipeline moving
 	while(1) begin
 		@(negedge clk);
-		if (oDoneDemosaic == 0) begin
+		// Still need to move the pipeline and leave blanks each row
+		for (int i = 0; i < width; i++) begin
 			iValid	= 1'b1;
+			@(negedge clk);
 		end
-		else begin
-			// Image done, should be automatically reset
-			// .(reset|yccDone)
-			iValid	= 1'b0;
-			break;
+		
+		for (int j = 0; j < 16; j++) begin
+			iValid = 0;
+			if (oDoneDemosaic == 1) begin
+				break;
+			end
+			@(negedge clk);
 		end
+		
 	end
 	
 	@(negedge clk);
@@ -293,7 +299,7 @@ initial begin
 		
 		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
 			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						oR, g_demosaic_r, oG, g_demosaic_g, oB, g_demosaic_b, $time);
+						iRFilter, g_demosaic_r, iGFilter, g_demosaic_g, iBFilter, g_demosaic_b, $time);
 			failed = 1;
 		end
 	end
