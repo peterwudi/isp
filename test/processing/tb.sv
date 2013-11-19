@@ -379,86 +379,86 @@ initial begin
 	for (int i = 0; i < 10; i++) begin
 		@(negedge clk);
 	end
+	//$stop(0);
+end
+
+logic unsigned	[53:0]	o_golden_ycc;
+logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
+
+// YCC Consumer
+initial begin
+	static real rms = 0.0;
+	static integer tmp = 0;
+	
+	integer r_outFile;
+	integer g_outFile;
+	integer b_outFile;
+	
+	r_outFile = $fopen("yOut", "r");
+	g_outFile = $fopen("cbOut", "r");
+	b_outFile = $fopen("crOut", "r");
+	
+	for (int i = 0; i < totalPixels; i++) begin
+		integer out1, out2, out3;
+		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
+		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
+		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
+		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+	end
+	$fclose(r_outFile);
+	$fclose(g_outFile);
+	$fclose(b_outFile);
+	
+	o_golden_ycc = 'b0;
+	
+	// YCC
+	for (int i = 0; i < totalPixels; i++) begin
+		real v1;
+		real v2;
+		real diff;
+		
+		// Wait for a valid output
+		@(negedge clk);
+		while (!oValidYcc) begin
+			@(negedge clk);
+		end
+		
+		//@(negedge clk);  // Give time for o_out to be updated.
+		v1 = real'({y, cb, cr});
+		o_golden_ycc = {yMatrix[i], cbMatrix[i], crMatrix[i]};		
+		
+		g_ycc_y 	= yMatrix[i];
+		g_ycc_cb	= cbMatrix[i];
+		g_ycc_cr	= crMatrix[i];
+		
+		v2 = real'(o_golden_ycc);
+		diff = (v1 - v2);
+		
+		rms += diff*diff;
+		if (diff != 0) begin
+			$display("<YCC> diff: %f, rms: %f, o_out: %f, golden: %f, at time: ", diff, rms, v1, v2, $time);
+		end
+	end
+	
+	rms /= totalPixels;
+	rms = rms ** (0.5);
+	
+	$display("<YCC> RMS Error: %f", rms);
+	if (rms > 10) begin
+		$display("<YCC> Average RMS Error is above 10 units - something is probably wrong");
+	end
+	else begin
+		$display("<YCC> Error is within 10 units - great success!!");
+	end
+	
+	for (int i = 0; i < 10; i++) begin
+		@(negedge clk);
+	end
+	
+	rms = 0;
+	
 	$stop(0);
 end
-//
-//logic unsigned	[53:0]	o_golden_ycc;
-//logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
-//
-//// YCC Consumer
-//initial begin
-//	static real rms = 0.0;
-//	static integer tmp = 0;
-//	
-//	integer r_outFile;
-//	integer g_outFile;
-//	integer b_outFile;
-//	
-//	r_outFile = $fopen("yOut", "r");
-//	g_outFile = $fopen("cbOut", "r");
-//	b_outFile = $fopen("crOut", "r");
-//	
-//	for (int i = 0; i < totalPixels; i++) begin
-//		integer out1, out2, out3;
-//		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
-//		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
-//		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
-//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-//	end
-//	$fclose(r_outFile);
-//	$fclose(g_outFile);
-//	$fclose(b_outFile);
-//	
-//	o_golden_ycc = 'b0;
-//	
-//	// YCC
-//	for (int i = 0; i < totalPixels; i++) begin
-//		real v1;
-//		real v2;
-//		real diff;
-//		
-//		// Wait for a valid output
-//		@(negedge clk);
-//		while (!oValidYcc) begin
-//			@(negedge clk);
-//		end
-//		
-//		//@(negedge clk);  // Give time for o_out to be updated.
-//		v1 = real'({y, cb, cr});
-//		o_golden_ycc = {yMatrix[i], cbMatrix[i], crMatrix[i]};		
-//		
-//		g_ycc_y 	= yMatrix[i];
-//		g_ycc_cb	= cbMatrix[i];
-//		g_ycc_cr	= crMatrix[i];
-//		
-//		v2 = real'(o_golden_ycc);
-//		diff = (v1 - v2);
-//		
-//		rms += diff*diff;
-//		if (diff != 0) begin
-//			$display("<YCC> diff: %f, rms: %f, o_out: %f, golden: %f, at time: ", diff, rms, v1, v2, $time);
-//		end
-//	end
-//	
-//	rms /= totalPixels;
-//	rms = rms ** (0.5);
-//	
-//	$display("<YCC> RMS Error: %f", rms);
-//	if (rms > 10) begin
-//		$display("<YCC> Average RMS Error is above 10 units - something is probably wrong");
-//	end
-//	else begin
-//		$display("<YCC> Error is within 10 units - great success!!");
-//	end
-//	
-//	for (int i = 0; i < 10; i++) begin
-//		@(negedge clk);
-//	end
-//	
-//	rms = 0;
-//	
-//	$stop(0);
-//end
 
 
 
