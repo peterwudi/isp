@@ -14,12 +14,13 @@ parameter	width	= 320;
 parameter	height	= 240;
 parameter	kernel_size	= 3;
 
-localparam	row_pipeline_depth = width + 2;
+localparam	rows_needed_before_proc = (kernel_size - 1)/2;
+localparam	row_pipeline_depth = width + 2*rows_needed_before_proc;
 
 // For odd x odd kernels, need (kernel_size-1)/2 rows
 // of 0's before and after the actual image.
 // e.g. 3x3 kernel needs 1 row.
-localparam	rows_needed_before_proc = (kernel_size - 1)/2;
+
 
 // For odd x odd kernels, need kernel_size-1 cycles
 // before a row can be processed.
@@ -72,6 +73,18 @@ wire	unsigned	[23:0]	data_b;
 reg							r_iValid;
 reg	unsigned [23:0]	r_iData;
 
+// "r_iData" is a buffer of input data. iData always gets buffered
+// here first, and then depending on what iValid is, we decide
+// whether to write it into the FIFO or not.
+//
+// "r_iValid" is the delayed iValid, it controls the pipeline. i.e.
+// when r_iValid is low, the pipeline is stalled, and no invalid
+// data can get into the pipeline.
+//
+// "valid" is used to identify which output data is valid. All data
+// inside the pipeline are valid, however, when the pixel being
+// processed is outside of the boundary, the result is not valid.
+// "valid" is carried outside of the convolution unit.
 always @(posedge clk) begin
 	if (reset) begin
 		r_iValid		<= 0;
@@ -134,27 +147,8 @@ always @(posedge clk) begin
 					ready_rows	<= ready_rows + 1;
 				end
 			end
-			
-//			// If data is ready (we have kernel_size rows)
-//			// && has waited for at least pixels_needed_before_proc cycles
-//			// (need to set valid high 1 cycle before the valid output)
-//			// && image is not done
-//			if (	 (ready_rows == kernel_size)
-//				 && (		row_cnt >= pixels_needed_before_proc - 1)
-//						//&&	row_cnt != row_pipeline_depth - 1)
-//				 && (img_done == 0))
-//			begin
-//				valid <= 1'b1;
-//			end
-//			else begin
-//				valid <= 1'b0;
-//			end
 		end
 	end
-	
-//	data_r	<= {tap[0][23:16],	tap[1][23:16],	tap[2][23:16]};
-//	data_g	<= {tap[0][15:8],		tap[1][15:8],	tap[2][15:8]};
-//	data_b	<= {tap[0][7:0],		tap[1][7:0],	tap[2][7:0]};
 	
 end
 

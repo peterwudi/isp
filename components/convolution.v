@@ -4,12 +4,9 @@ module convolution
 	input	clk,
 	input reset,
 	input i_valid,
-	input i_done,
-	
+	input i_done,	
 	input unsigned	[23:0]	i_data,
-	
-	//output 						o_valid,
-	//output						o_img_done,
+
 	output signed	[34:0]	o_data
 );
 
@@ -59,8 +56,6 @@ reg	signed	[43:0] out;
 
 // Pipeline registers
 reg	[15:0]	window	[kernel_size-1:0][kernel_size-1:0];
-//reg				valid		[pipeline_depth - 1 : 0];
-//reg				img_done	[pipeline_depth - 1 : 0];
 
 // Delay line of mult_3
 reg	[15:0]	delay_3	[3:0];
@@ -71,9 +66,6 @@ always @(posedge clk) begin
 		window[0][0]	<= 0;
 		window[1][0]	<= 0;
 		window[2][0]	<= 0;
-		
-		//valid[0]			<= 0;
-		//img_done[0]		<= 0;
 	end
 	else begin
 		if (i_valid) begin
@@ -86,9 +78,6 @@ always @(posedge clk) begin
 			delay_3[1]		<= window[2][0];
 			delay_3[2]		<= window[2][1];
 			delay_3[3]		<= window[2][2];
-			
-			//valid[0]			<= i_valid;
-			//img_done[0]		<= i_done;
 			
 			// Produce valid results
 			mult1Res_r[0]	<= mult1Res;
@@ -136,8 +125,6 @@ multAdd_4_16x16 mult_3(
 	.result(mult3Res));
 
 assign o_data		= out;
-//assign o_valid		= valid[pipeline_depth - 1];
-//assign o_img_done	= img_done[pipeline_depth - 1];
 
 genvar i;
 genvar j;
@@ -155,19 +142,6 @@ generate
 		end
 	end
 	
-//	for (i = 1; i < pipeline_depth; i = i + 1) begin: c
-//		always @(posedge clk) begin
-//			if (reset) begin
-//				valid[i]		<= 0;
-//				img_done[i]	<= 0;
-//			end
-//			else if (i_valid) begin
-//				valid[i]		<= valid[i-1];
-//				img_done[i]	<= img_done[i-1];
-//			end
-//		end
-//	end
-	
 	for (i = 1; i < mult1Res_delay; i = i + 1) begin: d
 		always @(posedge clk) begin
 			if (reset) begin
@@ -180,8 +154,6 @@ generate
 	end
 	
 endgenerate
-
-
 
 endmodule
 

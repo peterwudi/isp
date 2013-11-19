@@ -64,8 +64,6 @@ reg	unsigned	[2:0]		boundaryCnt;
 reg				[23:0]	iDataFilter;
 reg	unsigned	[31:0]	startBoundary;
 
-
-
 // Test
 assign	iRFilter			= iDataFilter[23:16];
 assign	iGFilter 		= iDataFilter[15:8];

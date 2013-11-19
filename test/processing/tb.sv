@@ -201,12 +201,12 @@ initial begin
 		end
 		
 		if (oDoneDemosaic == 1) begin
+			iValid = 0;
 			break;
 		end
 		
 		for (int j = 0; j < 16; j++) begin
 			iValid = 0;
-			
 			@(negedge clk);
 		end	
 	end
@@ -231,14 +231,6 @@ initial begin
 	r_outFile = $fopen("demosaicROut", "r");
 	g_outFile = $fopen("demosaicGOut", "r");
 	b_outFile = $fopen("demosaicBOut", "r");
-//	
-//	for (int i = 0; i < totalPixels; i++) begin
-//		integer out1, out2, out3;
-//		out1 = $fscanf(r_outFile, "%d", rDemosaic[i]);
-//		out2 = $fscanf(g_outFile, "%d", gDemosaic[i]);
-//		out3 = $fscanf(b_outFile, "%d", bDemosaic[i]);
-//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-//	end
 
 	for (int i = 0; i < totalInFilter; i++) begin
 		integer out1, out2, out3;
@@ -277,7 +269,6 @@ initial begin
 		
 		// Wait for a valid output
 		@(negedge clk);
-		//while (!oValidDemosaic) begin
 		while (!o_iValidFilter) begin
 			@(negedge clk);
 		end
@@ -382,17 +373,15 @@ initial begin
 	//$stop(0);
 end
 
-logic unsigned	[53:0]	o_golden_ycc;
 logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
 
 // YCC Consumer
 initial begin
-	static real rms = 0.0;
-	static integer tmp = 0;
-	
 	integer r_outFile;
 	integer g_outFile;
 	integer b_outFile;
+	
+	integer failed = 0;
 	
 	r_outFile = $fopen("yOut", "r");
 	g_outFile = $fopen("cbOut", "r");
@@ -409,13 +398,11 @@ initial begin
 	$fclose(g_outFile);
 	$fclose(b_outFile);
 	
-	o_golden_ycc = 'b0;
-	
 	// YCC
 	for (int i = 0; i < totalPixels; i++) begin
-		real v1;
-		real v2;
-		real diff;
+		real yDiff;
+		real cbDiff;
+		real crDiff;
 		
 		// Wait for a valid output
 		@(negedge clk);
@@ -424,38 +411,31 @@ initial begin
 		end
 		
 		//@(negedge clk);  // Give time for o_out to be updated.
-		v1 = real'({y, cb, cr});
-		o_golden_ycc = {yMatrix[i], cbMatrix[i], crMatrix[i]};		
-		
 		g_ycc_y 	= yMatrix[i];
 		g_ycc_cb	= cbMatrix[i];
 		g_ycc_cr	= crMatrix[i];
 		
-		v2 = real'(o_golden_ycc);
-		diff = (v1 - v2);
+		yDiff		= (y - g_ycc_y);
+		cbDiff	= (cb - g_ycc_cb);
+		crDiff	= (cr - g_ycc_cr);
 		
-		rms += diff*diff;
-		if (diff != 0) begin
-			$display("<YCC> diff: %f, rms: %f, o_out: %f, golden: %f, at time: ", diff, rms, v1, v2, $time);
+		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
+			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
+						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
+			failed = 1;
 		end
 	end
 	
-	rms /= totalPixels;
-	rms = rms ** (0.5);
-	
-	$display("<YCC> RMS Error: %f", rms);
-	if (rms > 10) begin
-		$display("<YCC> Average RMS Error is above 10 units - something is probably wrong");
+	if (failed == 1) begin
+		$display("YCC is wrong");
 	end
 	else begin
-		$display("<YCC> Error is within 10 units - great success!!");
+		$display("YCC great success!!");
 	end
 	
 	for (int i = 0; i < 10; i++) begin
 		@(negedge clk);
 	end
-	
-	rms = 0;
 	
 	$stop(0);
 end
