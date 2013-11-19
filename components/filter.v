@@ -28,14 +28,14 @@ localparam	rows_needed_before_proc = (kernel_size - 1)/2;
 // result.
 localparam	pixels_needed_before_proc = (kernel_size + 1)/2;
 
-localparam	cycles_proc	= 9;
+localparam	cycles_proc	= 8;
 // Cycles needed for post processing, (e.g. factor, bias, truncation etc.)
 localparam	cycles_post_proc	= 1;
 
 
 // number of data ready rows, data is valid when ready_rows == kernel_size
 reg	[6:0]	ready_rows;
-reg			valid;
+wire			valid;
 reg			img_done;
 
 // Row counter
@@ -64,17 +64,30 @@ reg				[7:0]		res_b;
 
 
 wire	unsigned	[23:0]	tap		[2:0];	
-reg							r_iValid;
 
-reg	unsigned	[23:0]	data_r;
-reg	unsigned	[23:0]	data_g;
-reg	unsigned	[23:0]	data_b;
+wire	unsigned	[23:0]	data_r;
+wire	unsigned	[23:0]	data_g;
+wire	unsigned	[23:0]	data_b;
+
+reg							r_iValid;
+reg	unsigned [23:0]	r_iData;
+
+always @(posedge clk) begin
+	if (reset) begin
+		r_iValid		<= 0;
+		r_iData		<= 'b0;
+	end
+	else begin
+		r_iValid		<= iValid;
+		r_iData		<= iData;
+	end
+end
 
 filter_shift_reg u0
 (
-	.clken(iValid),
+	.clken(r_iValid),
 	.clock(clk),
-	.shiftin(iData),
+	.shiftin(r_iData),
 	.shiftout(),
 	.taps0x(tap[0]),
 	.taps1x(tap[1]),
@@ -84,16 +97,14 @@ filter_shift_reg u0
 
 always @(posedge clk) begin
 	if (reset) begin
-		valid				<= 1'b0;
-		r_iValid			<= 0;
+//		valid				<= 1'b0;
 		ready_rows		<= 'b0;
 		row_cnt			<= 'b0;
 		rows_done		<= 'b0;
 		img_done			<= 1'b0;
 	end
 	else begin
-		r_iValid	<= iValid;
-		if (iValid) begin
+		if (r_iValid) begin
 			// The row buffer will be filled with i_data
 			// need to put a 0 before the 1st pixel
 			//
@@ -124,38 +135,47 @@ always @(posedge clk) begin
 				end
 			end
 			
-			// If data is ready (we have kernel_size rows)
-			// && has waited for at least pixels_needed_before_proc cycles
-			// (need to set valid high 1 cycle before the valid output)
-			// && image is not done
-			if (	 (ready_rows == kernel_size)
-				 && (		row_cnt >= pixels_needed_before_proc - 1)
-						//&&	row_cnt != row_pipeline_depth - 1)
-				 && (img_done == 0))
-			begin
-				valid <= 1'b1;
-			end
-			else begin
-				valid <= 1'b0;
-			end
-		end
-		else begin
-			// Input not valid, stall the pipeline
-			valid <= 1'b0;
+//			// If data is ready (we have kernel_size rows)
+//			// && has waited for at least pixels_needed_before_proc cycles
+//			// (need to set valid high 1 cycle before the valid output)
+//			// && image is not done
+//			if (	 (ready_rows == kernel_size)
+//				 && (		row_cnt >= pixels_needed_before_proc - 1)
+//						//&&	row_cnt != row_pipeline_depth - 1)
+//				 && (img_done == 0))
+//			begin
+//				valid <= 1'b1;
+//			end
+//			else begin
+//				valid <= 1'b0;
+//			end
 		end
 	end
 	
-	data_r	<= {tap[0][23:16],	tap[1][23:16],	tap[2][23:16]};
-	data_g	<= {tap[0][15:8],		tap[1][15:8],	tap[2][15:8]};
-	data_b	<= {tap[0][7:0],		tap[1][7:0],	tap[2][7:0]};
+//	data_r	<= {tap[0][23:16],	tap[1][23:16],	tap[2][23:16]};
+//	data_g	<= {tap[0][15:8],		tap[1][15:8],	tap[2][15:8]};
+//	data_b	<= {tap[0][7:0],		tap[1][7:0],	tap[2][7:0]};
 	
 end
+
+assign	data_r	= {tap[0][23:16],	tap[1][23:16],	tap[2][23:16]};
+assign	data_g	= {tap[0][15:8],		tap[1][15:8],	tap[2][15:8]};
+assign	data_b	= {tap[0][7:0],		tap[1][7:0],	tap[2][7:0]};
+
+// If data is ready (we have kernel_size rows)
+// && has waited for at least pixels_needed_before_proc cycles
+// && image is not done
+assign valid = (		 (ready_rows == kernel_size)
+						&& (		row_cnt >= pixels_needed_before_proc)
+						//&&	row_cnt != row_pipeline_depth - 1)
+						&& (img_done == 0)) ? 1:0;
+
 
 convolution r_conv
 (
 	.clk(clk),
 	.reset(reset),
-	.i_valid(valid),
+	.i_valid(r_iValid),
 	.i_done(img_done),
 	.i_data(data_r),
 	//.o_valid(conv_o_valid),
@@ -167,7 +187,7 @@ convolution g_conv
 (
 	.clk(clk),
 	.reset(reset),
-	.i_valid(valid),
+	.i_valid(r_iValid),
 	.i_done(img_done),
 	.i_data(data_g),
 	.o_data(conv_o_g)
@@ -177,7 +197,7 @@ convolution b_conv
 (
 	.clk(clk),
 	.reset(reset),
-	.i_valid(valid),
+	.i_valid(r_iValid),
 	.i_done(img_done),
 	.i_data(data_b),
 	.o_data(conv_o_b)
@@ -193,7 +213,7 @@ always @(posedge clk) begin
 		o_valid_pipeline[0]	<= 1'b0;
 		o_done_pipeline[0]	<= 1'b0;
 	end
-	else if (iValid) begin
+	else if (r_iValid) begin
 		// Pass the signals
 		o_valid_pipeline[0]	<= valid;
 		o_done_pipeline[0]	<= img_done;
@@ -240,7 +260,7 @@ generate
 				o_valid_pipeline[i]	<= 1'b0;
 				o_done_pipeline[i]	<= 1'b0;
 			end
-			else if (iValid) begin
+			else if (r_iValid) begin
 				o_valid_pipeline[i]	<= o_valid_pipeline[i-1];
 				o_done_pipeline[i]	<= o_done_pipeline[i-1];
 			end
@@ -250,7 +270,7 @@ endgenerate
 
 
 assign	oDone		= o_done_pipeline[cycles_proc+cycles_post_proc - 1];
-assign	oValid	= (iValid == 1) ? o_valid_pipeline[cycles_proc+cycles_post_proc - 1]:0;
+assign	oValid	= (r_iValid == 1) ? o_valid_pipeline[cycles_proc+cycles_post_proc - 1]:0;
 assign	oData		= {res_r, res_g, res_b};
 
 
