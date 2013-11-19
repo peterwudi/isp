@@ -26,8 +26,9 @@ localparam	rows_needed_before_proc = (kernel_size - 1)/2;
 // e.g. 3x3 kernel needs 2 cycles to get the boundary 0 to
 // the 2nd to last stage, and the next cycle performs a valid
 // result.
-localparam	pixels_needed_before_proc = kernel_size - 1;
+localparam	pixels_needed_before_proc = (kernel_size + 1)/2;
 
+localparam	cycles_proc	= 9;
 // Cycles needed for post processing, (e.g. factor, bias, truncation etc.)
 localparam	cycles_post_proc	= 1;
 
@@ -50,8 +51,8 @@ reg	[12:0] rows_done;
 wire			conv_o_valid;
 
 wire			conv_o_done;
-reg			o_valid_pipeline	[cycles_post_proc - 1 : 0];
-reg			o_done_pipeline	[cycles_post_proc - 1 : 0];
+reg			o_valid_pipeline	[cycles_proc+cycles_post_proc-1 : 0];
+reg			o_done_pipeline	[cycles_proc+cycles_post_proc-1 : 0];
 
 wire	signed	[34:0]	conv_o_r;
 wire	signed	[34:0]	conv_o_g;
@@ -63,11 +64,11 @@ reg				[7:0]		res_b;
 
 
 wire	unsigned	[23:0]	tap		[2:0];	
+reg							r_iValid;
 
-
-reg	unsigned	[23:0]		data_r;
-reg	unsigned	[23:0]		data_g;
-reg	unsigned	[23:0]		data_b;
+reg	unsigned	[23:0]	data_r;
+reg	unsigned	[23:0]	data_g;
+reg	unsigned	[23:0]	data_b;
 
 filter_shift_reg u0
 (
@@ -84,60 +85,64 @@ filter_shift_reg u0
 always @(posedge clk) begin
 	if (reset) begin
 		valid				<= 1'b0;
+		r_iValid			<= 0;
 		ready_rows		<= 'b0;
 		row_cnt			<= 'b0;
 		rows_done		<= 'b0;
 		img_done			<= 1'b0;
 	end
-	else if (iValid) begin
-		// The row buffer will be filled with i_data
-		// need to put a 0 before the 1st pixel
-		//
-		// row_cnt range from 0 to row_pipeline_depth - 1
-		if (row_cnt < row_pipeline_depth - 1) begin
-			// Increment row counter
-			row_cnt	<= row_cnt + 1;
-		end
-		else begin
-			// Reset row counter and use the next buffer,
-			// which is always available because all the data
-			// are perfectly aligned
-			row_cnt	<= 0;
-			
-			rows_done <= rows_done + 1;
-			
-			if (rows_done < height + 2*rows_needed_before_proc) begin
-				img_done		<= 1'b0;
+	else begin
+		r_iValid	<= iValid;
+		if (iValid) begin
+			// The row buffer will be filled with i_data
+			// need to put a 0 before the 1st pixel
+			//
+			// row_cnt range from 0 to row_pipeline_depth - 1
+			if (row_cnt < row_pipeline_depth - 1) begin
+				// Increment row counter
+				row_cnt	<= row_cnt + 1;
 			end
 			else begin
-				img_done		<= 1'b1;
-				rows_done	<= 'b0;
+				// Reset row counter and use the next buffer,
+				// which is always available because all the data
+				// are perfectly aligned
+				row_cnt	<= 0;
+				
+				rows_done <= rows_done + 1;
+				
+				if (rows_done < height + 2*rows_needed_before_proc) begin
+					img_done		<= 1'b0;
+				end
+				else begin
+					img_done		<= 1'b1;
+					rows_done	<= 'b0;
+				end
+				
+				// Just finished a row, increment ready_rows
+				if (ready_rows < kernel_size) begin
+					ready_rows	<= ready_rows + 1;
+				end
 			end
 			
-			// Just finished a row, increment ready_rows
-			if (ready_rows < kernel_size) begin
-				ready_rows	<= ready_rows + 1;
+			// If data is ready (we have kernel_size rows)
+			// && has waited for at least pixels_needed_before_proc cycles
+			// (need to set valid high 1 cycle before the valid output)
+			// && image is not done
+			if (	 (ready_rows == kernel_size)
+				 && (		row_cnt >= pixels_needed_before_proc - 1)
+						//&&	row_cnt != row_pipeline_depth - 1)
+				 && (img_done == 0))
+			begin
+				valid <= 1'b1;
+			end
+			else begin
+				valid <= 1'b0;
 			end
 		end
-		
-		// If data is ready (we have kernel_size rows)
-		// && has waited for at least pixels_needed_before_proc cycles
-		// (need to set valid high 1 cycle before the valid output)
-		// && image is not done
-		if (	 (ready_rows == kernel_size)
-			 && (		row_cnt >= pixels_needed_before_proc - 1
-					&&	row_cnt != row_pipeline_depth - 1)
-			 && (img_done == 0))
-		begin
-			valid <= 1'b1;
-		end
 		else begin
+			// Input not valid, stall the pipeline
 			valid <= 1'b0;
-		end	
-	end
-	else begin
-		// Input not valid, stall the pipeline
-		valid <= 1'b0;
+		end
 	end
 	
 	data_r	<= {tap[0][23:16],	tap[1][23:16],	tap[2][23:16]};
@@ -152,11 +157,9 @@ convolution r_conv
 	.reset(reset),
 	.i_valid(valid),
 	.i_done(img_done),
-	
 	.i_data(data_r),
-	
-	.o_valid(conv_o_valid),
-	.o_img_done(conv_o_done),
+	//.o_valid(conv_o_valid),
+	//.o_img_done(conv_o_done),
 	.o_data(conv_o_r)
 );
 
@@ -166,11 +169,7 @@ convolution g_conv
 	.reset(reset),
 	.i_valid(valid),
 	.i_done(img_done),
-	
 	.i_data(data_g),
-	
-	.o_valid(),
-	.o_img_done(),
 	.o_data(conv_o_g)
 );
 
@@ -180,11 +179,7 @@ convolution b_conv
 	.reset(reset),
 	.i_valid(valid),
 	.i_done(img_done),
-	
 	.i_data(data_b),
-	
-	.o_valid(),
-	.o_img_done(),
 	.o_data(conv_o_b)
 );
 
@@ -200,8 +195,8 @@ always @(posedge clk) begin
 	end
 	else if (iValid) begin
 		// Pass the signals
-		o_valid_pipeline[0]	<= conv_o_valid;
-		o_done_pipeline[0]	<= conv_o_done;
+		o_valid_pipeline[0]	<= valid;
+		o_done_pipeline[0]	<= img_done;
 	
 		// Truncation
 		if (conv_o_r > 255) begin
@@ -239,7 +234,7 @@ end
 genvar i;
 generate
 	// Post processing
-	for (i = 1; i < cycles_post_proc; i = i + 1) begin: d
+	for (i = 1; i < cycles_proc+cycles_post_proc; i = i + 1) begin: d
 		always @(posedge clk) begin
 			if (reset) begin
 				o_valid_pipeline[i]	<= 1'b0;
@@ -254,10 +249,8 @@ generate
 endgenerate
 
 
-assign	oDone		= o_done_pipeline[cycles_post_proc - 1];
-
-// oValid only when the pipeline is still moving
-assign	oValid	= (valid == 1) ? o_valid_pipeline[cycles_post_proc - 1] : 0;
+assign	oDone		= o_done_pipeline[cycles_proc+cycles_post_proc - 1];
+assign	oValid	= (iValid == 1) ? o_valid_pipeline[cycles_proc+cycles_post_proc - 1]:0;
 assign	oData		= {res_r, res_g, res_b};
 
 

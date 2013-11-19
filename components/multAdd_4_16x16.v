@@ -47,6 +47,7 @@ module multAdd_4_16x16 (
 	datab_1,
 	datab_2,
 	datab_3,
+	ena0,
 	result);
 
 	input	[43:0]  chainin;
@@ -59,6 +60,7 @@ module multAdd_4_16x16 (
 	input	[15:0]  datab_1;
 	input	[15:0]  datab_2;
 	input	[15:0]  datab_3;
+	input	  ena0;
 	output	[43:0]  result;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
@@ -73,6 +75,7 @@ module multAdd_4_16x16 (
 	tri0	[15:0]  datab_1;
 	tri0	[15:0]  datab_2;
 	tri0	[15:0]  datab_3;
+	tri1	  ena0;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_on
 `endif
@@ -94,6 +97,7 @@ module multAdd_4_16x16 (
 				.chainin (chainin),
 				.clock0 (clock0),
 				.datab (sub_wire2),
+				.ena0 (ena0),
 				.dataa (sub_wire7),
 				.result (sub_wire0),
 				.accum_sload (1'b0),
@@ -116,7 +120,6 @@ module multAdd_4_16x16 (
 				.coefsel2 ({3{1'b0}}),
 				.coefsel3 ({3{1'b0}}),
 				.datac ({88{1'b0}}),
-				.ena0 (1'b1),
 				.ena1 (1'b1),
 				.ena2 (1'b1),
 				.ena3 (1'b1),
@@ -247,7 +250,7 @@ endmodule
 // Retrieval info: PRIVATE: ADDNSUB3_PIPE_CLK_SRC NUMERIC "0"
 // Retrieval info: PRIVATE: ADDNSUB3_PIPE_REG STRING "1"
 // Retrieval info: PRIVATE: ADDNSUB3_REG STRING "1"
-// Retrieval info: PRIVATE: ADD_ENABLE NUMERIC "0"
+// Retrieval info: PRIVATE: ADD_ENABLE NUMERIC "1"
 // Retrieval info: PRIVATE: ALL_REG_ACLR NUMERIC "0"
 // Retrieval info: PRIVATE: A_ACLR_SRC_MULT0 NUMERIC "3"
 // Retrieval info: PRIVATE: A_CLK_SRC_MULT0 NUMERIC "0"
@@ -470,6 +473,7 @@ endmodule
 // Retrieval info: USED_PORT: datab_1 0 0 16 0 INPUT GND "datab_1[15..0]"
 // Retrieval info: USED_PORT: datab_2 0 0 16 0 INPUT GND "datab_2[15..0]"
 // Retrieval info: USED_PORT: datab_3 0 0 16 0 INPUT GND "datab_3[15..0]"
+// Retrieval info: USED_PORT: ena0 0 0 0 0 INPUT VCC "ena0"
 // Retrieval info: USED_PORT: result 0 0 44 0 OUTPUT GND "result[43..0]"
 // Retrieval info: CONNECT: @chainin 0 0 44 0 chainin 0 0 44 0
 // Retrieval info: CONNECT: @clock0 0 0 0 0 clock0 0 0 0 0
@@ -481,6 +485,7 @@ endmodule
 // Retrieval info: CONNECT: @datab 0 0 16 16 datab_1 0 0 16 0
 // Retrieval info: CONNECT: @datab 0 0 16 32 datab_2 0 0 16 0
 // Retrieval info: CONNECT: @datab 0 0 16 48 datab_3 0 0 16 0
+// Retrieval info: CONNECT: @ena0 0 0 0 0 ena0 0 0 0 0
 // Retrieval info: CONNECT: result 0 0 44 0 @result 0 0 44 0
 // Retrieval info: GEN_FILE: TYPE_NORMAL multAdd_4_16x16.v TRUE
 // Retrieval info: GEN_FILE: TYPE_NORMAL multAdd_4_16x16.inc FALSE

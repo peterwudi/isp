@@ -40,11 +40,13 @@ module mult_1_16x16 (
 	clock0,
 	dataa_0,
 	datab_0,
+	ena0,
 	result);
 
 	input	  clock0;
 	input	[15:0]  dataa_0;
 	input	[15:0]  datab_0;
+	input	  ena0;
 	output	[31:0]  result;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
@@ -52,6 +54,7 @@ module mult_1_16x16 (
 	tri1	  clock0;
 	tri0	[15:0]  dataa_0;
 	tri0	[15:0]  datab_0;
+	tri1	  ena0;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_on
 `endif
@@ -61,8 +64,9 @@ module mult_1_16x16 (
 
 	altmult_add	ALTMULT_ADD_component (
 				.clock0 (clock0),
-				.dataa (dataa_0),
 				.datab (datab_0),
+				.ena0 (ena0),
+				.dataa (dataa_0),
 				.result (sub_wire0),
 				.accum_sload (1'b0),
 				.aclr0 (1'b0),
@@ -85,7 +89,6 @@ module mult_1_16x16 (
 				.coefsel2 ({3{1'b0}}),
 				.coefsel3 ({3{1'b0}}),
 				.datac ({22{1'b0}}),
-				.ena0 (1'b1),
 				.ena1 (1'b1),
 				.ena2 (1'b1),
 				.ena3 (1'b1),
@@ -152,8 +155,7 @@ module mult_1_16x16 (
 		ALTMULT_ADD_component.width_b = 16,
 		ALTMULT_ADD_component.width_chainin = 1,
 		ALTMULT_ADD_component.width_result = 32,
-		ALTMULT_ADD_component.zero_chainout_output_aclr = "UNUSED",
-		ALTMULT_ADD_component.zero_chainout_output_register = "CLOCK0",
+		ALTMULT_ADD_component.zero_chainout_output_register = "UNREGISTERED",
 		ALTMULT_ADD_component.zero_loopback_aclr = "UNUSED",
 		ALTMULT_ADD_component.zero_loopback_output_aclr = "UNUSED",
 		ALTMULT_ADD_component.zero_loopback_output_register = "CLOCK0",
@@ -186,7 +188,7 @@ endmodule
 // Retrieval info: PRIVATE: ADDNSUB3_PIPE_CLK_SRC NUMERIC "0"
 // Retrieval info: PRIVATE: ADDNSUB3_PIPE_REG STRING "1"
 // Retrieval info: PRIVATE: ADDNSUB3_REG STRING "1"
-// Retrieval info: PRIVATE: ADD_ENABLE NUMERIC "0"
+// Retrieval info: PRIVATE: ADD_ENABLE NUMERIC "1"
 // Retrieval info: PRIVATE: ALL_REG_ACLR NUMERIC "0"
 // Retrieval info: PRIVATE: A_ACLR_SRC_MULT0 NUMERIC "3"
 // Retrieval info: PRIVATE: A_CLK_SRC_MULT0 NUMERIC "0"
@@ -360,8 +362,7 @@ endmodule
 // Retrieval info: CONSTANT: WIDTH_B NUMERIC "16"
 // Retrieval info: CONSTANT: WIDTH_CHAININ NUMERIC "1"
 // Retrieval info: CONSTANT: WIDTH_RESULT NUMERIC "32"
-// Retrieval info: CONSTANT: ZERO_CHAINOUT_OUTPUT_ACLR STRING "UNUSED"
-// Retrieval info: CONSTANT: ZERO_CHAINOUT_OUTPUT_REGISTER STRING "CLOCK0"
+// Retrieval info: CONSTANT: ZERO_CHAINOUT_OUTPUT_REGISTER STRING "UNREGISTERED"
 // Retrieval info: CONSTANT: ZERO_LOOPBACK_ACLR STRING "UNUSED"
 // Retrieval info: CONSTANT: ZERO_LOOPBACK_OUTPUT_ACLR STRING "UNUSED"
 // Retrieval info: CONSTANT: ZERO_LOOPBACK_OUTPUT_REGISTER STRING "CLOCK0"
@@ -371,15 +372,17 @@ endmodule
 // Retrieval info: USED_PORT: clock0 0 0 0 0 INPUT VCC "clock0"
 // Retrieval info: USED_PORT: dataa_0 0 0 16 0 INPUT GND "dataa_0[15..0]"
 // Retrieval info: USED_PORT: datab_0 0 0 16 0 INPUT GND "datab_0[15..0]"
+// Retrieval info: USED_PORT: ena0 0 0 0 0 INPUT VCC "ena0"
 // Retrieval info: USED_PORT: result 0 0 32 0 OUTPUT GND "result[31..0]"
 // Retrieval info: CONNECT: @clock0 0 0 0 0 clock0 0 0 0 0
 // Retrieval info: CONNECT: @dataa 0 0 16 0 dataa_0 0 0 16 0
 // Retrieval info: CONNECT: @datab 0 0 16 0 datab_0 0 0 16 0
+// Retrieval info: CONNECT: @ena0 0 0 0 0 ena0 0 0 0 0
 // Retrieval info: CONNECT: result 0 0 32 0 @result 0 0 32 0
 // Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16.v TRUE
 // Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16.inc FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16.cmp FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16.bsf FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16_bb.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL mult_1_16x16_bb.v FALSE
 // Retrieval info: LIB_FILE: altera_mf
