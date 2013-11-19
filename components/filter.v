@@ -14,8 +14,8 @@ parameter	width	= 320;
 parameter	height	= 240;
 parameter	kernel_size	= 3;
 
-localparam	rows_needed_before_proc = (kernel_size - 1)/2;
-localparam	row_pipeline_depth = width + 2*rows_needed_before_proc;
+localparam	boundary_width = (kernel_size - 1)/2;
+localparam	row_pipeline_depth = width + 2*boundary_width;
 
 // For odd x odd kernels, need (kernel_size-1)/2 rows
 // of 0's before and after the actual image.
@@ -27,7 +27,7 @@ localparam	row_pipeline_depth = width + 2*rows_needed_before_proc;
 // e.g. 3x3 kernel needs 2 cycles to get the boundary 0 to
 // the 2nd to last stage, and the next cycle performs a valid
 // result.
-localparam	pixels_needed_before_proc = (kernel_size + 1)/2;
+localparam	pixels_needed_before_proc = boundary_width+1;
 
 localparam	cycles_proc	= 8;
 // Cycles needed for post processing, (e.g. factor, bias, truncation etc.)
@@ -49,9 +49,6 @@ reg	[12:0] rows_done;
 
 // Post processing
 //	The output need to be in the range 0 - 255
-wire			conv_o_valid;
-
-wire			conv_o_done;
 reg			o_valid_pipeline	[cycles_proc+cycles_post_proc-1 : 0];
 reg			o_done_pipeline	[cycles_proc+cycles_post_proc-1 : 0];
 
@@ -110,7 +107,6 @@ filter_shift_reg u0
 
 always @(posedge clk) begin
 	if (reset) begin
-//		valid				<= 1'b0;
 		ready_rows		<= 'b0;
 		row_cnt			<= 'b0;
 		rows_done		<= 'b0;
@@ -134,7 +130,7 @@ always @(posedge clk) begin
 				
 				rows_done <= rows_done + 1;
 				
-				if (rows_done < height + 2*rows_needed_before_proc) begin
+				if (rows_done < height + 2*boundary_width) begin
 					img_done		<= 1'b0;
 				end
 				else begin
@@ -157,11 +153,11 @@ assign	data_g	= {tap[0][15:8],		tap[1][15:8],	tap[2][15:8]};
 assign	data_b	= {tap[0][7:0],		tap[1][7:0],	tap[2][7:0]};
 
 // If data is ready (we have kernel_size rows)
-// && has waited for at least pixels_needed_before_proc cycles
+// && is inside the active pixel area
 // && image is not done
 assign valid = (		 (ready_rows == kernel_size)
-						&& (		row_cnt >= pixels_needed_before_proc)
-						//&&	row_cnt != row_pipeline_depth - 1)
+						&& (		(row_cnt >= pixels_needed_before_proc)
+								&&	row_cnt < row_pipeline_depth-boundary_width+1)
 						&& (img_done == 0)) ? 1:0;
 
 
@@ -172,8 +168,6 @@ convolution r_conv
 	.i_valid(r_iValid),
 	.i_done(img_done),
 	.i_data(data_r),
-	//.o_valid(conv_o_valid),
-	//.o_img_done(conv_o_done),
 	.o_data(conv_o_r)
 );
 

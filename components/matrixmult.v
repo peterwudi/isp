@@ -56,7 +56,7 @@ always @(posedge clk) begin
 		moDone	<= 0;
 	end
 	else if (oValid) begin
-		if (pixelCnt < frameSize) begin
+		if (pixelCnt < frameSize-1) begin
 			pixelCnt	<= pixelCnt+1;
 		end
 		else begin
