@@ -17,7 +17,7 @@ logic							iValid;
 logic	unsigned [7:0]		iData;
 
 // Demosaic
-logic	unsigned [7:0]		oR, oG, oB;
+logic	unsigned [7:0]		oDemosaicR, oDemosaicG, oDemosaicB;
 logic							oValidDemosaic;
 logic							oDoneDemosaic;
 
@@ -34,6 +34,11 @@ logic							oDoneFilter;
 logic	signed	[17:0]	y, cb, cr;
 logic							oValidYcc;
 logic							oDoneYcc;
+
+// ycc2rgb
+logic	unsigned	[7:0]		oFinalR, oFinalG, oFinalB;
+logic							oValidRGB;
+logic							oDoneRGB;
 
 // Input/output array from file
 
@@ -60,10 +65,15 @@ logic unsigned	[7:0]		rFilter [totalPixels-1:0];
 logic unsigned	[7:0]		gFilter [totalPixels-1:0];
 logic unsigned	[7:0]		bFilter [totalPixels-1:0];
 
-// Matrix output
+// YCC matrix output
 logic unsigned	[17:0]	yMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	cbMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	crMatrix [totalPixels-1:0];
+
+// RGB matrix output
+logic unsigned	[17:0]	rMatrix [totalPixels-1:0];
+logic unsigned	[17:0]	gMatrix [totalPixels-1:0];
+logic unsigned	[17:0]	bMatrix [totalPixels-1:0];
 
 processing #(.width(width),	.height(height))
 dut ( .* );
@@ -437,11 +447,74 @@ initial begin
 		@(negedge clk);
 	end
 	
-	$stop(0);
+	//$stop(0);
 end
 
+logic signed	[17:0]	g_rgb_r, g_rgb_g, g_rgb_b;
 
-
+// RGB Consumer
+initial begin
+	integer r_outFile;
+	integer g_outFile;
+	integer b_outFile;
+	
+	integer failed = 0;
+	
+	r_outFile = $fopen("rOut", "r");
+	g_outFile = $fopen("gOut", "r");
+	b_outFile = $fopen("bOut", "r");
+	
+	for (int i = 0; i < totalPixels; i++) begin
+		integer out1, out2, out3;
+		out1 = $fscanf(r_outFile, "%d", rMatrix[i]);
+		out2 = $fscanf(g_outFile, "%d", gMatrix[i]);
+		out3 = $fscanf(b_outFile, "%d", bMatrix[i]);
+		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+	end
+	$fclose(r_outFile);
+	$fclose(g_outFile);
+	$fclose(b_outFile);
+	
+	// RGB
+	for (int i = 0; i < totalPixels; i++) begin
+		real rDiff;
+		real gDiff;
+		real bDiff;
+		
+		// Wait for a valid output
+		@(negedge clk);
+		while (!oValidRGB) begin
+			@(negedge clk);
+		end
+		
+		g_rgb_r 	= rMatrix[i];
+		g_rgb_g	= gMatrix[i];
+		g_rgb_b	= bMatrix[i];
+		
+		rDiff		= (oFinalR - g_rgb_r);
+		gDiff		= (oFinalG - g_rgb_g);
+		bDiff		= (oFinalB - g_rgb_b);
+		
+		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+			$display("<RGB> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+						oFinalR, g_rgb_r, oFinalG, g_rgb_g, oFinalB, g_rgb_b, $time);
+			failed = 1;
+		end
+	end
+	
+	if (failed == 1) begin
+		$display("RGB is wrong");
+	end
+	else begin
+		$display("RGB great success!!");
+	end
+	
+	for (int i = 0; i < 10; i++) begin
+		@(negedge clk);
+	end
+	
+	$stop(0);
+end
 
 
 

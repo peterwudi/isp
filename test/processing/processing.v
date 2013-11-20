@@ -8,7 +8,7 @@ module processing(
 	input		unsigned [7:0]		iData,
 	
 	// Demosaic
-	output	unsigned	[7:0]		oR, oG, oB,
+	output	unsigned	[7:0]		oDemosaicR, oDemosaicG, oDemosaicB,
 	output							oValidDemosaic,
 	output							oDoneDemosaic,
 	
@@ -24,7 +24,12 @@ module processing(
 	// rgb2ycc
 	output	signed	[17:0]	y, cb, cr,
 	output							oValidYcc,
-	output							oDoneYcc
+	output							oDoneYcc,
+	
+	// ycc2rgb
+	output	unsigned	[7:0]		oFinalR, oFinalG, oFinalB,
+	output							oValidRGB,
+	output							oDoneRGB
 );
 
 parameter	width			= 320;
@@ -41,9 +46,9 @@ demosaic
 	.reset(reset | oDoneDemosaic),
 	.iValid(iValid),
 	
-	.oR(oR),
-	.oG(oG),
-	.oB(oB),
+	.oR(oDemosaicR),
+	.oG(oDemosaicG),
+	.oB(oDemosaicB),
 	.xCnt(xCnt),
 	.yCnt(yCnt),
 	.demosaicCnt(demosaicCnt),
@@ -125,7 +130,7 @@ always @ (posedge clk) begin
 		end
 		else begin
 			// Actual data
-			iDataFilter		<= (oValidDemosaic == 1) ? {oR, oG, oB} : 'b0;
+			iDataFilter		<= (oValidDemosaic == 1) ? {oDemosaicR, oDemosaicG, oDemosaicB} : 'b0;
 			iValidFilter	<= oValidDemosaic;
 		end
 	end
@@ -186,7 +191,7 @@ localparam signed [9*18-1:0] rgb2ycc_coef =
 	18'sd65536, -18'sd54906, -18'sd10630
 };
 
-wire	[37:0]	moA, moB, moC;
+wire	[37:0]	moY, moCb, moCr;
 
 matrixmult_3x3 #(.frameSize(frameSize))
 rgb2ycc
@@ -200,9 +205,9 @@ rgb2ycc
 	
 	.coef(rgb2ycc_coef),
 	
-	.oA(moA),
-	.oB(moB),
-	.oC(moC),
+	.oA(moY),
+	.oB(moCb),
+	.oC(moCr),
 	.oValid(oValidYcc),
 	.oDone(oDoneYcc)
 );
@@ -210,10 +215,49 @@ rgb2ycc
 // 18bits int x (18bits with 17 bits after the decimal point)
 // gets you a 36bits number with 17 bits after the decimal
 // point. We want only 9.
-assign	y	= moA[25:8];
-assign	cb	= moB[25:8];
-assign	cr	= moC[25:8];
+assign	y	= moY[25:8];
+assign	cb	= moCb[25:8];
+assign	cr	= moCr[25:8];
 
+
+localparam signed [9*18-1:0] ycc2rgb_coef =
+{
+	18'sd65536,  18'sd0,       18'sd91881,
+	18'sd65536, -18'sd22551,  -18'sd46799,
+	18'sd65536,  18'sd112853,  18'sd10
+};
+
+wire	[37:0]	moFinalR, moFinalG, moFinalB;
+
+matrixmult_3x3 #(.frameSize(frameSize))
+ycc2rgb
+(
+	.clk(clk),
+	.reset(reset | oDoneRGB),
+	.iValid(oValidYcc),
+	.iX(y),
+	.iY(cb),
+	.iZ(cr),
+	
+	.coef(ycc2rgb_coef),
+	
+	.oA(moFinalR),
+	.oB(moFinalG),
+	.oC(moFinalB),
+	.oValid(oValidRGB),
+	.oDone(oDoneRGB)
+);
+
+//	ycc x ycc2rgb_coef
+// aaaaaaaaa bbbbbbbbb	x	cc dddddddddddddddd
+//	  9 bits   9 bits     2bits   16 bits
+// = aaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
+//    12 bits            25 bits
+// Want to take the lower 8 bits of the integer part
+// i.e. [32:25]
+assign	oFinalR	= moFinalR[32:25];
+assign	oFinalG	= moFinalG[32:25];
+assign	oFinalB	= moFinalB[32:25];
 
 
 
