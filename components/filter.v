@@ -1,4 +1,4 @@
-module filter_fifo
+module filter_fifo_7
 (
 	input 	clk,
 	input 	reset,
@@ -10,8 +10,297 @@ module filter_fifo
 	output	unsigned	[23:0]	oData
 );
 
-parameter	width	= 320;
-parameter	height	= 240;
+parameter	width			= 320;
+parameter	height		= 240;
+parameter	kernel_size	= 7;
+
+localparam	boundary_width = (kernel_size - 1)/2;
+localparam	row_pipeline_depth = width + 2*boundary_width;
+
+// For odd x odd kernels, need (kernel_size-1)/2 rows
+// of 0's before and after the actual image.
+// e.g. 3x3 kernel needs 1 row.
+
+
+// For odd x odd kernels, need kernel_size-1 cycles
+// before a row can be processed.
+// e.g. 3x3 kernel needs 2 cycles to get the boundary 0 to
+// the 2nd to last stage, and the next cycle performs a valid
+// result.
+localparam	pixels_needed_before_proc = boundary_width+1;
+
+localparam	cycles_proc	= 8;
+// Cycles needed for post processing, (e.g. factor, bias, truncation etc.)
+localparam	cycles_post_proc	= 1;
+
+
+// number of data ready rows, data is valid when ready_rows == kernel_size
+reg	[6:0]	ready_rows;
+wire			valid;
+reg			img_done;
+
+// Row counter
+reg	[12:0] row_cnt;
+
+// Regs to detect whether an image is done
+// NOTE: this is NOT height
+reg	[12:0] rows_done;
+
+
+// Post processing
+//	The output need to be in the range 0 - 255
+reg			o_valid_pipeline	[cycles_proc+cycles_post_proc-1 : 0];
+reg			o_done_pipeline	[cycles_proc+cycles_post_proc-1 : 0];
+
+wire	signed	[31:0]	conv_o_r;
+wire	signed	[31:0]	conv_o_g;
+wire	signed	[31:0]	conv_o_b;
+
+reg				[7:0]		res_r;
+reg				[7:0]		res_g;
+reg				[7:0]		res_b;
+
+
+wire	unsigned	[23:0]	tap		[6:0];	
+
+wire	unsigned	[55:0]	data_r;
+wire	unsigned	[55:0]	data_g;
+wire	unsigned	[55:0]	data_b;
+
+reg							r_iValid;
+reg	unsigned [23:0]	r_iData;
+
+// "r_iData" is a buffer of input data. iData always gets buffered
+// here first, and then depending on what iValid is, we decide
+// whether to write it into the FIFO or not.
+//
+// "r_iValid" is the delayed iValid, it controls the pipeline. i.e.
+// when r_iValid is low, the pipeline is stalled, and no invalid
+// data can get into the pipeline.
+//
+// "valid" is used to identify which output data is valid. All data
+// inside the pipeline are valid, however, when the pixel being
+// processed is outside of the boundary, the result is not valid.
+// "valid" is carried outside of the convolution unit.
+always @(posedge clk) begin
+	if (reset) begin
+		r_iValid		<= 0;
+		r_iData		<= 'b0;
+	end
+	else begin
+		r_iValid		<= iValid;
+		r_iData		<= iData;
+	end
+end
+
+filter_shift_reg_7tap u0
+(
+	.clken(r_iValid),
+	.clock(clk),
+	.shiftin(r_iData),
+	.shiftout(),
+	.taps0x(tap[0]),
+	.taps1x(tap[1]),
+	.taps2x(tap[2]),
+	.taps3x(tap[3]),
+	.taps4x(tap[4]),
+	.taps5x(tap[5]),
+	.taps6x(tap[6])
+);
+
+always @(posedge clk) begin
+	if (reset) begin
+		ready_rows		<= 'b0;
+		row_cnt			<= 'b0;
+		rows_done		<= 'b0;
+		img_done			<= 1'b0;
+	end
+	else begin
+		if (r_iValid) begin
+			// The row buffer will be filled with i_data
+			// need to put a 0 before the 1st pixel
+			//
+			// row_cnt range from 0 to row_pipeline_depth - 1
+			if (row_cnt < row_pipeline_depth - 1) begin
+				// Increment row counter
+				row_cnt	<= row_cnt + 1;
+			end
+			else begin
+				// Reset row counter and use the next buffer,
+				// which is always available because all the data
+				// are perfectly aligned
+				row_cnt	<= 0;
+				
+				rows_done <= rows_done + 1;
+				
+				if (rows_done < height + 2*boundary_width) begin
+					img_done		<= 1'b0;
+				end
+				else begin
+					img_done		<= 1'b1;
+					rows_done	<= 'b0;
+				end
+				
+				// Just finished a row, increment ready_rows
+				if (ready_rows < kernel_size) begin
+					ready_rows	<= ready_rows + 1;
+				end
+			end
+		end
+	end
+	
+end
+
+assign	data_r	= {tap[0][23:16],	tap[1][23:16],	tap[2][23:16], tap[3][23:16],
+							tap[4][23:16],	tap[5][23:16],	tap[6][23:16]};
+assign	data_g	= {tap[0][15:8],	tap[1][15:8],	tap[2][15:8],	tap[3][15:8],
+							tap[4][15:8],	tap[5][15:8],	tap[6][15:8]};
+assign	data_b	= {tap[0][7:0],	tap[1][7:0],	tap[2][7:0],	tap[3][7:0],
+							tap[4][7:0],	tap[5][7:0],	tap[6][7:0]};
+
+							
+// If data is ready (we have kernel_size rows)
+// && is inside the active pixel area
+// && image is not done
+assign valid = (		 (ready_rows == kernel_size)
+						&& (		(row_cnt >= pixels_needed_before_proc)
+								&&	row_cnt < row_pipeline_depth-boundary_width+1)
+						&& (img_done == 0)) ? 1:0;
+
+convolution_7x7 r_conv
+(
+	.clk(clk),
+	.reset(reset),
+	.i_valid(r_iValid),
+	.i_data(data_r),
+	.o_data(conv_o_r)
+);
+
+convolution_7x7 g_conv
+(
+	.clk(clk),
+	.reset(reset),
+	.i_valid(r_iValid),
+	.i_data(data_g),
+	.o_data(conv_o_g)
+);
+
+convolution_7x7 b_conv
+(
+	.clk(clk),
+	.reset(reset),
+	.i_valid(r_iValid),
+	.i_data(data_b),
+	.o_data(conv_o_b)
+);
+
+
+always @(posedge clk) begin
+	if (reset) begin
+		res_r					<= 8'd0;
+		res_g					<= 8'd0;
+		res_b					<= 8'd0;
+		
+		o_valid_pipeline[0]	<= 1'b0;
+		o_done_pipeline[0]	<= 1'b0;
+	end
+	else if (r_iValid) begin
+		// Pass the signals
+		o_valid_pipeline[0]	<= valid;
+		o_done_pipeline[0]	<= img_done;
+	
+		// Truncation
+		if (conv_o_r > 255) begin
+			res_r	<= 8'd255;
+		end
+		else if (conv_o_r < 0) begin
+			res_r	<= 8'd0;
+		end
+		else begin
+			res_r	<= conv_o_r[7:0];
+		end
+		
+		if (conv_o_g > 255) begin
+			res_g	<= 8'd255;
+		end
+		else if (conv_o_g < 0) begin
+			res_g	<= 8'd0;
+		end
+		else begin
+			res_g	<= conv_o_g[7:0];
+		end
+		
+		if (conv_o_b > 255) begin
+			res_b	<= 8'd255;
+		end
+		else if (conv_o_b < 0) begin
+			res_b	<= 8'd0;
+		end
+		else begin
+			res_b	<= conv_o_b[7:0];
+		end
+	end
+end
+
+genvar i;
+generate
+	// Post processing
+	for (i = 1; i < cycles_proc+cycles_post_proc; i = i + 1) begin: d
+		always @(posedge clk) begin
+			if (reset) begin
+				o_valid_pipeline[i]	<= 1'b0;
+				o_done_pipeline[i]	<= 1'b0;
+			end
+			else if (r_iValid) begin
+				o_valid_pipeline[i]	<= o_valid_pipeline[i-1];
+				o_done_pipeline[i]	<= o_done_pipeline[i-1];
+			end
+		end
+	end
+endgenerate
+
+
+assign	oDone		= o_done_pipeline[cycles_proc+cycles_post_proc - 1];
+assign	oValid	= (r_iValid == 1) ? o_valid_pipeline[cycles_proc+cycles_post_proc - 1]:0;
+assign	oData		= {res_r, res_g, res_b};
+
+
+endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module filter_fifo_3
+(
+	input 	clk,
+	input 	reset,
+	input		iValid,
+	output	oValid,
+	output	oDone,
+	
+	input		unsigned [23:0]	iData,
+	output	unsigned	[23:0]	oData
+);
+
+parameter	width			= 320;
+parameter	height		= 240;
 parameter	kernel_size	= 3;
 
 localparam	boundary_width = (kernel_size - 1)/2;
@@ -161,7 +450,7 @@ assign valid = (		 (ready_rows == kernel_size)
 						&& (img_done == 0)) ? 1:0;
 
 
-convolution r_conv
+convolution_3x3 r_conv
 (
 	.clk(clk),
 	.reset(reset),
@@ -171,7 +460,7 @@ convolution r_conv
 	.o_data(conv_o_r)
 );
 
-convolution g_conv
+convolution_3x3 g_conv
 (
 	.clk(clk),
 	.reset(reset),
@@ -181,7 +470,7 @@ convolution g_conv
 	.o_data(conv_o_g)
 );
 
-convolution b_conv
+convolution_3x3 b_conv
 (
 	.clk(clk),
 	.reset(reset),

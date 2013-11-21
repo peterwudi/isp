@@ -157,7 +157,7 @@ always @(posedge clk) begin
 end
 
 
-filter_fifo #(.width(width), .height(height), .kernel_size(kernelSize))
+filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
 filter
 (
 	.clk(clk),
@@ -184,80 +184,80 @@ Cr    0.5000   -0.4189  -0.0811       B
 
 // TODO: make this loadable
 // Coef has 17 bits after decimal point
-localparam signed [9*18-1:0] rgb2ycc_coef =
-{
-	18'sd39164,  18'sd76926,  18'sd14982,
-	-18'sd22138, -18'sd43398, 18'sd65536,
-	18'sd65536, -18'sd54906, -18'sd10630
-};
-
-wire	[37:0]	moY, moCb, moCr;
-
-matrixmult_3x3 #(.frameSize(frameSize))
-rgb2ycc
-(
-	.clk(clk),
-	.reset(reset | oDoneYcc),
-	.iValid(oValidFilter),
-	.iX({10'b0, oDataFilter[23:16]}),
-	.iY({10'b0, oDataFilter[15:8]}),
-	.iZ({10'b0, oDataFilter[7:0]}),
-	
-	.coef(rgb2ycc_coef),
-	
-	.oA(moY),
-	.oB(moCb),
-	.oC(moCr),
-	.oValid(oValidYcc),
-	.oDone(oDoneYcc)
-);
-
-// 18bits int x (18bits with 17 bits after the decimal point)
-// gets you a 36bits number with 17 bits after the decimal
-// point. We want only 9.
-assign	y	= moY[25:8];
-assign	cb	= moCb[25:8];
-assign	cr	= moCr[25:8];
-
-
-localparam signed [9*18-1:0] ycc2rgb_coef =
-{
-	18'sd65536,  18'sd0,       18'sd91881,
-	18'sd65536, -18'sd22551,  -18'sd46799,
-	18'sd65536,  18'sd112853,  18'sd10
-};
-
-wire	[37:0]	moFinalR, moFinalG, moFinalB;
-
-matrixmult_3x3 #(.frameSize(frameSize))
-ycc2rgb
-(
-	.clk(clk),
-	.reset(reset | oDoneRGB),
-	.iValid(oValidYcc),
-	.iX(y),
-	.iY(cb),
-	.iZ(cr),
-	
-	.coef(ycc2rgb_coef),
-	
-	.oA(moFinalR),
-	.oB(moFinalG),
-	.oC(moFinalB),
-	.oValid(oValidRGB),
-	.oDone(oDoneRGB)
-);
-
-//	ycc x ycc2rgb_coef
-// aaaaaaaaa bbbbbbbbb	x	cc dddddddddddddddd
-//	  9 bits   9 bits     2bits   16 bits
-// = aaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
-//    12 bits            25 bits
-// Want to take the lower 8 bits of the integer part
-// i.e. [32:25]
-assign	oFinalR	= moFinalR[32:25];
-assign	oFinalG	= moFinalG[32:25];
-assign	oFinalB	= moFinalB[32:25];
+//localparam signed [9*18-1:0] rgb2ycc_coef =
+//{
+//	18'sd39164,  18'sd76926,  18'sd14982,
+//	-18'sd22138, -18'sd43398, 18'sd65536,
+//	18'sd65536, -18'sd54906, -18'sd10630
+//};
+//
+//wire	[37:0]	moY, moCb, moCr;
+//
+//matrixmult_3x3 #(.frameSize(frameSize))
+//rgb2ycc
+//(
+//	.clk(clk),
+//	.reset(reset | oDoneYcc),
+//	.iValid(oValidFilter),
+//	.iX({10'b0, oDataFilter[23:16]}),
+//	.iY({10'b0, oDataFilter[15:8]}),
+//	.iZ({10'b0, oDataFilter[7:0]}),
+//	
+//	.coef(rgb2ycc_coef),
+//	
+//	.oA(moY),
+//	.oB(moCb),
+//	.oC(moCr),
+//	.oValid(oValidYcc),
+//	.oDone(oDoneYcc)
+//);
+//
+//// 18bits int x (18bits with 17 bits after the decimal point)
+//// gets you a 36bits number with 17 bits after the decimal
+//// point. We want only 9.
+//assign	y	= moY[25:8];
+//assign	cb	= moCb[25:8];
+//assign	cr	= moCr[25:8];
+//
+//
+//localparam signed [9*18-1:0] ycc2rgb_coef =
+//{
+//	18'sd65536,  18'sd0,       18'sd91881,
+//	18'sd65536, -18'sd22551,  -18'sd46799,
+//	18'sd65536,  18'sd112853,  18'sd10
+//};
+//
+//wire	[37:0]	moFinalR, moFinalG, moFinalB;
+//
+//matrixmult_3x3 #(.frameSize(frameSize))
+//ycc2rgb
+//(
+//	.clk(clk),
+//	.reset(reset | oDoneRGB),
+//	.iValid(oValidYcc),
+//	.iX(y),
+//	.iY(cb),
+//	.iZ(cr),
+//	
+//	.coef(ycc2rgb_coef),
+//	
+//	.oA(moFinalR),
+//	.oB(moFinalG),
+//	.oC(moFinalB),
+//	.oValid(oValidRGB),
+//	.oDone(oDoneRGB)
+//);
+//
+////	ycc x ycc2rgb_coef
+//// aaaaaaaaa bbbbbbbbb	x	cc dddddddddddddddd
+////	  9 bits   9 bits     2bits   16 bits
+//// = aaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
+////    12 bits            25 bits
+//// Want to take the lower 8 bits of the integer part
+//// i.e. [32:25]
+//assign	oFinalR	= moFinalR[32:25];
+//assign	oFinalG	= moFinalG[32:25];
+//assign	oFinalB	= moFinalB[32:25];
 
 
 

@@ -63,6 +63,7 @@ set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb -section_id tb.sv
 set_global_assignment -name EDA_TEST_BENCH_FILE tb.sv -section_id tb.sv
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name VERILOG_FILE ../../components/filter_shift_reg_7tap.v
 set_global_assignment -name VERILOG_FILE ../../components/multAdd_4_16x16.v
 set_global_assignment -name VERILOG_FILE ../../components/mult_1_16x16.v
 set_global_assignment -name VERILOG_FILE ../../components/demosaic_neighbor_shift_reg.v

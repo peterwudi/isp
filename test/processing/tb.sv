@@ -131,32 +131,6 @@ initial begin
 //			end			
 		end
 	end
-		
-//	// Feeding filter
-//	for (int i = 0; i < totalInFilter; i++) begin
-//		integer in1, in2, in3;
-//		if (		(i < width + 2)
-//			 ||	(i > totalInFilter - width - 2)
-//			 ||	((i % (width + 2)) == 0)
-//			 ||	((i % (width + 2)) == (width + 1)))
-//		begin
-//			rOrig[i] = 8'b0;
-//			gOrig[i] = 8'b0;
-//			bOrig[i] = 8'b0;
-//		end
-//		else begin
-//			// Read from file
-//			in1 = $fscanf(r_inFile, "%d", rOrig[i]);
-//			in2 = $fscanf(g_inFile, "%d", gOrig[i]);
-//			in3 = $fscanf(b_inFile, "%d", bOrig[i]);
-//			
-//			// Debug
-////			if (i > 76000) begin
-////				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
-////							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
-////			end
-//		end
-//	end
 	
 	$fclose(r_inFile);
 	$fclose(g_inFile);
@@ -271,7 +245,6 @@ initial begin
 	$fclose(g_outFile);
 	$fclose(b_outFile);
 	
-	//for (int i = 0; i < totalPixels; i++) begin
 	for (int i = 0; i < totalInFilter; i++) begin
 		real rDiff;
 		real gDiff;
@@ -380,141 +353,141 @@ initial begin
 	for (int i = 0; i < 10; i++) begin
 		@(negedge clk);
 	end
-	//$stop(0);
-end
-
-logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
-
-// YCC Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("yOut", "r");
-	g_outFile = $fopen("cbOut", "r");
-	b_outFile = $fopen("crOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
-		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
-		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// YCC
-	for (int i = 0; i < totalPixels; i++) begin
-		real yDiff;
-		real cbDiff;
-		real crDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidYcc) begin
-			@(negedge clk);
-		end
-		
-		//@(negedge clk);  // Give time for o_out to be updated.
-		g_ycc_y 	= yMatrix[i];
-		g_ycc_cb	= cbMatrix[i];
-		g_ycc_cr	= crMatrix[i];
-		
-		yDiff		= (y - g_ycc_y);
-		cbDiff	= (cb - g_ycc_cb);
-		crDiff	= (cr - g_ycc_cr);
-		
-		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
-			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
-						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("YCC is wrong");
-	end
-	else begin
-		$display("YCC great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	
-	//$stop(0);
-end
-
-logic signed	[17:0]	g_rgb_r, g_rgb_g, g_rgb_b;
-
-// RGB Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("rOut", "r");
-	g_outFile = $fopen("gOut", "r");
-	b_outFile = $fopen("bOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", rMatrix[i]);
-		out2 = $fscanf(g_outFile, "%d", gMatrix[i]);
-		out3 = $fscanf(b_outFile, "%d", bMatrix[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// RGB
-	for (int i = 0; i < totalPixels; i++) begin
-		real rDiff;
-		real gDiff;
-		real bDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidRGB) begin
-			@(negedge clk);
-		end
-		
-		g_rgb_r 	= rMatrix[i];
-		g_rgb_g	= gMatrix[i];
-		g_rgb_b	= bMatrix[i];
-		
-		rDiff		= (oFinalR - g_rgb_r);
-		gDiff		= (oFinalG - g_rgb_g);
-		bDiff		= (oFinalB - g_rgb_b);
-		
-		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<RGB> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						oFinalR, g_rgb_r, oFinalG, g_rgb_g, oFinalB, g_rgb_b, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("RGB is wrong");
-	end
-	else begin
-		$display("RGB great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	
 	$stop(0);
 end
+
+//logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
+//
+//// YCC Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("yOut", "r");
+//	g_outFile = $fopen("cbOut", "r");
+//	b_outFile = $fopen("crOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
+//		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
+//		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// YCC
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real yDiff;
+//		real cbDiff;
+//		real crDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidYcc) begin
+//			@(negedge clk);
+//		end
+//		
+//		//@(negedge clk);  // Give time for o_out to be updated.
+//		g_ycc_y 	= yMatrix[i];
+//		g_ycc_cb	= cbMatrix[i];
+//		g_ycc_cr	= crMatrix[i];
+//		
+//		yDiff		= (y - g_ycc_y);
+//		cbDiff	= (cb - g_ycc_cb);
+//		crDiff	= (cr - g_ycc_cr);
+//		
+//		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
+//			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
+//						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("YCC is wrong");
+//	end
+//	else begin
+//		$display("YCC great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	//$stop(0);
+//end
+//
+//logic signed	[17:0]	g_rgb_r, g_rgb_g, g_rgb_b;
+//
+//// RGB Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("rOut", "r");
+//	g_outFile = $fopen("gOut", "r");
+//	b_outFile = $fopen("bOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", rMatrix[i]);
+//		out2 = $fscanf(g_outFile, "%d", gMatrix[i]);
+//		out3 = $fscanf(b_outFile, "%d", bMatrix[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// RGB
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real rDiff;
+//		real gDiff;
+//		real bDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidRGB) begin
+//			@(negedge clk);
+//		end
+//		
+//		g_rgb_r 	= rMatrix[i];
+//		g_rgb_g	= gMatrix[i];
+//		g_rgb_b	= bMatrix[i];
+//		
+//		rDiff		= (oFinalR - g_rgb_r);
+//		gDiff		= (oFinalG - g_rgb_g);
+//		bDiff		= (oFinalB - g_rgb_b);
+//		
+//		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+//			$display("<RGB> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+//						oFinalR, g_rgb_r, oFinalG, g_rgb_g, oFinalB, g_rgb_b, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("RGB is wrong");
+//	end
+//	else begin
+//		$display("RGB great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	$stop(0);
+//end
 
 
 
