@@ -29,20 +29,25 @@ assign	oB			=	moB[7:0];
 assign	oValid	=	moValid;
 assign	oDone		=	moDone;
 
+// 2 extra buffer rows
 demosaic_neighbor_shift_reg buffer(
 	.clock(clk),
 	.clken(iValid),
 	.shiftin(iData),
 	.shiftout(),
-	.taps0x(tap0),
-	.taps1x(tap1)
+	.taps0x(),
+	.taps1x(),
+	.taps2x(tap0),
+	.taps3x(tap1)
 );
 
-parameter	width		= 320;
-parameter	height	= 240;	
+parameter	width				= 320;
+parameter	height			= 240;
+parameter	kernelSize		= 7;
+parameter	boundaryWidth	= (kernelSize-1)/2;
 
-// Need to buffer 2 full rows before intrapolation
-localparam	totalCycles	= width*(height+2);
+// Need to buffer boundaryWidth-1 empty and 2 full rows before intrapolation
+localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 
 // Pixel counter
 reg	[31:0]	cnt, x, y;
@@ -82,8 +87,8 @@ begin
 		
 		moDone	<= (cnt == totalCycles - 1) ? 1:0;
 		
-		if (cnt >= width * 2) begin
-			// Only start counter after the first 2 empty rows
+		if (cnt >= width * (2+boundaryWidth-1)) begin
+			// Only start counter after the first 4 empty rows
 			if (x < width - 1) begin
 				x	<= x + 1;
 			end
@@ -98,7 +103,7 @@ begin
 			end
 		end
 		
-		if (cnt < width*2) begin
+		if (cnt < width*(2+boundaryWidth-1)) begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end

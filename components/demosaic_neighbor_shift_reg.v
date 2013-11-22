@@ -42,7 +42,9 @@ module demosaic_neighbor_shift_reg (
 	shiftin,
 	shiftout,
 	taps0x,
-	taps1x);
+	taps1x,
+	taps2x,
+	taps3x);
 
 	input	  clken;
 	input	  clock;
@@ -50,6 +52,8 @@ module demosaic_neighbor_shift_reg (
 	output	[7:0]  shiftout;
 	output	[7:0]  taps0x;
 	output	[7:0]  taps1x;
+	output	[7:0]  taps2x;
+	output	[7:0]  taps3x;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -59,12 +63,18 @@ module demosaic_neighbor_shift_reg (
 `endif
 
 	wire [7:0] sub_wire0;
-	wire [15:0] sub_wire1;
+	wire [31:0] sub_wire1;
 	wire [7:0] shiftout = sub_wire0[7:0];
-	wire [15:8] sub_wire3 = sub_wire1[15:8];
+	wire [31:24] sub_wire7 = sub_wire1[31:24];
+	wire [15:8] sub_wire6 = sub_wire1[15:8];
+	wire [15:8] sub_wire5 = sub_wire6[15:8];
+	wire [23:16] sub_wire4 = sub_wire1[23:16];
+	wire [23:16] sub_wire3 = sub_wire4[23:16];
 	wire [7:0] sub_wire2 = sub_wire1[7:0];
 	wire [7:0] taps0x = sub_wire2[7:0];
-	wire [7:0] taps1x = sub_wire3[15:8];
+	wire [7:0] taps2x = sub_wire3[23:16];
+	wire [7:0] taps1x = sub_wire5[15:8];
+	wire [7:0] taps3x = sub_wire7[31:24];
 
 	altshift_taps	ALTSHIFT_TAPS_component (
 				.clock (clock),
@@ -81,7 +91,7 @@ module demosaic_neighbor_shift_reg (
 		ALTSHIFT_TAPS_component.intended_device_family = "Stratix III",
 		ALTSHIFT_TAPS_component.lpm_hint = "RAM_BLOCK_TYPE=AUTO",
 		ALTSHIFT_TAPS_component.lpm_type = "altshift_taps",
-		ALTSHIFT_TAPS_component.number_of_taps = 2,
+		ALTSHIFT_TAPS_component.number_of_taps = 4,
 		ALTSHIFT_TAPS_component.tap_distance = 320,
 		ALTSHIFT_TAPS_component.width = 8;
 
@@ -95,7 +105,7 @@ endmodule
 // Retrieval info: PRIVATE: CLKEN NUMERIC "1"
 // Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "1"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix III"
-// Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "2"
+// Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "4"
 // Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "3"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
 // Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "320"
@@ -104,7 +114,7 @@ endmodule
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Stratix III"
 // Retrieval info: CONSTANT: LPM_HINT STRING "RAM_BLOCK_TYPE=AUTO"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altshift_taps"
-// Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "2"
+// Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "4"
 // Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "320"
 // Retrieval info: CONSTANT: WIDTH NUMERIC "8"
 // Retrieval info: USED_PORT: clken 0 0 0 0 INPUT VCC "clken"
@@ -113,12 +123,16 @@ endmodule
 // Retrieval info: USED_PORT: shiftout 0 0 8 0 OUTPUT NODEFVAL "shiftout[7..0]"
 // Retrieval info: USED_PORT: taps0x 0 0 8 0 OUTPUT NODEFVAL "taps0x[7..0]"
 // Retrieval info: USED_PORT: taps1x 0 0 8 0 OUTPUT NODEFVAL "taps1x[7..0]"
+// Retrieval info: USED_PORT: taps2x 0 0 8 0 OUTPUT NODEFVAL "taps2x[7..0]"
+// Retrieval info: USED_PORT: taps3x 0 0 8 0 OUTPUT NODEFVAL "taps3x[7..0]"
 // Retrieval info: CONNECT: @clken 0 0 0 0 clken 0 0 0 0
 // Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
 // Retrieval info: CONNECT: @shiftin 0 0 8 0 shiftin 0 0 8 0
 // Retrieval info: CONNECT: shiftout 0 0 8 0 @shiftout 0 0 8 0
 // Retrieval info: CONNECT: taps0x 0 0 8 0 @taps 0 0 8 0
 // Retrieval info: CONNECT: taps1x 0 0 8 0 @taps 0 0 8 8
+// Retrieval info: CONNECT: taps2x 0 0 8 0 @taps 0 0 8 16
+// Retrieval info: CONNECT: taps3x 0 0 8 0 @taps 0 0 8 24
 // Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_neighbor_shift_reg.v TRUE
 // Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_neighbor_shift_reg.inc FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_neighbor_shift_reg.cmp FALSE

@@ -55,10 +55,10 @@ demosaic
 	.oValid(oValidDemosaic),
 	.oDone(oDoneDemosaic)
 );
-parameter	kernelSize					= 3;
+parameter	kernelSize					= 7;
 localparam	boundaryWidth				= (kernelSize-1)/2;
 localparam	rows_needed_before_proc = (kernelSize-1)/2;
-localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth);
+localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;
 localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 reg				[31:0]	skipCnt;
@@ -100,6 +100,7 @@ always @ (posedge clk) begin
 			end
 		end
 		
+		// At this point all skips has to be done
 		if (!skipCntEn) begin
 			// At start/end boundary
 			if (demosaicCnt == startBoundary) begin
@@ -135,40 +136,40 @@ always @ (posedge clk) begin
 		end
 	end
 end
-
-reg				filterPipelineEn;
-reg	[31:0]	filterInputCnt;
-
-always @(posedge clk) begin
-	if (reset | oDoneFilter) begin
-		filterPipelineEn	<= 0;
-		filterInputCnt		<= 'b0;
-	end
-	else begin
-		if (iValidFilter | filterPipelineEn) begin
-			filterInputCnt	<= filterInputCnt + 1;
-		end
-		
-		if (filterInputCnt >= totalPixelCnt) begin
-			// Input is finished, need to keep enabling the filter pipeline
-			filterPipelineEn	<= 1;
-		end
-	end
-end
-
-
-filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
-filter
-(
-	.clk(clk),
-	.reset(reset | oDoneFilter),
-	.iValid(iValidFilter | filterPipelineEn),
-	.oValid(oValidFilter),
-	.oDone(oDoneFilter),
-	
-	.iData(iDataFilter),
-	.oData(oDataFilter)
-);
+//
+//reg				filterPipelineEn;
+//reg	[31:0]	filterInputCnt;
+//
+//always @(posedge clk) begin
+//	if (reset | oDoneFilter) begin
+//		filterPipelineEn	<= 0;
+//		filterInputCnt		<= 'b0;
+//	end
+//	else begin
+//		if (iValidFilter | filterPipelineEn) begin
+//			filterInputCnt	<= filterInputCnt + 1;
+//		end
+//		
+//		if (filterInputCnt >= totalPixelCnt) begin
+//			// Input is finished, need to keep enabling the filter pipeline
+//			filterPipelineEn	<= 1;
+//		end
+//	end
+//end
+//
+//
+//filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
+//filter
+//(
+//	.clk(clk),
+//	.reset(reset | oDoneFilter),
+//	.iValid(iValidFilter | filterPipelineEn),
+//	.oValid(oValidFilter),
+//	.oDone(oDoneFilter),
+//	
+//	.iData(iDataFilter),
+//	.oData(oDataFilter)
+//);
 
 
 // 18-bit singed fixed point number, 9 bits

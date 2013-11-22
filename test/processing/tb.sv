@@ -2,8 +2,14 @@
 
 localparam	width				= 320;
 localparam	height			= 240;
+localparam	kernelSize		= 7;
+localparam	boundaryWidth	= (kernelSize-1)/2;
+localparam	rowSize			= width+boundaryWidth*2;
+localparam	frontSkip		= rowSize*boundaryWidth;
+
 localparam	totalPixels		= width * height;
-localparam	totalInFilter	= (width + 2) * (height + 2);
+localparam	totalInFilter	= (width+boundaryWidth)*(height+boundaryWidth);
+
 
 // TODO: add pading bytes if need be, not necessary for 240p
 
@@ -218,10 +224,10 @@ initial begin
 
 	for (int i = 0; i < totalInFilter; i++) begin
 		integer out1, out2, out3;
-		if (		(i < width + 2)
-			 ||	(i > totalInFilter - width - 2)
-			 ||	((i % (width + 2)) == 0)
-			 ||	((i % (width + 2)) == (width + 1)))
+		if (		(i < frontSkip)
+			 ||	(i > totalInFilter - frontSkip)
+			 ||	((i % rowSize) < boundaryWidth)
+			 ||	((i % rowSize) >= (width + boundaryWidth)))
 		begin
 			o_irFilter[i] = 8'b0;
 			o_igFilter[i] = 8'b0;
@@ -282,79 +288,79 @@ initial begin
 		@(negedge clk);
 	end
 	
-	//$stop(0);
-end
-
-
-logic unsigned	[7:0]		filter_r, filter_g, filter_b;
-logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
-
-// Filter Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("sharpenROut", "r");
-	g_outFile = $fopen("sharpenGOut", "r");
-	b_outFile = $fopen("sharpenBOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
-		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
-		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// RGB
-	for (int i = 0; i < totalPixels; i++) begin
-		real rDiff;
-		real gDiff;
-		real bDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidFilter) begin
-			@(negedge clk);
-		end
-		
-		filter_r		= oDataFilter[23:16];
-		filter_g		= oDataFilter[15:8];
-		filter_b		= oDataFilter[7:0];
-
-		g_filter_r	= rFilter[i];
-		g_filter_g	= gFilter[i];
-		g_filter_b	= bFilter[i];
-		
-		rDiff = (filter_r - g_filter_r);
-		gDiff = (filter_g - g_filter_g);
-		bDiff = (filter_b - g_filter_b);
-		
-		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<Filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("Filter is wrong");
-	end
-	else begin
-		$display("Filter great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
 	$stop(0);
 end
+
+//
+//logic unsigned	[7:0]		filter_r, filter_g, filter_b;
+//logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
+//
+//// Filter Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("sharpenROut", "r");
+//	g_outFile = $fopen("sharpenGOut", "r");
+//	b_outFile = $fopen("sharpenBOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
+//		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
+//		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// RGB
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real rDiff;
+//		real gDiff;
+//		real bDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidFilter) begin
+//			@(negedge clk);
+//		end
+//		
+//		filter_r		= oDataFilter[23:16];
+//		filter_g		= oDataFilter[15:8];
+//		filter_b		= oDataFilter[7:0];
+//
+//		g_filter_r	= rFilter[i];
+//		g_filter_g	= gFilter[i];
+//		g_filter_b	= bFilter[i];
+//		
+//		rDiff = (filter_r - g_filter_r);
+//		gDiff = (filter_g - g_filter_g);
+//		bDiff = (filter_b - g_filter_b);
+//		
+//		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+//			$display("<Filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+//						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("Filter is wrong");
+//	end
+//	else begin
+//		$display("Filter great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	$stop(0);
+//end
 
 //logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
 //

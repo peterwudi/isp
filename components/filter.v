@@ -14,8 +14,9 @@ parameter	width			= 320;
 parameter	height		= 240;
 parameter	kernel_size	= 7;
 
-localparam	boundary_width = (kernel_size - 1)/2;
-localparam	row_pipeline_depth = width + 2*boundary_width;
+localparam	boundary_width			= (kernel_size - 1)/2;
+localparam	row_pipeline_depth	= width + 2*boundary_width;
+localparam	frontSkipPixels		= row_pipeline_depth * boundary_width;
 
 // For odd x odd kernels, need (kernel_size-1)/2 rows
 // of 0's before and after the actual image.
@@ -40,11 +41,11 @@ wire			valid;
 reg			img_done;
 
 // Row counter
-reg	[12:0] row_cnt;
+reg	[31:0] row_cnt;
 
 // Regs to detect whether an image is done
 // NOTE: this is NOT height
-reg	[12:0] rows_done;
+reg	[31:0] rows_done;
 
 
 // Post processing
