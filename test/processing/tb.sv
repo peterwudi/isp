@@ -8,7 +8,7 @@ localparam	rowSize			= width+boundaryWidth*2;
 localparam	frontSkip		= rowSize*boundaryWidth;
 
 localparam	totalPixels		= width * height;
-localparam	totalInFilter	= (width+boundaryWidth)*(height+boundaryWidth);
+localparam	totalInFilter	= rowSize*(height+boundaryWidth*2);
 
 
 // TODO: add pading bytes if need be, not necessary for 240p

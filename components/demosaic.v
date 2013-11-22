@@ -57,7 +57,7 @@ assign	yCnt			= y;
 assign	demosaicCnt = cnt;
 
 // Last row, set all pixel values to 0
-assign	selectedTap0 = (cnt <= width*(height+1)) ? tap0 : 'b0;
+assign	selectedTap0 = (cnt <= width*(height+boundaryWidth)) ? tap0 : 'b0;
 
 always@	(posedge clk)
 begin
