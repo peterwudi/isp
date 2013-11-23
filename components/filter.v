@@ -30,7 +30,7 @@ localparam	frontSkipPixels		= row_pipeline_depth * boundary_width;
 // result.
 localparam	pixels_needed_before_proc = boundary_width+1;
 
-localparam	cycles_proc	= 8;
+localparam	cycles_proc	= 10;
 // Cycles needed for post processing, (e.g. factor, bias, truncation etc.)
 localparam	cycles_post_proc	= 1;
 
@@ -164,7 +164,7 @@ assign	data_b	= {tap[0][7:0],	tap[1][7:0],	tap[2][7:0],	tap[3][7:0],
 // && is inside the active pixel area
 // && image is not done
 assign valid = (		 (ready_rows == kernel_size)
-						&& (		(row_cnt >= pixels_needed_before_proc)
+						&& (		(row_cnt >= kernel_size - 1)
 								&&	row_cnt < row_pipeline_depth-boundary_width+1)
 						&& (img_done == 0)) ? 1:0;
 

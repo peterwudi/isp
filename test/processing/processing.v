@@ -136,40 +136,40 @@ always @ (posedge clk) begin
 		end
 	end
 end
-//
-//reg				filterPipelineEn;
-//reg	[31:0]	filterInputCnt;
-//
-//always @(posedge clk) begin
-//	if (reset | oDoneFilter) begin
-//		filterPipelineEn	<= 0;
-//		filterInputCnt		<= 'b0;
-//	end
-//	else begin
-//		if (iValidFilter | filterPipelineEn) begin
-//			filterInputCnt	<= filterInputCnt + 1;
-//		end
-//		
-//		if (filterInputCnt >= totalPixelCnt) begin
-//			// Input is finished, need to keep enabling the filter pipeline
-//			filterPipelineEn	<= 1;
-//		end
-//	end
-//end
-//
-//
-//filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
-//filter
-//(
-//	.clk(clk),
-//	.reset(reset | oDoneFilter),
-//	.iValid(iValidFilter | filterPipelineEn),
-//	.oValid(oValidFilter),
-//	.oDone(oDoneFilter),
-//	
-//	.iData(iDataFilter),
-//	.oData(oDataFilter)
-//);
+
+reg				filterPipelineEn;
+reg	[31:0]	filterInputCnt;
+
+always @(posedge clk) begin
+	if (reset | oDoneFilter) begin
+		filterPipelineEn	<= 0;
+		filterInputCnt		<= 'b0;
+	end
+	else begin
+		if (iValidFilter | filterPipelineEn) begin
+			filterInputCnt	<= filterInputCnt + 1;
+		end
+		
+		if (filterInputCnt >= totalPixelCnt) begin
+			// Input is finished, need to keep enabling the filter pipeline
+			filterPipelineEn	<= 1;
+		end
+	end
+end
+
+
+filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
+filter
+(
+	.clk(clk),
+	.reset(reset | oDoneFilter),
+	.iValid(iValidFilter | filterPipelineEn),
+	.oValid(oValidFilter),
+	.oDone(oDoneFilter),
+	
+	.iData(iDataFilter),
+	.oData(oDataFilter)
+);
 
 
 // 18-bit singed fixed point number, 9 bits

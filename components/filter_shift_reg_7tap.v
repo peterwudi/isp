@@ -107,7 +107,7 @@ module filter_shift_reg_7tap (
 		ALTSHIFT_TAPS_component.lpm_hint = "RAM_BLOCK_TYPE=AUTO",
 		ALTSHIFT_TAPS_component.lpm_type = "altshift_taps",
 		ALTSHIFT_TAPS_component.number_of_taps = 7,
-		ALTSHIFT_TAPS_component.tap_distance = 322,
+		ALTSHIFT_TAPS_component.tap_distance = 326,
 		ALTSHIFT_TAPS_component.width = 24;
 
 
@@ -123,14 +123,14 @@ endmodule
 // Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "7"
 // Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "3"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
-// Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "322"
+// Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "326"
 // Retrieval info: PRIVATE: WIDTH NUMERIC "24"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Stratix III"
 // Retrieval info: CONSTANT: LPM_HINT STRING "RAM_BLOCK_TYPE=AUTO"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altshift_taps"
 // Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "7"
-// Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "322"
+// Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "326"
 // Retrieval info: CONSTANT: WIDTH NUMERIC "24"
 // Retrieval info: USED_PORT: clken 0 0 0 0 INPUT VCC "clken"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
