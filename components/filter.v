@@ -269,25 +269,6 @@ assign	oData		= {res_r, res_g, res_b};
 endmodule
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module filter_fifo_3
 (
 	input 	clk,
