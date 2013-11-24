@@ -165,7 +165,7 @@ assign	data_b	= {tap[0][7:0],	tap[1][7:0],	tap[2][7:0],	tap[3][7:0],
 // && image is not done
 assign valid = (		 (ready_rows == kernel_size)
 						&& (		(row_cnt >= kernel_size - 1)
-								&&	row_cnt < row_pipeline_depth-boundary_width+1)
+								&&	row_cnt < row_pipeline_depth)
 						&& (img_done == 0)) ? 1:0;
 
 convolution_7x7 r_conv
