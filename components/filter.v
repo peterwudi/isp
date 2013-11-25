@@ -10,8 +10,8 @@ module filter_fifo_7
 	output	unsigned	[23:0]	oData
 );
 
-parameter	width			= 320;
-parameter	height		= 240;
+parameter	width			= 1920;
+parameter	height		= 1080;
 parameter	kernel_size	= 7;
 
 localparam	boundary_width			= (kernel_size - 1)/2;
@@ -94,6 +94,7 @@ always @(posedge clk) begin
 	end
 end
 
+// Depth is width+boundary_width*2
 filter_shift_reg_7tap u0
 (
 	.clken(r_iValid),

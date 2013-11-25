@@ -32,8 +32,8 @@ module processing(
 	output							oDoneRGB
 );
 
-parameter	width			= 320;
-parameter	height		= 240;
+parameter	width			= 1920;
+parameter	height		= 1080;
 parameter	frameSize	= width * height;
 
 wire	[31:0]	xCnt, yCnt, demosaicCnt;

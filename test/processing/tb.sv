@@ -1,7 +1,7 @@
 `timescale 1ns/1ns
 
-localparam	width				= 320;
-localparam	height			= 240;
+localparam	width				= 1920;
+localparam	height			= 1080;
 localparam	kernelSize		= 7;
 localparam	boundaryWidth	= (kernelSize-1)/2;
 localparam	rowSize			= width+boundaryWidth*2;

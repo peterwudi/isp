@@ -30,6 +30,7 @@ assign	oValid	=	moValid;
 assign	oDone		=	moDone;
 
 // 2 extra buffer rows
+// Depth is width
 demosaic_neighbor_shift_reg buffer(
 	.clock(clk),
 	.clken(iValid),
@@ -41,8 +42,8 @@ demosaic_neighbor_shift_reg buffer(
 	.taps3x(tap1)
 );
 
-parameter	width				= 320;
-parameter	height			= 240;
+parameter	width				= 1920;
+parameter	height			= 1080;
 parameter	kernelSize		= 7;
 parameter	boundaryWidth	= (kernelSize-1)/2;
 
