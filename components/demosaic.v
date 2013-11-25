@@ -1,4 +1,3 @@
-
 module demosaic_neighbor
 (
 	input					clk,
@@ -31,7 +30,18 @@ assign	oDone		=	moDone;
 
 // 2 extra buffer rows
 // Depth is width
-demosaic_neighbor_shift_reg buffer(
+//demosaic_neighbor_shift_reg buffer(
+//	.clock(clk),
+//	.clken(iValid),
+//	.shiftin(iData),
+//	.shiftout(),
+//	.taps0x(),
+//	.taps1x(),
+//	.taps2x(tap0),
+//	.taps3x(tap1)
+//);
+
+demosaic_neighbor_shift_reg_240p buffer(
 	.clock(clk),
 	.clken(iValid),
 	.shiftin(iData),
@@ -42,10 +52,11 @@ demosaic_neighbor_shift_reg buffer(
 	.taps3x(tap1)
 );
 
+
 parameter	width				= 1920;
 parameter	height			= 1080;
 parameter	kernelSize		= 7;
-parameter	boundaryWidth	= (kernelSize-1)/2;
+localparam	boundaryWidth	= (kernelSize-1)/2;
 
 // Need to buffer boundaryWidth-1 empty and 2 full rows before intrapolation
 localparam	totalCycles	= width*(height+2+boundaryWidth-1);

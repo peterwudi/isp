@@ -45,7 +45,7 @@ oB	=	coef	X	iY
 oC					iZ
 */
 
-parameter	frameSize = 320*240;
+parameter	frameSize = 1920*1080;
 
 reg	[31:0]	pixelCnt;
 reg				moDone;

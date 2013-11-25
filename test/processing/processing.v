@@ -1,4 +1,3 @@
-
 module processing(
 
 	input 							clk,
@@ -32,13 +31,23 @@ module processing(
 	output							oDoneRGB
 );
 
-parameter	width			= 1920;
-parameter	height		= 1080;
-parameter	frameSize	= width * height;
+//parameter	width			= 1920;
+//parameter	height		= 1080;
+
+parameter	width			= 320;
+parameter	height		= 240;
+
+localparam	frameSize	= width * height;
+
+parameter	kernelSize					= 7;
+localparam	boundaryWidth				= (kernelSize-1)/2;
+localparam	rows_needed_before_proc = (kernelSize-1)/2;
+localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;
+localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 wire	[31:0]	xCnt, yCnt, demosaicCnt;
 
-demosaic_neighbor #(.width(width), .height(height))
+demosaic_neighbor #(.width(width), .height(height), .kernelSize(kernelSize))
 demosaic
 (
 	.clk(clk),
@@ -55,11 +64,7 @@ demosaic
 	.oValid(oValidDemosaic),
 	.oDone(oDoneDemosaic)
 );
-parameter	kernelSize					= 7;
-localparam	boundaryWidth				= (kernelSize-1)/2;
-localparam	rows_needed_before_proc = (kernelSize-1)/2;
-localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;
-localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
+
 
 reg				[31:0]	skipCnt;
 reg							skipCntEn;
@@ -156,7 +161,6 @@ always @(posedge clk) begin
 		end
 	end
 end
-
 
 filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
 filter

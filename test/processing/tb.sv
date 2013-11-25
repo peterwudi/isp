@@ -1,7 +1,12 @@
 `timescale 1ns/1ns
 
-localparam	width				= 1920;
-localparam	height			= 1080;
+//localparam	width				= 1920;
+//localparam	height			= 1080;
+
+localparam	width				= 320;
+localparam	height			= 240;
+
+
 localparam	kernelSize		= 7;
 localparam	boundaryWidth	= (kernelSize-1)/2;
 localparam	rowSize			= width+boundaryWidth*2;
@@ -81,7 +86,7 @@ logic unsigned	[17:0]	rMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	gMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	bMatrix [totalPixels-1:0];
 
-processing #(.width(width),	.height(height))
+processing #(.width(width),	.height(height), 	.kernelSize(kernelSize))
 dut ( .* );
 
 initial clk = '1;
@@ -211,223 +216,223 @@ end
 logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
 
 // Demosaic Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("demosaicROut", "r");
-	g_outFile = $fopen("demosaicGOut", "r");
-	b_outFile = $fopen("demosaicBOut", "r");
-
-	for (int i = 0; i < totalInFilter; i++) begin
-		integer out1, out2, out3;
-		if (		(i < frontSkip)
-			 ||	(i > totalInFilter - frontSkip)
-			 ||	((i % rowSize) < boundaryWidth)
-			 ||	((i % rowSize) >= (width + boundaryWidth)))
-		begin
-			o_irFilter[i] = 8'b0;
-			o_igFilter[i] = 8'b0;
-			o_ibFilter[i] = 8'b0;
-		end
-		else begin
-			// Read from file
-			out1 = $fscanf(r_outFile, "%d", o_irFilter[i]);
-			out2 = $fscanf(g_outFile, "%d", o_igFilter[i]);
-			out3 = $fscanf(b_outFile, "%d", o_ibFilter[i]);
-			
-			// Debug
-//			if (i > 76000) begin
-//				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
-//							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
-//			end
-		end
-	end
-
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	for (int i = 0; i < totalInFilter; i++) begin
-		real rDiff;
-		real gDiff;
-		real bDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!o_iValidFilter) begin
-			@(negedge clk);
-		end
-
-		g_demosaic_r 	= o_irFilter[i];
-		g_demosaic_g	= o_igFilter[i];
-		g_demosaic_b	= o_ibFilter[i];
-
-		rDiff = (iRFilter - g_demosaic_r);
-		gDiff = (iGFilter - g_demosaic_g);
-		bDiff = (iBFilter - g_demosaic_b);
-		
-		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						iRFilter, g_demosaic_r, iGFilter, g_demosaic_g, iBFilter, g_demosaic_b, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("Demosaic is wrong");
-	end
-	else begin
-		$display("Demosaic great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	
-	//$stop(0);
-end
-
-
-logic unsigned	[7:0]		filter_r, filter_g, filter_b;
-logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
-
-// Filter Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("sharpenROut", "r");
-	g_outFile = $fopen("sharpenGOut", "r");
-	b_outFile = $fopen("sharpenBOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
-		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
-		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// RGB
-	for (int i = 0; i < totalPixels; i++) begin
-		real rDiff;
-		real gDiff;
-		real bDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidFilter) begin
-			@(negedge clk);
-		end
-		
-		filter_r		= oDataFilter[23:16];
-		filter_g		= oDataFilter[15:8];
-		filter_b		= oDataFilter[7:0];
-
-		g_filter_r	= rFilter[i];
-		g_filter_g	= gFilter[i];
-		g_filter_b	= bFilter[i];
-		
-		rDiff = (filter_r - g_filter_r);
-		gDiff = (filter_g - g_filter_g);
-		bDiff = (filter_b - g_filter_b);
-		
-		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<Filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("Filter is wrong");
-	end
-	else begin
-		$display("Filter great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	//$stop(0);
-end
-
-logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
-
-// YCC Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("yOut", "r");
-	g_outFile = $fopen("cbOut", "r");
-	b_outFile = $fopen("crOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
-		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
-		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// YCC
-	for (int i = 0; i < totalPixels; i++) begin
-		real yDiff;
-		real cbDiff;
-		real crDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidYcc) begin
-			@(negedge clk);
-		end
-		
-		//@(negedge clk);  // Give time for o_out to be updated.
-		g_ycc_y 	= yMatrix[i];
-		g_ycc_cb	= cbMatrix[i];
-		g_ycc_cr	= crMatrix[i];
-		
-		yDiff		= (y - g_ycc_y);
-		cbDiff	= (cb - g_ycc_cb);
-		crDiff	= (cr - g_ycc_cr);
-		
-		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
-			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
-						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("YCC is wrong");
-	end
-	else begin
-		$display("YCC great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	
-	//$stop(0);
-end
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("demosaicROut", "r");
+//	g_outFile = $fopen("demosaicGOut", "r");
+//	b_outFile = $fopen("demosaicBOut", "r");
+//
+//	for (int i = 0; i < totalInFilter; i++) begin
+//		integer out1, out2, out3;
+//		if (		(i < frontSkip)
+//			 ||	(i > totalInFilter - frontSkip)
+//			 ||	((i % rowSize) < boundaryWidth)
+//			 ||	((i % rowSize) >= (width + boundaryWidth)))
+//		begin
+//			o_irFilter[i] = 8'b0;
+//			o_igFilter[i] = 8'b0;
+//			o_ibFilter[i] = 8'b0;
+//		end
+//		else begin
+//			// Read from file
+//			out1 = $fscanf(r_outFile, "%d", o_irFilter[i]);
+//			out2 = $fscanf(g_outFile, "%d", o_igFilter[i]);
+//			out3 = $fscanf(b_outFile, "%d", o_ibFilter[i]);
+//			
+//			// Debug
+////			if (i > 76000) begin
+////				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
+////							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
+////			end
+//		end
+//	end
+//
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	for (int i = 0; i < totalInFilter; i++) begin
+//		real rDiff;
+//		real gDiff;
+//		real bDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!o_iValidFilter) begin
+//			@(negedge clk);
+//		end
+//
+//		g_demosaic_r 	= o_irFilter[i];
+//		g_demosaic_g	= o_igFilter[i];
+//		g_demosaic_b	= o_ibFilter[i];
+//
+//		rDiff = (iRFilter - g_demosaic_r);
+//		gDiff = (iGFilter - g_demosaic_g);
+//		bDiff = (iBFilter - g_demosaic_b);
+//		
+//		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+//			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+//						iRFilter, g_demosaic_r, iGFilter, g_demosaic_g, iBFilter, g_demosaic_b, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("Demosaic is wrong");
+//	end
+//	else begin
+//		$display("Demosaic great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	//$stop(0);
+//end
+//
+//
+//logic unsigned	[7:0]		filter_r, filter_g, filter_b;
+//logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
+//
+//// Filter Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("sharpenROut", "r");
+//	g_outFile = $fopen("sharpenGOut", "r");
+//	b_outFile = $fopen("sharpenBOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
+//		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
+//		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// RGB
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real rDiff;
+//		real gDiff;
+//		real bDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidFilter) begin
+//			@(negedge clk);
+//		end
+//		
+//		filter_r		= oDataFilter[23:16];
+//		filter_g		= oDataFilter[15:8];
+//		filter_b		= oDataFilter[7:0];
+//
+//		g_filter_r	= rFilter[i];
+//		g_filter_g	= gFilter[i];
+//		g_filter_b	= bFilter[i];
+//		
+//		rDiff = (filter_r - g_filter_r);
+//		gDiff = (filter_g - g_filter_g);
+//		bDiff = (filter_b - g_filter_b);
+//		
+//		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+//			$display("<Filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+//						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("Filter is wrong");
+//	end
+//	else begin
+//		$display("Filter great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	//$stop(0);
+//end
+//
+//logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
+//
+//// YCC Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("yOut", "r");
+//	g_outFile = $fopen("cbOut", "r");
+//	b_outFile = $fopen("crOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
+//		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
+//		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// YCC
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real yDiff;
+//		real cbDiff;
+//		real crDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidYcc) begin
+//			@(negedge clk);
+//		end
+//		
+//		//@(negedge clk);  // Give time for o_out to be updated.
+//		g_ycc_y 	= yMatrix[i];
+//		g_ycc_cb	= cbMatrix[i];
+//		g_ycc_cr	= crMatrix[i];
+//		
+//		yDiff		= (y - g_ycc_y);
+//		cbDiff	= (cb - g_ycc_cb);
+//		crDiff	= (cr - g_ycc_cr);
+//		
+//		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
+//			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
+//						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("YCC is wrong");
+//	end
+//	else begin
+//		$display("YCC great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	//$stop(0);
+//end
 
 logic signed	[17:0]	g_rgb_r, g_rgb_g, g_rgb_b;
 
