@@ -10,7 +10,7 @@ module conveng
 	output	[23:0]	oData,
 	output				oValid,
 	output				oDone
-)
+);
 
 parameter	width			= 1920;
 parameter	height		= 1080;

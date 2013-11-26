@@ -224,6 +224,23 @@ assign	y	= moY[25:8];
 assign	cb	= moCb[25:8];
 assign	cr	= moCr[25:8];
 
+wire	[17:0]	yGamma, cbGamma, crGamma;
+wire				oValidGamma;
+
+gamma gamma
+(
+	.clk(clk),
+	.reset(reset),
+	.iY(y),
+	.iCb(cb),
+	.iCr(cr),
+	.iValid(oValidYcc),
+	
+	.oY(yGamma),
+	.oCb(cbGamma),
+	.oCr(crGamma),
+	.oValid(oValidGamma)
+);
 
 localparam signed [9*18-1:0] ycc2rgb_coef =
 {
@@ -239,10 +256,10 @@ ycc2rgb
 (
 	.clk(clk),
 	.reset(reset | oDoneRGB),
-	.iValid(oValidYcc),
-	.iX(y),
-	.iY(cb),
-	.iZ(cr),
+	.iValid(oValidGamma),
+	.iX(yGamma),
+	.iY(cbGamma),
+	.iZ(crGamma),
 	
 	.coef(ycc2rgb_coef),
 	
