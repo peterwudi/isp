@@ -1,5 +1,6 @@
-module processing(
+`include "params.v"
 
+module processing(
 	input 							clk,
 	input 							reset,
 	input								newFrame,
