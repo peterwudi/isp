@@ -35,9 +35,6 @@ reg				colShift;
 reg				rowShift;
 reg	[255:0]	rf	[6:0];
 
-reg				valid;
-reg				valid_pipeline[pipelineDepth-1:0];
-
 shift2drf shift2drf
 (
 	.clk(clk),
@@ -49,6 +46,92 @@ shift2drf shift2drf
 	
 	.rf(rf)
 );
+reg				r_iValid;
+reg	[255:0]	r_iData;
+reg	[3:0]		state;
+
+
+reg				valid;
+reg				req;
+reg				o_valid_pipeline[pipelineDepth-1:0];
+
+// Control
+always @(posedge clk) begin
+	if (reset) begin
+		state		<= 'b0;
+	end
+	else begin
+		case (state):
+			'd0: begin
+				// Init state
+				
+	
+	
+	
+	
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+always @(posedge clk) begin
+	if (reset) begin
+		r_iValid		<= 0;
+		r_iData		<= 'b0;
+	end
+	else begin
+		if (r_iValid) begin
+			// row_cnt range from 0 to row_pipeline_depth - 1
+			if (row_cnt < row_pipeline_depth - 1) begin
+				// Increment row counter
+				row_cnt	<= row_cnt + 1;
+			end
+			else begin
+				// Reset row counter and use the next buffer,
+				// which is always available because all the data
+				// are perfectly aligned
+				row_cnt	<= 0;
+				
+				rows_done <= rows_done + 1;
+				
+				if (rows_done < height + 2*boundary_width) begin
+					img_done		<= 1'b0;
+				end
+				else begin
+					img_done		<= 1'b1;
+					rows_done	<= 'b0;
+				end
+				
+				// Just finished a row, increment ready_rows
+				if (ready_rows < kernel_size) begin
+					ready_rows	<= ready_rows + 1;
+				end
+	
+	
+	
+		if (iValid) begin
+			
+			
+	
+	end
+end
+
+assign	oAck	= ack;
 
 // Reduction tree
 // Multiplier outputs
@@ -86,27 +169,6 @@ end
 
 reg unsigned	[7:0]		r_multIn	[14:0][3:0];
 reg signed		[15:0]	r_coefIn	[14:0][3:0];
-
-multAdd_4_16x16 mult0(
-	.chainin(44'b0),
-	.clock0(clk),
-	.dataa_0(rf[255:248][0]),
-	.dataa_1(rf[247:240][0]),
-	.dataa_2(rf[239:232][0]),
-	.dataa_3(rf[231:224][0]),
-	.datab_0(h[(783-i*64):(768-i*64)]),
-	.datab_1(h[(767-i*64):(752-i*64)]),
-	.datab_2(h[(751-i*64):(736-i*64)]),
-	.datab_3(h[(735-i*64):(720-i*64)]),
-	.ena0(i_valid),
-	.result(multRes[i]));
-
-mult_1_16x16 mult_1(
-	.clock0(clk),
-	.dataa_0(window[6][6]),
-	.datab_0(h[15:0]),
-	.ena0(i_valid),
-	.result(multRes[12]));
 
 genvar i;
 genvar j;
@@ -163,76 +225,106 @@ generate
 			end
 			else if (valid) begin
 				// h[783:0], each row has 112 bits
-				coefIn[0][i] <= h[783-i*16:768-i*16];					//	00-03
-				coefIn[1][i] <= h[783-i*16-112:768-i*16-112];		// 10-13
-				coefIn[2][i] <= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
-		
-				// 7x7: 50-53, otherwise: 01-04
-				coefIn[3][i] <= (mode==`pattern_7x7)?h[783-i*16-112*5:768-i*16-112*5]:h[767-i*16:752-i*16];
-				// 7x7: 60-63, otherwise: 11-14
-				coefIn[4][i] <= (mode==`pattern_7x7)?h[783-i*16-112*6:768-i*16-112*6]:h[767-i*16-112:752-i*16-112];
-				// 7x7: 63-66, otherwise: 21-24
-				coefIn[5][i] <= (mode==`pattern_7x7)?h[735-i*16-112*6:720-i*16-112*6]:h[767-i*16-112*2:752-i*16-112*2];
-			
-				// 3x3: 02-05, otherwise: 30-33
-				coefIn[6][i] <= (mode==`pattern_3x3)?h[751-i*16:736-i*16]:h[783-i*16-112*3:768-i*16-112*3];
-				// 3x3: 12-15, otherwise: 40-43
-				coefIn[7][i] <= (mode==`pattern_3x3)?h[751-i*16-112*1:736-i*16-112*1]:h[783-i*16-112*4:768-i*16-112*4];
-				
-				// 3x3: 22-25, 5x5: 04-34, 7x7: all zero because it's in valid area
 				case (mode)
 					`pattern_3x3: begin
-						coefIn[8][i] <= h[751-i*16-112*2:736-i*16-112*2];
+						// 4 coefficints, the last one is 0 so don't care.
+						coefIn[0][i]	<= h[783-i*16:768-i*16];					//	00-03
+						coefIn[1][i]	<= h[783-i*16-112:768-i*16-112];			// 10-13
+						coefIn[2][i]	<= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
+						coefIn[3][i]	<= h[783-i*16:768-i*16];					//	00-03
+						coefIn[4][i]	<= h[783-i*16-112:768-i*16-112];			// 10-13
+						coefIn[5][i]	<= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
+						coefIn[6][i]	<= h[783-i*16:768-i*16];					//	00-03
+						coefIn[7][i]	<= h[783-i*16-112:768-i*16-112];			// 10-13
+						coefIn[8][i]	<= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
+						coefIn[9][i]	<= h[783-i*16:768-i*16];					//	00-03
+						coefIn[10][i]	<= h[783-i*16-112:768-i*16-112];			// 10-13
+						coefIn[11][i]	<= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
+						coefIn[12][i] 	<= 'b0;											//	zero
+						coefIn[13][i] 	<= 'b0;											// zero
+						coefIn[14][i] 	<= 'b0;											// zero
 					end
 					`pattern_5x5: begin
-						coefIn[8][i] <= h[719-112*i:704-112*i];
+						coefIn[0][i]	<= h[783-i*16:768-i*16];					//	00-03
+						coefIn[1][i]	<= h[783-i*16-112:768-i*16-112];			// 10-13
+						coefIn[2][i]	<= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
+						coefIn[3][i]	<= h[783-i*16:768-i*16];					//	00-03
+						coefIn[4][i]	<= h[783-i*16-112:768-i*16-112];			// 10-13
+						coefIn[5][i]	<= h[783-i*16-112*2:768-i*16-112*2];	// 20-23
+						
+						coefIn[6][i]	<= h[783-i*16-112*3:768-i*16-112*3];	//	30-33
+						coefIn[7][i]	<= h[783-i*16-112*4:768-i*16-112*4];	// 40-43
+						coefIn[8][i]	<= h[719-112*i:704-112*i];					// 04-34
+						coefIn[9][i]	<= h[783-i*16-112*3:768-i*16-112*3];	//	30-33
+						coefIn[10][i]	<= h[783-i*16-112*4:768-i*16-112*4];	// 40-43
+						coefIn[11][i]	<= h[703-112*i:688-112*i];					// 05-35
+						
+						coefIn[12][0] 	<= 'b0;
+						coefIn[12][1] 	<= h[719-112*4:703-112*4];					// 44
+						coefIn[12][2] 	<= 'b0;
+						coefIn[12][3] 	<= 'b0;
+						
+						coefIn[13][0] 	<= 'b0;
+						coefIn[13][1] 	<= 'b0;
+						coefIn[13][2] 	<= h[719-112*4:703-112*4];					// 44
+						coefIn[13][3] 	<= 'b0;
+						
+						coefIn[14][i] 	<= 'b0;											// zero
+					end
+					`pattern_7x7: begin
+						// Set the last coef to 0
+						coefIn[0][i]	<= (i != 3)? h[783-i*16:768-i*16] : 'b0;					//	00-03
+						coefIn[1][i]	<= (i != 3)? h[783-i*16-112:768-i*16-112] :'b0;			// 10-13
+						coefIn[2][i]	<= (i != 3)? h[783-i*16-112*2:768-i*16-112*2] :'b0;	// 20-23
+						coefIn[3][i]	<= (i != 3)? h[783-i*16-112*3:768-i*16-112*3] :'b0;	//	30-33
+						coefIn[4][i]	<= (i != 3)? h[783-i*16-112*4:768-i*16-112*4] :'b0;	// 40-43
+						coefIn[6][i]	<= (i != 3)? h[783-i*16-112*5:768-i*16-112*5] :'b0;	//	50-53
+						coefIn[7][i]	<= (i != 3)? h[783-i*16-112*6:768-i*16-112*6] :'b0;	// 60-63
+						
+						coefIn[8][i]	<= 'b0;																// zero
+						
+						coefIn[9][i]	<= h[735-i*16:720-i*16];										//	03-06
+						coefIn[10][i]	<= h[735-i*16-112*1:720-i*16-112*1];						// 13-16
+						coefIn[11][i]	<= h[735-i*16-112*2:720-i*16-112*2];						// 23-26
+						coefIn[12][i] 	<= h[735-i*16-112*3:720-i*16-112*3];						//	33-36
+						coefIn[13][i] 	<= h[735-i*16-112*4:720-i*16-112*4];						// 43-46
+						coefIn[14][i] 	<= h[735-i*16-112*5:720-i*16-112*5];						// 53-56
+						coefIn[5][i]	<= h[735-i*16-112*6:720-i*16-112*6];						// 63-66
 					end
 					default: begin
-						coefIn[8][i] <= 'b0;
+						coefIn[0][i] 	<= 'b0;
+						coefIn[1][i] 	<= 'b0;
+						coefIn[2][i] 	<= 'b0;
+						coefIn[3][i] 	<= 'b0;
+						coefIn[4][i] 	<= 'b0;
+						coefIn[5][i] 	<= 'b0;
+						coefIn[6][i] 	<= 'b0;
+						coefIn[7][i] 	<= 'b0;
+						coefIn[8][i] 	<= 'b0;
+						coefIn[9][i] 	<= 'b0;
+						coefIn[10][i] 	<= 'b0;
+						coefIn[11][i] 	<= 'b0;
+						coefIn[12][i] 	<= 'b0;
+						coefIn[13][i] 	<= 'b0;
+						coefIn[14][i] 	<= 'b0;
 					end
-				endcase
-				
-				// 5x5: 31-34, otherwise: 03-06
-				coefIn[9][i] <= (mode==`pattern_5x5)?h[767-i*16-112*3:752-i*16-112*3]:h[735-i*16:720-i*16];
-				// 5x5: 41-44, otherwise: 13-16
-				coefIn[10][i] <= (mode==`pattern_5x5)?h[767-i*16-112*4:752-i*16-112*4]:h[735-i*16-112:720-i*16-112];
-				// 5x5: 05-35, otherwise: 23-26
-				coefIn[11][i] <= (mode==`pattern_5x5)?h[703-112*i:688-112*i]:h[735-i*16-112*2:720-i*16-112*2];	
-		
-				// 5x5: 43-46(only using 44), otherwise: 33-36
-				if (mode == `patter_7x7) begin
-					coefIn[12][i]	<= h[735-i*16-112*3:720-i*16-112*3];
-				else
-					coefIn[12][0]	<= 'b0;
-					// Only using 44
-					coefIn[12][1]	<= h[271:256];
-					coefIn[12][2]	<= 'b0;
-					coefIn[12][3]	<= 'b0;
-				
-				(mode==`pattern_5x5)?h[231-i*16:224-i*16][4]:h[231-i*16:224-i*16][3];
-				// 43-46
-				coefIn[13][i] <= h[231-i*16:224-i*16][4];
-				// 53-56
-				coefIn[14][i] <= h[231-i*16:224-i*16][5];
+				endcase;
 			end
 		end
 	end
 	
-	
-	
-		
 	for (i = 0; i < 15; i = i + 1) begin: mult
 		multAdd_4_16x16 mult(
 			.chainin(44'b0),
 			.clock0(clk),
-			.dataa_0(window[`x][`y]),
-			.dataa_1(window[`x+((`y>=6)?1:0)][(`y+1)%7]),
-			.dataa_2(window[`x+((`y>=5)?1:0)][(`y+2)%7]),
-			.dataa_3(window[`x+((`y>=4)?1:0)][(`y+3)%7]),
-			.datab_0(h[(783-i*64):(768-i*64)]),
-			.datab_1(h[(767-i*64):(752-i*64)]),
-			.datab_2(h[(751-i*64):(736-i*64)]),
-			.datab_3(h[(735-i*64):(720-i*64)]),
+			.dataa_0(multIn[i][0]),
+			.dataa_1(multIn[i][1]),
+			.dataa_2(multIn[i][2]),
+			.dataa_3(multIn[i][3]),
+			.datab_0(coefIn[i][0]),
+			.datab_1(coefIn[i][1]),
+			.datab_2(coefIn[i][2]),
+			.datab_3(coefIn[i][3]),
 			.ena0(i_valid),
 			.result(multRes[i]));
 	end
