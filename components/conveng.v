@@ -9,16 +9,17 @@ module conveng
 	input					iValid,
 	input		[2:0]		mode,
 	
+	input		[15:0]	iWidth,
+	input		[15:0]	iHeight,
+	
 	output				oReq,
+	output				oAddress,
 	output	[23:0]	oData,
 	output				oValid,
 	output				oDone
 );
-
-parameter	width			= 1920;
-parameter	height		= 1080;
-
-localparam	pipelineDepth = 9;
+localparam	pipelineDepth	= 9;
+localparam	rfwidth			= 64;
 
 localparam signed [49*16-1:0] h = {
 	-16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0, 16'sd0, 16'sd0,
@@ -30,6 +31,117 @@ localparam signed [49*16-1:0] h = {
 	16'sd0,  16'sd0,  16'sd0,	16'sd0, 16'sd0, 16'sd0, 16'sd0
 };
 
+reg	[15:0]	width, height;
+reg	[3:0]		kernelSize;
+reg	[3:0]		boundaryWidth;
+reg	[4:0]		totalBoundry;
+reg	[31:0]	totalPixels;
+reg	[15:0]	totalStripes;
+reg	[15:0]	lastStripeWidth;
+reg	[15:0]	stripeOffset;
+reg	[1:0]		constState;
+
+// Register constants
+always @(posedge clk) begin
+	if (reset) begin
+		constState			<= 'd0;
+		width					<= 'b0;
+		height				<= 'b0;
+		kernelSize			<= 'b0;
+		boundaryWidth		<= 'b0;
+		totalBoundry		<= 'b0;
+		totalPixels			<= 'b0;
+		totalStripes		<= 'b0;
+		lastStripeWidth	<= 'b0;
+		stripeOffset		<= 'b0;
+	end
+	else begin
+		case (constState)
+			'd0: begin
+				// Init, reset all consts
+				width					<= 'b0;
+				height				<= 'b0;
+				kernelSize			<= 'b0;
+				boundaryWidth		<= 'b0;
+				totalBoundry		<= 'b0;
+				totalPixels			<= 'b0;
+				totalStripes		<= 'b0;
+				lastStripeWidth	<= 'b0;
+				constState			<= 'd1;
+			end
+			'd1: begin
+				// Copy consts
+				width			<= iWidth;
+				height		<= iHeight;
+				
+				case (height):
+					'd1080: begin
+						totalPixels		<= 'd2073600;
+					end
+					'd240: begin
+						totalPixels		<= 'd86400;
+					end
+					default: begin
+						totalPixels		<= 'd0;
+					end
+				endcase
+				
+				// stripeOffset	= 64 - 2*boundaryWidth
+				// totalStripes	= ceil(width/stripeOffset)
+				// Last stripe width = width%stripeOffset (if 0 then stripeOffset)
+				case (mode):
+					`pattern_3x3: begin
+						kernelSize			<= 'd3;
+						boundaryWidth		<= 'd1;
+						totalBoundry		<= 'd2;
+						stripeOffset		<= 'd62;
+						totalStripes		<= (height == 1080)? 'd31 :'d6;
+						lastStripeWidth	<= (height == 1080)? 'd60 :'d10;
+					end
+					`pattern_5x5: begin
+						kernelSize			<= 'd5;
+						boundaryWidth		<= 'd2;
+						totalBoundry		<= 'd4;
+						stripeOffset		<= 'd60;
+						totalStripes		<= (height == 1080)? 'd32 :'d6;
+						lastStripeWidth	<= (height == 1080)? 'd0  :'d20;
+					end
+					`pattern_7x7: begin
+						kernelSize			<= 'd7;
+						boundaryWidth		<= 'd3;
+						totalBoundry		<= 'd6;
+						stripeOffset		<= 'd58;
+						totalStripes		<= (height == 1080)? 'd34 :'d6;
+						lastStripeWidth	<= (height == 1080)? 'd6  :'d30;
+					end
+					default: begin
+						kernelSize		<= 'd0;
+						boundaryWidth	<= 'd0;
+						totalBoundry	<= 'd0;
+						stripeOffset	<= 'd0;
+						totalStripes	<= 'd0;
+					end
+				endcase
+				
+				constState	<= 'd2;
+			end
+			'd2: begin
+				// Finished copying consts, stay here until reset
+			end
+			default: begin
+				constState			<= 'd0;
+				width					<= 'b0;
+				height				<= 'b0;
+				kernelSize			<= 'b0;
+				boundaryWidth		<= 'b0;
+				totalBoundry		<= 'd0;
+				totalPixels			<= 'b0;
+				lastStripeWidth	<= 'b0;
+				totalStripes		<= 'b0;
+			end
+		endcase
+	end
+end			
 
 reg				colShift;
 reg				rowShift;
@@ -39,7 +151,7 @@ shift2drf shift2drf
 (
 	.clk(clk),
 	.reset(reset),
-	.iData(iData),
+	.iData(r_iData),
 	.mode(mode),
 	.colShift(colShift),
 	.rowShift(rowShift),
@@ -48,90 +160,201 @@ shift2drf shift2drf
 );
 reg				r_iValid;
 reg	[255:0]	r_iData;
-reg	[3:0]		state;
-
+reg	[3:0]		ctrlState;
 
 reg				valid;
+reg				img_done;
+reg	[15:0]	rowCnt;
+reg	[15:0]	colCnt;
+reg	[31:0]	pixelCnt;
+reg	[15:0]	stripeCnt;
+reg	[15:0]	stripeWidth;
+reg	[15:0]	stripeStart;
+reg	[31:0]	moAddress;
 reg				req;
 reg				o_valid_pipeline[pipelineDepth-1:0];
+reg				o_done_pipeline[pipelineDepth-1:0];
 
 // Control
 always @(posedge clk) begin
 	if (reset) begin
-		state		<= 'b0;
+		ctrlState		<= 'd0;
+		req				<= 0;
+		colShift			<= 0;
+		rowShift			<= 0;
+		valid				<= 0;
+		rowCnt			<= 'b0;
+		colCnt			<= 'b0;
+		pixelCnt			<= 'b0;
+		stripeCnt		<=	'b0;
+		stripeStart		<= 'b0;
+		stripeWidth		<= 'b0;
+		moAddress		<= 'b0;
+		r_iValid			<= 'b0;
+		r_iData			<= 'b0;
 	end
 	else begin
-		case (state):
+		img_done	<= (pixelCnt == totalPixels) ? 1 : 0;
+		
+		case (ctrlState):
 			'd0: begin
 				// Init state
-				
-	
-	
-	
-	
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-always @(posedge clk) begin
-	if (reset) begin
-		r_iValid		<= 0;
-		r_iData		<= 'b0;
-	end
-	else begin
-		if (r_iValid) begin
-			// row_cnt range from 0 to row_pipeline_depth - 1
-			if (row_cnt < row_pipeline_depth - 1) begin
-				// Increment row counter
-				row_cnt	<= row_cnt + 1;
+				req			<= 1;
+				ctrlState	<= 'd1;
+				colShift		<= 0;
+				rowShift		<= 0;
+				valid			<= 0;
+				rowCnt		<= 'b0;
+				colCnt		<= 'b0;
+				pixelCnt		<= 'b0;
+				stripeCnt	<=	'b0;
+				stripeStart	<= 'b0;
+				stripeWidth	<= 'b0;
+				r_iValid		<= 'b0;
+				r_iData		<= 'b0;
 			end
-			else begin
-				// Reset row counter and use the next buffer,
-				// which is always available because all the data
-				// are perfectly aligned
-				row_cnt	<= 0;
-				
-				rows_done <= rows_done + 1;
-				
-				if (rows_done < height + 2*boundary_width) begin
-					img_done		<= 1'b0;
+			'd1: begin
+				req			<= 0;
+				// Wait for iValid
+				if (iValid == 1) begin
+					// Cache iData
+					r_iData		<= iData;
+					ctrlState	<= 'd2;
 				end
 				else begin
-					img_done		<= 1'b1;
-					rows_done	<= 'b0;
+					// Wait
+					ctrlState	<= 'd1;
 				end
+			end
+			'd2: begin
+				// Row shift into the 2D RF
+				rowShift		<= 1;
 				
-				// Just finished a row, increment ready_rows
-				if (ready_rows < kernel_size) begin
-					ready_rows	<= ready_rows + 1;
+				// Update address to get the next row
+				moAddress	<= moAddress + width;
+				
+				rowCnt		<= rowCnt + 1;
+				
+				// Check if have enough rows
+				if (rowCnt	< kernelSize-1) begin
+					// At least need another row, go to
+					// state 1 to request another row
+					ctrlState	<= 'd1;
+					req			<= 1;
 				end
-	
-	
-	
-		if (iValid) begin
-			
-			
-	
+				else begin
+					// Have enough rows, ready to process
+					req			<= 0;
+					ctrlState	<= 'd3;
+					
+					// Set stripeWidth
+					if (stripeCnt < totalStripes - 1) begin
+						// Not the last stripe
+						// stripeOffset valid data
+						stripeWidth	<= stripeOffset;
+					end
+					else begin
+						// Last stripe
+						// lastStripeWidth valid data
+						stripeWidth	<= lastStripeWidth;
+					end					
+				end
+			end
+			'd3: begin
+				// Start to process
+				req			<= 0;
+				
+				if (colCnt < stripeWidth - 1) begin
+					// Shift horizontally to get new data.
+					// Only shift stripeWidth - 1 times
+					colShift		<= 1;
+					colCnt		<= colCnt + 1;
+					// Set the valid signal and pass through the
+					// delay pipeline
+					valid			<= 1;
+					
+					if (pixelCnt < totalPixels - 1) begin
+						// Count how many valid outputs has been processed.
+						pixelCnt	<= pixelCnt + 1;
+					end
+					else begin
+						pixelCnt	<= 'b0;
+					end
+					ctrlState	<= 'd3;
+				end
+				else begin
+					// Shifts to the boundry now, the output is invalid
+					valid			<= 0;
+					colShift		<= 0;
+					
+					if (stripeCnt == totalStripes) begin
+						// Last stripe, we're done, go to a wait state to
+						// wait for reset.
+						ctrlState	<= 'd5;
+					end
+					
+					// Update new stripe address info
+					stripeStart	<= stripeStart + stripeOffset;
+					moAddress	<= stripeStart + stripeOffset;
+					
+					if (rowCnt	< height) begin
+						// Haven't finished the stripe yet, need to do:
+						//	(1) Maintain the 2D RF, i.e. shift everything
+						// to align at the beginning.
+						// (2) Get a new row
+						// So go to a mainainance state 
+						ctrlState	<= 'd4;
+						
+						// Set colCnt to kernelSize for the mainainance state 
+						colCnt		<= kernelSize;
+					end
+					else begin
+						// Already finished the strip, don't care what's
+						// in the 2D RF, start a new stripe.
+						req			<= 1;
+						ctrlState	<= 'd1;
+						colCnt		<= 0;
+						stripeCnt	<= stripeCnt + 1;
+					end
+				end
+			end
+			'd4: begin
+				// Need to shift kernelSize times horizontally to align
+				// to the beginning of the row
+				if (rowCnt	> 0) begin
+					colShift 	<= 1;
+					rowCnt		<= rowCnt - 1;
+					ctrlState	<= 'd4;
+				end
+				else begin
+					// Mainainance done, request new data, go to state 1
+					// to wait and start a new stripe.
+					req			<= 1;
+					ctrlState	<= 'd1;
+				end			
+			end
+			'd5: begin
+				// Stay here until reset
+			end
+			default: begin
+				req			<= 0;
+				ctrlState	<= 'd0;
+				colShift		<= 0;
+				rowShift		<= 0;
+				valid			<= 0;
+				rowCnt		<= 'b0;
+				colCnt		<= 'b0;
+				pixelCnt		<= 'b0;
+				stripeCnt	<=	'b0;
+				stripeStart	<= 'b0;
+				stripeWidth	<= 'b0;
+				r_iValid		<= 'b0;
+				r_iData		<= 'b0;
+			end
+		endcase
 	end
 end
 
-assign	oAck	= ack;
 
 // Reduction tree
 // Multiplier outputs
@@ -407,8 +630,33 @@ generate
 				pattern_5x5_out_lvl5[i]	<=	multlvl4[i];
 			end
 		end
-	end 
+	end
+	
+	for (i = 0; i < pipelineDepth; i = i + 1) begin: valid/done
+		always @(posedge clk) begin
+			if (reset) begin
+				o_valid_pipeline[i]	<= 1'b0;
+				o_done_pipeline[i]	<= 1'b0;
+			end
+			else if (valid) begin
+				if (i == 0) begin
+					o_valid_pipeline[0]	<= 1'b0;
+					o_done_pipeline[0]	<= 1'b0;
+				end
+				else begin
+					o_valid_pipeline[i]	<= o_valid_pipeline[i-1];
+					o_done_pipeline[i]	<= o_done_pipeline[i-1];
+				end
+			end
+		end
+	end
 endgenerate
+
+
+// Outputs
+assign	oReq	= req
+
+
 
 
 endmodule
