@@ -41,6 +41,12 @@ logic	unsigned	[23:0]	oDataFilter;
 logic							oValidFilter;
 logic							oDoneFilter;
 
+// Conveng
+logic	[255:0]				irData, igData, ibData;
+logic							oReq;
+logic	[31:0]				oRdAddress, oWrAddress;
+logic	[7:0]					orData, ogData, obData;
+
 // rgb2ycc
 logic	signed	[17:0]	y, cb, cr;
 logic							oValidYcc;
@@ -96,59 +102,170 @@ logic unsigned	[7:0]		iR;
 logic unsigned	[7:0]		iG;
 logic unsigned	[7:0]		iB;
 
-// Producer
-initial begin
-	integer r_inFile;
-	integer g_inFile;
-	integer b_inFile;
-	
-	r_inFile = $fopen("rOrig", "r");
-	g_inFile = $fopen("gOrig", "r");
-	b_inFile = $fopen("bOrig", "r");
+// Stream Producer
+//initial begin
+//	integer r_inFile;
+//	integer g_inFile;
+//	integer b_inFile;
+//	
+//	r_inFile = $fopen("rOrig", "r");
+//	g_inFile = $fopen("gOrig", "r");
+//	b_inFile = $fopen("bOrig", "r");
+//
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer in1, in2, in3;
+//		
+//		// Read from file
+//		in1 = $fscanf(r_inFile, "%d", rOrig[i]);
+//		in2 = $fscanf(g_inFile, "%d", gOrig[i]);
+//		in3 = $fscanf(b_inFile, "%d", bOrig[i]);
+//	end
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		if ((i / width) % 2 == 0) begin
+//			// Even row, G B G B ......
+//			if ((i % width) % 2 == 0) begin
+//				// Even col
+//				raw[i] = gOrig[i];
+//			end
+//			else begin
+//				raw[i] = bOrig[i];
+//			end
+//		end
+//		else begin			
+//			// Odd row, R G R G ......
+//			if ((i % width) % 2 == 0) begin
+//				// Even col
+//				raw[i] = rOrig[i];
+//			end
+//			else begin
+//				raw[i] = gOrig[i];
+//			end
+//			
+//			// Debug
+////			if (i > totalPixels - 3) begin
+////				$display("i = %d, gOrig[i] = %d, raw[i] = %d", i, gOrig[i], raw[i]);
+////			end			
+//		end
+//	end
+//	
+//	$fclose(r_inFile);
+//	$fclose(g_inFile);
+//	$fclose(b_inFile);
+//	
+//	iValid = 1'b0;
+//	iData = 'd0;
+//	newFrame = 0;
+//	
+//	reset = 1'b1;
+//	@(negedge clk);
+//	@(negedge clk);
+//	reset = 1'b0;	
+//	@(negedge clk);
+//	newFrame = 1;
+//	for (int i = 0; i < 32; i++) begin
+//		@(negedge clk);
+//		newFrame = 0;
+//	end
+//	
+//	// RGB
+//	for (int i = 0; i < totalPixels; i++) begin
+//		//iData	= {rOrig[i], gOrig[i], bOrig[i]};
+//		iData = raw[i];
+//		
+//		iR	= rOrig[i];
+//		iG	= gOrig[i];
+//		iB	= bOrig[i];
+//		iValid	= 1'b1;
+//		@(negedge clk);
+//		
+//		if ((i%width) == width - 1) begin
+//			// Boundary in between rows
+//			for (int j = 0; j < 16; j++) begin
+//				iValid = 0;
+//				@(negedge clk);
+//			end
+//		end
+//		
+//	end
+//	
+//	iData = 'b0;
+//	
+//	
+//	// Need iValid to be high to keep the pipeline moving
+//	while(1) begin
+//		@(negedge clk);
+//		// Still need to move the pipeline and leave blanks each row
+//		for (int i = 0; i < width; i++) begin
+//			iValid	= 1'b1;
+//			@(negedge clk);
+//		end
+//		
+//		if (oDoneDemosaic == 1) begin
+//			iValid = 0;
+//			break;
+//		end
+//		
+//		for (int j = 0; j < 16; j++) begin
+//			iValid = 0;
+//			@(negedge clk);
+//		end	
+//	end
+//	
+//	@(negedge clk);
+//	reset = 1'b0;
+//	
+//	@(negedge clk);
+//	reset = 1'b0;
+//end
 
-	for (int i = 0; i < totalPixels; i++) begin
-		integer in1, in2, in3;
-		
-		// Read from file
-		in1 = $fscanf(r_inFile, "%d", rOrig[i]);
-		in2 = $fscanf(g_inFile, "%d", gOrig[i]);
-		in3 = $fscanf(b_inFile, "%d", bOrig[i]);
-	end
+
+
+// Conveng Producer
+initial begin
+	integer r_outFile;
+	integer g_outFile;
+	integer b_outFile;
 	
-	for (int i = 0; i < totalPixels; i++) begin
-		if ((i / width) % 2 == 0) begin
-			// Even row, G B G B ......
-			if ((i % width) % 2 == 0) begin
-				// Even col
-				raw[i] = gOrig[i];
-			end
-			else begin
-				raw[i] = bOrig[i];
-			end
+	integer failed = 0;
+	
+	r_outFile = $fopen("demosaicROut", "r");
+	g_outFile = $fopen("demosaicGOut", "r");
+	b_outFile = $fopen("demosaicBOut", "r");
+
+	for (int i = 0; i < totalInFilter; i++) begin
+		integer out1, out2, out3;
+		if (		(i < frontSkip)
+			 ||	(i > totalInFilter - frontSkip)
+			 ||	((i % rowSize) < boundaryWidth)
+			 ||	((i % rowSize) >= (width + boundaryWidth)))
+		begin
+			o_irFilter[i] = 8'b0;
+			o_igFilter[i] = 8'b0;
+			o_ibFilter[i] = 8'b0;
 		end
-		else begin			
-			// Odd row, R G R G ......
-			if ((i % width) % 2 == 0) begin
-				// Even col
-				raw[i] = rOrig[i];
-			end
-			else begin
-				raw[i] = gOrig[i];
-			end
+		else begin
+			// Read from file
+			out1 = $fscanf(r_outFile, "%d", o_irFilter[i]);
+			out2 = $fscanf(g_outFile, "%d", o_igFilter[i]);
+			out3 = $fscanf(b_outFile, "%d", o_ibFilter[i]);
 			
 			// Debug
-//			if (i > totalPixels - 3) begin
-//				$display("i = %d, gOrig[i] = %d, raw[i] = %d", i, gOrig[i], raw[i]);
-//			end			
+//			if (i > 76000) begin
+//				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
+//							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
+//			end
 		end
 	end
 	
-	$fclose(r_inFile);
-	$fclose(g_inFile);
-	$fclose(b_inFile);
+	$fclose(r_outFile);
+	$fclose(g_outFile);
+	$fclose(b_outFile);
 	
 	iValid = 1'b0;
-	iData = 'd0;
+	irData = 'd0;
+	igData = 'd0;
+	ibData = 'd0;
 	newFrame = 0;
 	
 	reset = 1'b1;
@@ -162,48 +279,73 @@ initial begin
 		newFrame = 0;
 	end
 	
-	// RGB
-	for (int i = 0; i < totalPixels; i++) begin
-		//iData	= {rOrig[i], gOrig[i], bOrig[i]};
-		iData = raw[i];
-		
-		iR	= rOrig[i];
-		iG	= gOrig[i];
-		iB	= bOrig[i];
-		iValid	= 1'b1;
-		@(negedge clk);
-		
-		if ((i%width) == width - 1) begin
-			// Boundary in between rows
-			for (int j = 0; j < 16; j++) begin
-				iValid = 0;
-				@(negedge clk);
-			end
-		end
-		
-	end
-	
-	iData = 'b0;
-	
-	
-	// Need iValid to be high to keep the pipeline moving
+	// Provide data as requested
 	while(1) begin
 		@(negedge clk);
-		// Still need to move the pipeline and leave blanks each row
-		for (int i = 0; i < width; i++) begin
+		
+		if (oReq == 1) begin
+			irData	<= {	o_irFilter[oRdAddress], o_irFilter[oRdAddress+1], o_irFilter[oRdAddress+2], o_irFilter[oRdAddress+3],
+								o_irFilter[oRdAddress+4], o_irFilter[oRdAddress+5], o_irFilter[oRdAddress+6], o_irFilter[oRdAddress+7],
+								o_irFilter[oRdAddress+8], o_irFilter[oRdAddress+9], o_irFilter[oRdAddress+10], o_irFilter[oRdAddress+11],
+								o_irFilter[oRdAddress+12], o_irFilter[oRdAddress+13], o_irFilter[oRdAddress+14], o_irFilter[oRdAddress+15],
+								o_irFilter[oRdAddress+16], o_irFilter[oRdAddress+17], o_irFilter[oRdAddress+18], o_irFilter[oRdAddress+19],
+								o_irFilter[oRdAddress+20], o_irFilter[oRdAddress+21], o_irFilter[oRdAddress+22], o_irFilter[oRdAddress+23],
+								o_irFilter[oRdAddress+24], o_irFilter[oRdAddress+25], o_irFilter[oRdAddress+26], o_irFilter[oRdAddress+27],
+								o_irFilter[oRdAddress+28], o_irFilter[oRdAddress+29], o_irFilter[oRdAddress+30], o_irFilter[oRdAddress+31],
+								o_irFilter[oRdAddress+32], o_irFilter[oRdAddress+33], o_irFilter[oRdAddress+34], o_irFilter[oRdAddress+35],
+								o_irFilter[oRdAddress+36], o_irFilter[oRdAddress+37], o_irFilter[oRdAddress+38], o_irFilter[oRdAddress+39],
+								o_irFilter[oRdAddress+40], o_irFilter[oRdAddress+41], o_irFilter[oRdAddress+42], o_irFilter[oRdAddress+43],
+								o_irFilter[oRdAddress+44], o_irFilter[oRdAddress+45], o_irFilter[oRdAddress+46], o_irFilter[oRdAddress+47],
+								o_irFilter[oRdAddress+48], o_irFilter[oRdAddress+49], o_irFilter[oRdAddress+50], o_irFilter[oRdAddress+51],
+								o_irFilter[oRdAddress+52], o_irFilter[oRdAddress+53], o_irFilter[oRdAddress+54], o_irFilter[oRdAddress+55],
+								o_irFilter[oRdAddress+56], o_irFilter[oRdAddress+57], o_irFilter[oRdAddress+58], o_irFilter[oRdAddress+59],
+								o_irFilter[oRdAddress+60], o_irFilter[oRdAddress+61], o_irFilter[oRdAddress+62], o_irFilter[oRdAddress+63]};
+								
+			igData	<= {	o_igFilter[oRdAddress], o_igFilter[oRdAddress+1], o_igFilter[oRdAddress+2], o_igFilter[oRdAddress+3],
+								o_igFilter[oRdAddress+4], o_igFilter[oRdAddress+5], o_igFilter[oRdAddress+6], o_igFilter[oRdAddress+7],
+								o_igFilter[oRdAddress+8], o_igFilter[oRdAddress+9], o_igFilter[oRdAddress+10], o_igFilter[oRdAddress+11],
+								o_igFilter[oRdAddress+12], o_igFilter[oRdAddress+13], o_igFilter[oRdAddress+14], o_igFilter[oRdAddress+15],
+								o_igFilter[oRdAddress+16], o_igFilter[oRdAddress+17], o_igFilter[oRdAddress+18], o_igFilter[oRdAddress+19],
+								o_igFilter[oRdAddress+20], o_igFilter[oRdAddress+21], o_igFilter[oRdAddress+22], o_igFilter[oRdAddress+23],
+								o_igFilter[oRdAddress+24], o_igFilter[oRdAddress+25], o_igFilter[oRdAddress+26], o_igFilter[oRdAddress+27],
+								o_igFilter[oRdAddress+28], o_igFilter[oRdAddress+29], o_igFilter[oRdAddress+30], o_igFilter[oRdAddress+31],
+								o_igFilter[oRdAddress+32], o_igFilter[oRdAddress+33], o_igFilter[oRdAddress+34], o_igFilter[oRdAddress+35],
+								o_igFilter[oRdAddress+36], o_igFilter[oRdAddress+37], o_igFilter[oRdAddress+38], o_igFilter[oRdAddress+39],
+								o_igFilter[oRdAddress+40], o_igFilter[oRdAddress+41], o_igFilter[oRdAddress+42], o_igFilter[oRdAddress+43],
+								o_igFilter[oRdAddress+44], o_igFilter[oRdAddress+45], o_igFilter[oRdAddress+46], o_igFilter[oRdAddress+47],
+								o_igFilter[oRdAddress+48], o_igFilter[oRdAddress+49], o_igFilter[oRdAddress+50], o_igFilter[oRdAddress+51],
+								o_igFilter[oRdAddress+52], o_igFilter[oRdAddress+53], o_igFilter[oRdAddress+54], o_igFilter[oRdAddress+55],
+								o_igFilter[oRdAddress+56], o_igFilter[oRdAddress+57], o_igFilter[oRdAddress+58], o_igFilter[oRdAddress+59],
+								o_igFilter[oRdAddress+60], o_igFilter[oRdAddress+61], o_igFilter[oRdAddress+62], o_igFilter[oRdAddress+63]};
+				
+			ibData	<= {	o_ibFilter[oRdAddress], o_ibFilter[oRdAddress+1], o_ibFilter[oRdAddress+2], o_ibFilter[oRdAddress+3],
+								o_ibFilter[oRdAddress+4], o_ibFilter[oRdAddress+5], o_ibFilter[oRdAddress+6], o_ibFilter[oRdAddress+7],
+								o_ibFilter[oRdAddress+8], o_ibFilter[oRdAddress+9], o_ibFilter[oRdAddress+10], o_ibFilter[oRdAddress+11],
+								o_ibFilter[oRdAddress+12], o_ibFilter[oRdAddress+13], o_ibFilter[oRdAddress+14], o_ibFilter[oRdAddress+15],
+								o_ibFilter[oRdAddress+16], o_ibFilter[oRdAddress+17], o_ibFilter[oRdAddress+18], o_ibFilter[oRdAddress+19],
+								o_ibFilter[oRdAddress+20], o_ibFilter[oRdAddress+21], o_ibFilter[oRdAddress+22], o_ibFilter[oRdAddress+23],
+								o_ibFilter[oRdAddress+24], o_ibFilter[oRdAddress+25], o_ibFilter[oRdAddress+26], o_ibFilter[oRdAddress+27],
+								o_ibFilter[oRdAddress+28], o_ibFilter[oRdAddress+29], o_ibFilter[oRdAddress+30], o_ibFilter[oRdAddress+31],
+								o_ibFilter[oRdAddress+32], o_ibFilter[oRdAddress+33], o_ibFilter[oRdAddress+34], o_ibFilter[oRdAddress+35],
+								o_ibFilter[oRdAddress+36], o_ibFilter[oRdAddress+37], o_ibFilter[oRdAddress+38], o_ibFilter[oRdAddress+39],
+								o_ibFilter[oRdAddress+40], o_ibFilter[oRdAddress+41], o_ibFilter[oRdAddress+42], o_ibFilter[oRdAddress+43],
+								o_ibFilter[oRdAddress+44], o_ibFilter[oRdAddress+45], o_ibFilter[oRdAddress+46], o_ibFilter[oRdAddress+47],
+								o_ibFilter[oRdAddress+48], o_ibFilter[oRdAddress+49], o_ibFilter[oRdAddress+50], o_ibFilter[oRdAddress+51],
+								o_ibFilter[oRdAddress+52], o_ibFilter[oRdAddress+53], o_ibFilter[oRdAddress+54], o_ibFilter[oRdAddress+55],
+								o_ibFilter[oRdAddress+56], o_ibFilter[oRdAddress+57], o_ibFilter[oRdAddress+58], o_ibFilter[oRdAddress+59],
+								o_ibFilter[oRdAddress+60], o_ibFilter[oRdAddress+61], o_ibFilter[oRdAddress+62], o_ibFilter[oRdAddress+63]};
 			iValid	= 1'b1;
-			@(negedge clk);
 		end
 		
-		if (oDoneDemosaic == 1) begin
+		if (oDoneFilter == 1) begin
 			iValid = 0;
 			break;
 		end
-		
-		for (int j = 0; j < 16; j++) begin
-			iValid = 0;
-			@(negedge clk);
-		end	
+	end	
+	
+	for (int j = 0; j < 16; j++) begin
+		iValid = 0;
+		@(negedge clk);	
 	end
 	
 	@(negedge clk);
@@ -213,7 +355,82 @@ initial begin
 	reset = 1'b0;
 end
 
-logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
+logic unsigned	[7:0]		filter_r, filter_g, filter_b;
+logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
+
+// Conveng Consumer
+initial begin
+	integer r_outFile;
+	integer g_outFile;
+	integer b_outFile;
+	
+	integer failed = 0;
+	
+	r_outFile = $fopen("sharpenROut", "r");
+	g_outFile = $fopen("sharpenGOut", "r");
+	b_outFile = $fopen("sharpenBOut", "r");
+	
+	for (int i = 0; i < totalPixels; i++) begin
+		integer out1, out2, out3;
+		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
+		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
+		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
+		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+	end
+	$fclose(r_outFile);
+	$fclose(g_outFile);
+	$fclose(b_outFile);	
+	
+	for (int i = 0; i < totalPixels; i++) begin
+		real rDiff;
+		real gDiff;
+		real bDiff;
+		
+		// Wait for a valid output
+		@(negedge clk);
+		while (!oValidFilter) begin
+			@(negedge clk);
+		end
+		
+		filter_r		= orData;
+		filter_g		= ogData;
+		filter_b		= obData;
+
+		g_filter_r	= rFilter[oWrAddress];
+		g_filter_g	= gFilter[oWrAddress];
+		g_filter_b	= bFilter[oWrAddress];
+		
+		rDiff = (filter_r - g_filter_r);
+		gDiff = (filter_g - g_filter_g);
+		bDiff = (filter_b - g_filter_b);
+		
+		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+			$display("<Conv filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
+			failed = 1;
+		end
+		
+		if (oDoneFilter) begin
+			$display("i = %d, break\n", i, $time);
+			break;
+		end
+	end
+	
+	if (failed == 1) begin
+		$display("Conv filter is wrong");
+	end
+	else begin
+		$display("Conv filter great success!!");
+	end
+	
+	for (int i = 0; i < 10; i++) begin
+		@(negedge clk);
+	end
+	$stop(0);
+end
+
+
+//logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
 
 // Demosaic Consumer
 //initial begin
@@ -367,138 +584,138 @@ logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
 //	//$stop(0);
 //end
 //
-logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
-
-// YCC Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("yOut", "r");
-	g_outFile = $fopen("cbOut", "r");
-	b_outFile = $fopen("crOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
-		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
-		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// YCC
-	for (int i = 0; i < totalPixels; i++) begin
-		real yDiff;
-		real cbDiff;
-		real crDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidYcc) begin
-			@(negedge clk);
-		end
-		
-		//@(negedge clk);  // Give time for o_out to be updated.
-		g_ycc_y 	= yMatrix[i];
-		g_ycc_cb	= cbMatrix[i];
-		g_ycc_cr	= crMatrix[i];
-		
-		yDiff		= (y - g_ycc_y);
-		cbDiff	= (cb - g_ycc_cb);
-		crDiff	= (cr - g_ycc_cr);
-		
-		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
-			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
-						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("YCC is wrong");
-	end
-	else begin
-		$display("YCC great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	
-	//$stop(0);
-end
-
-logic signed	[17:0]	g_rgb_r, g_rgb_g, g_rgb_b;
-
-// RGB Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("rOut", "r");
-	g_outFile = $fopen("gOut", "r");
-	b_outFile = $fopen("bOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", rMatrix[i]);
-		out2 = $fscanf(g_outFile, "%d", gMatrix[i]);
-		out3 = $fscanf(b_outFile, "%d", bMatrix[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	// RGB
-	for (int i = 0; i < totalPixels; i++) begin
-		real rDiff;
-		real gDiff;
-		real bDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidRGB) begin
-			@(negedge clk);
-		end
-		
-		g_rgb_r 	= rMatrix[i];
-		g_rgb_g	= gMatrix[i];
-		g_rgb_b	= bMatrix[i];
-		
-		rDiff		= (oFinalR - g_rgb_r);
-		gDiff		= (oFinalG - g_rgb_g);
-		bDiff		= (oFinalB - g_rgb_b);
-		
-		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<RGB> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						oFinalR, g_rgb_r, oFinalG, g_rgb_g, oFinalB, g_rgb_b, $time);
-			failed = 1;
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("RGB is wrong");
-	end
-	else begin
-		$display("RGB great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	
-	$stop(0);
-end
+//logic signed	[17:0]	g_ycc_y, g_ycc_cb, g_ycc_cr;
+//
+//// YCC Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("yOut", "r");
+//	g_outFile = $fopen("cbOut", "r");
+//	b_outFile = $fopen("crOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", yMatrix[i]);
+//		out2 = $fscanf(g_outFile, "%d", cbMatrix[i]);
+//		out3 = $fscanf(b_outFile, "%d", crMatrix[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// YCC
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real yDiff;
+//		real cbDiff;
+//		real crDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidYcc) begin
+//			@(negedge clk);
+//		end
+//		
+//		//@(negedge clk);  // Give time for o_out to be updated.
+//		g_ycc_y 	= yMatrix[i];
+//		g_ycc_cb	= cbMatrix[i];
+//		g_ycc_cr	= crMatrix[i];
+//		
+//		yDiff		= (y - g_ycc_y);
+//		cbDiff	= (cb - g_ycc_cb);
+//		crDiff	= (cr - g_ycc_cr);
+//		
+//		if ((yDiff != 0) || (cbDiff != 0) || (crDiff != 0)) begin
+//			$display("<YCC> y: %f, y_golden: %f; cb: %f, cb_golden: %f; cr: %f, cr_golden: %f, at time: ",
+//						y, g_ycc_y, cb, g_ycc_cb, cr, g_ycc_cr, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("YCC is wrong");
+//	end
+//	else begin
+//		$display("YCC great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	//$stop(0);
+//end
+//
+//logic signed	[17:0]	g_rgb_r, g_rgb_g, g_rgb_b;
+//
+//// RGB Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//	
+//	r_outFile = $fopen("rOut", "r");
+//	g_outFile = $fopen("gOut", "r");
+//	b_outFile = $fopen("bOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", rMatrix[i]);
+//		out2 = $fscanf(g_outFile, "%d", gMatrix[i]);
+//		out3 = $fscanf(b_outFile, "%d", bMatrix[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);
+//	
+//	// RGB
+//	for (int i = 0; i < totalPixels; i++) begin
+//		real rDiff;
+//		real gDiff;
+//		real bDiff;
+//		
+//		// Wait for a valid output
+//		@(negedge clk);
+//		while (!oValidRGB) begin
+//			@(negedge clk);
+//		end
+//		
+//		g_rgb_r 	= rMatrix[i];
+//		g_rgb_g	= gMatrix[i];
+//		g_rgb_b	= bMatrix[i];
+//		
+//		rDiff		= (oFinalR - g_rgb_r);
+//		gDiff		= (oFinalG - g_rgb_g);
+//		bDiff		= (oFinalB - g_rgb_b);
+//		
+//		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+//			$display("<RGB> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+//						oFinalR, g_rgb_r, oFinalG, g_rgb_g, oFinalB, g_rgb_b, $time);
+//			failed = 1;
+//		end
+//	end
+//	
+//	if (failed == 1) begin
+//		$display("RGB is wrong");
+//	end
+//	else begin
+//		$display("RGB great success!!");
+//	end
+//	
+//	for (int i = 0; i < 10; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	$stop(0);
+//end
 
 
 

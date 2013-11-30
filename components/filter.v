@@ -1,3 +1,96 @@
+`include "params.v"
+
+module filter_fifo_conveng
+(
+	input 				clk,
+	input 				reset,
+	input					iValid,
+	input		[2:0]		mode,
+	input		[255:0]	irData, igData, ibData,
+	
+	output				oReq,
+	output	[31:0]	oRdAddress,
+	output	[31:0]	oWrAddress,
+	//output	[31:0]	oData,
+	// TODO, for now use 7x7
+	output	[7:0]		orData, ogData, obData,
+	
+	output				oValid,
+	output				oDone
+);
+parameter	width			= 1920;
+parameter	height		= 1080;
+parameter	kernel_size	= 7;
+
+wire	[31:0]	r_conv_out, g_conv_out, b_conv_out;
+
+conveng r_conv
+(
+	.clk(clk),
+	.reset(reset),
+
+	.iData(irData),
+	.iValid(iValid),
+	.mode(mode),
+	
+	.iWidth(width),
+	.iHeight(height),
+	
+	.oReq(oReq),
+	.oRdAddress(oRdAddress),
+	.oWrAddress(oWrAddress),
+	.oData(r_conv_out),
+	.oValid(oValid),
+	.oDone(oDone)
+);
+
+conveng g_conv
+(
+	.clk(clk),
+	.reset(reset),
+
+	.iData(igData),
+	.iValid(iValid),
+	.mode(mode),
+	
+	.iWidth(width),
+	.iHeight(height),
+	
+	.oReq(),
+	.oRdAddress(),
+	.oWrAddress(),
+	.oData(g_conv_out),
+	.oValid(),
+	.oDone()
+);
+
+conveng b_conv
+(
+	.clk(clk),
+	.reset(reset),
+
+	.iData(ibData),
+	.iValid(iValid),
+	.mode(mode),
+	
+	.iWidth(width),
+	.iHeight(height),
+	
+	.oReq(),
+	.oRdAddress(),
+	.oWrAddress(),
+	.oData(b_conv_out),
+	.oValid(),
+	.oDone()
+);
+
+assign orData = r_conv_out[31:24];
+assign ogData = g_conv_out[31:24];
+assign obData = b_conv_out[31:24];
+
+endmodule
+
+
 module filter_fifo_7
 (
 	input 	clk,
