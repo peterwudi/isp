@@ -269,6 +269,11 @@ always @(posedge clk) begin
 					ctrlState	<= 'd3;
 					rowShift		<= 0;
 					
+					// Always do a col shift because the RF is shifted
+					// in the next cycle, need to set the signal 1 cycle
+					// ahead
+					colShift		<= 1;
+					
 					// Set stripeWidth
 					if (stripeCnt < totalStripes - 1) begin
 						// Not the last stripe

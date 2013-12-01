@@ -323,7 +323,7 @@ end
 
 logic unsigned	[7:0]		filter_r, filter_g, filter_b;
 logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
-
+logic unsigned [7:0]		pixelCnt = 0;
 // Conveng Consumer
 initial begin
 	integer r_outFile;
@@ -331,7 +331,7 @@ initial begin
 	integer b_outFile;
 	
 	integer failed = 0;
-	
+
 	r_outFile = $fopen("sharpenROut", "r");
 	g_outFile = $fopen("sharpenGOut", "r");
 	b_outFile = $fopen("sharpenBOut", "r");
@@ -347,6 +347,11 @@ initial begin
 	$fclose(g_outFile);
 	$fclose(b_outFile);	
 	
+	// Wait for reset
+	for (int i = 0; i < 16; i++) begin
+		@(negedge clk);
+	end
+	
 	for (int i = 0; i < totalPixels; i++) begin
 		real rDiff;
 		real gDiff;
@@ -354,18 +359,20 @@ initial begin
 		
 		// Wait for a valid output
 		@(negedge clk);
-		oWrAddress = 0;
 		while (!oValidFilter) begin
 			@(negedge clk);
 		end
+		oWrAddress	= (pixelCnt/480)*2 + ((pixelCnt%480)>>1)*320 + (pixelCnt%2);
+		$display("pixelCnt = %d @ time: ", pixelCnt, $time);
+		pixelCnt++;
 		
 		// 7x7
 		// Each stripe has 480 pixels
 		// Finished (oConvPixelCnt/480) stripes, each stripe has 2 pixels
 		// The current stripe has finished (oConvPixelCnt%480) pixels
 		// The start of the current line is (((oConvPixelCnt%480)-1)>>1)*320
-		// The pixel on the current stripe is (oConvPixelCnt%2)?2:1;
-		oWrAddress	= (oConvPixelCnt/480)*2 + (((oConvPixelCnt%480)-1)>>1)*320 + ((oConvPixelCnt%2)?2:1)-1;
+		// The pixel on the current stripe is (oConvPixelCnt%2);
+		//oWrAddress	= (oConvPixelCnt/480)*2 + (((oConvPixelCnt%480)-1)>>1)*320 + ((oConvPixelCnt%2)?2:1)-1;
 		
 		filter_r		= orData;
 		filter_g		= ogData;
