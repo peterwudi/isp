@@ -24,13 +24,14 @@ localparam	pipelineDepth	= 11;
 localparam	rfwidth			= 64;
 
 localparam signed [49*16-1:0] h = {
-	-16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0, 16'sd0, 16'sd0,
-	-16'sd1,  16'sd9, -16'sd1, 16'sd0, 16'sd0, 16'sd0, 16'sd0,
-	-16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0, 16'sd0, 16'sd0,
-	16'sd0,	16'sd0,  16'sd0,	16'sd0, 16'sd0, 16'sd0, 16'sd0,
-	16'sd0,  16'sd0,  16'sd0,	16'sd0, 16'sd0, 16'sd0, 16'sd0,
-	16'sd0,	16'sd0,  16'sd0,	16'sd0, 16'sd0, 16'sd0, 16'sd0,
-	16'sd0,  16'sd0,  16'sd0,	16'sd0, 16'sd0, 16'sd0, 16'sd0
+	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
+	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
+	16'sd0, 	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
+	16'sd0, 	16'sd0, -16'sd1,  16'sd9, -16'sd1, 16'sd0, 16'sd0,
+	16'sd0,	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
+	16'sd0,	16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0,
+	16'sd0,  16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0
+
 };
 
 reg	[15:0]	width, height;
@@ -295,19 +296,18 @@ always @(posedge clk) begin
 					end
 				img_done	<= (pixelCnt == totalPixels-1) ? 1 : 0;				
 				
+				// Set the valid signal and pass through the
+				// delay pipeline
+				valid			<= 1;
 				if (colCnt < stripeWidth - 1) begin
 					// Shift horizontally to get new data.
 					// Only shift stripeWidth - 1 times
 					colShift		<= 1;
 					colCnt		<= colCnt + 1;
-					// Set the valid signal and pass through the
-					// delay pipeline
-					valid			<= 1;
+					
 					ctrlState	<= 'd3;
 				end
 				else begin
-					// Shifts to the boundry now, the output is still valid
-					valid			<= 1;
 					colShift		<= 0;
 					
 					if (stripeCnt == totalStripes) begin
@@ -336,12 +336,14 @@ always @(posedge clk) begin
 						// in the 2D RF, start a new stripe.
 						req			<= 1;
 						ctrlState	<= 'd1;
-						colCnt		<= 0;
+						colCnt		<= 'b0;
 						stripeCnt	<= stripeCnt + 1;
 					end
 				end
 			end
 			'd4: begin
+				valid	<= 0;
+				
 				// Need to shift kernelSize times horizontally to align
 				// to the beginning of the row
 				if (colCnt	> 0) begin
@@ -353,6 +355,8 @@ always @(posedge clk) begin
 					// Mainainance done, request new data, go to state 1
 					// to wait and start a new stripe.
 					req			<= 1;
+					colShift 	<= 0;
+					colCnt		<= 'b0;
 					ctrlState	<= 'd1;
 				end			
 			end
@@ -551,10 +555,10 @@ generate
 						coefIn[0][i]	<= (i != 3)? h[783-i*16:768-i*16] : 'b0;					//	00-03
 						coefIn[1][i]	<= (i != 3)? h[783-i*16-112:768-i*16-112] :'b0;			// 10-13
 						coefIn[2][i]	<= (i != 3)? h[783-i*16-112*2:768-i*16-112*2] :'b0;	// 20-23
-						coefIn[3][i]	<= (i != 3)? h[783-i*16-112*3:768-i*16-112*3] :'b0;	//	30-33
-						coefIn[4][i]	<= (i != 3)? h[783-i*16-112*4:768-i*16-112*4] :'b0;	// 40-43
-						coefIn[6][i]	<= (i != 3)? h[783-i*16-112*5:768-i*16-112*5] :'b0;	//	50-53
-						coefIn[7][i]	<= (i != 3)? h[783-i*16-112*6:768-i*16-112*6] :'b0;	// 60-63
+						coefIn[6][i]	<= (i != 3)? h[783-i*16-112*3:768-i*16-112*3] :'b0;	//	30-33
+						coefIn[7][i]	<= (i != 3)? h[783-i*16-112*4:768-i*16-112*4] :'b0;	// 40-43
+						coefIn[3][i]	<= (i != 3)? h[783-i*16-112*5:768-i*16-112*5] :'b0;	//	50-53
+						coefIn[4][i]	<= (i != 3)? h[783-i*16-112*6:768-i*16-112*6] :'b0;	// 60-63
 						
 						coefIn[8][i]	<= 'b0;																// zero
 						
