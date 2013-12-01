@@ -363,7 +363,7 @@ initial begin
 			@(negedge clk);
 		end
 		oWrAddress	= (pixelCnt/480)*2 + ((pixelCnt%480)>>1)*320 + (pixelCnt%2);
-		$display("pixelCnt = %d @ time: ", pixelCnt, $time);
+		//$display("pixelCnt = %d @ time: ", pixelCnt, $time);
 		pixelCnt++;
 		
 		// 7x7

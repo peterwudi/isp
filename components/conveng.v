@@ -304,17 +304,17 @@ always @(posedge clk) begin
 				// Set the valid signal and pass through the
 				// delay pipeline
 				valid			<= 1;
+				
+				// Shift horizontally to get new data.
+				// Only shift stripeWidth - 1 times, but
+				// OK to shift before the maintenace state
+				colShift		<= 1;
+				
 				if (colCnt < stripeWidth - 1) begin
-					// Shift horizontally to get new data.
-					// Only shift stripeWidth - 1 times
-					colShift		<= 1;
 					colCnt		<= colCnt + 1;
-					
 					ctrlState	<= 'd3;
 				end
 				else begin
-					colShift		<= 0;
-					
 					if (stripeCnt == totalStripes) begin
 						// Last stripe, we're done, go to a wait state to
 						// wait for reset.
@@ -330,11 +330,12 @@ always @(posedge clk) begin
 						//	(1) Maintain the 2D RF, i.e. shift everything
 						// to align at the beginning.
 						// (2) Get a new row
-						// So go to a mainainance state 
+						// So go to a maintenace state 
 						ctrlState	<= 'd4;
 						
-						// Set colCnt to kernelSize for the mainainance state 
-						colCnt		<= kernelSize;
+						// Set colCnt to totalBoundry-1 for
+						// the mainainance state 
+						colCnt		<= totalBoundry - 1;
 					end
 					else begin
 						// Already finished the strip, don't care what's
@@ -367,6 +368,8 @@ always @(posedge clk) begin
 			end
 			'd5: begin
 				// Stay here until reset
+				rowShift		<= 0;
+				colShift		<= 0;
 			end
 			default: begin
 				req			<= 0;
@@ -788,10 +791,10 @@ generate
 				else if (colShift) begin
 					if (mode == `pattern_3x3) begin
 						// 3x3 pattern shifts 4 pixels at a time
-						rf[i][(j+numBits3x3)%rowSize] <= rf[i][j];
+						rf[i][j] <= rf[i][(j+numBits3x3)%rowSize];
 					end
 					else begin
-						rf[i][(j+numBits)%rowSize]	<= rf[i][j];
+						rf[i][j]	<= rf[i][(j+numBits)%rowSize];
 					end
 				end
 				else if (rowShift) begin
