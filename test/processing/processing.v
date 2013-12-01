@@ -22,9 +22,10 @@ module processing(
 	output							oDoneFilter,
 	
 	// Conveng
-	input		[255:0]				irData, igData, ibData,
+	input		[63:0]				irData, igData, ibData,
 	output							oReq,
-	output	[31:0]				oRdAddress, oWrAddress,
+	output	[31:0]				oRdAddress,// oWrAddress,
+	output	[31:0]				oConvPixelCnt,
 	output	[7:0]					orData, ogData, obData,
 	
 	// rgb2ycc
@@ -169,11 +170,28 @@ localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundary
 //	end
 //end
 
+reg	[7:0]	convengResetCnt;
+reg			convengReset;
+always @(posedge clk) begin
+	if (reset) begin
+		convengReset		<= 1;
+		convengResetCnt	<= 'b0;
+	end
+	else begin
+		if (convengResetCnt == 15) begin
+			convengReset	<= 0;
+		end
+		else begin 
+			convengResetCnt	<= convengResetCnt + 1;
+		end
+	end
+end
+	
 filter_fifo_conveng #(.width(width), .height(height))
 filter
 (
 	.clk(clk),
-	.reset(reset),
+	.reset(convengReset),
 	.iValid(iValid),
 	.mode(`pattern_7x7),
 	.irData(irData),
@@ -182,7 +200,8 @@ filter
 	
 	.oReq(oReq),
 	.oRdAddress(oRdAddress),
-	.oWrAddress(oWrAddress),
+	.oPixelCnt(oConvPixelCnt),
+	//.oWrAddress(oWrAddress),
 	.orData(orData),
 	.ogData(ogData),
 	.obData(obData),
@@ -190,9 +209,6 @@ filter
 	.oValid(oValidFilter),
 	.oDone(oDoneFilter)
 );
-
-
-
 
 
 //filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))

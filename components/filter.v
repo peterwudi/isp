@@ -6,11 +6,12 @@ module filter_fifo_conveng
 	input 				reset,
 	input					iValid,
 	input		[2:0]		mode,
-	input		[255:0]	irData, igData, ibData,
+	input		[63:0]	irData, igData, ibData,
 	
 	output				oReq,
 	output	[31:0]	oRdAddress,
-	output	[31:0]	oWrAddress,
+	output	[31:0]	oPixelCnt,
+	//output	[31:0]	oWrAddress,
 	//output	[31:0]	oData,
 	// TODO, for now use 7x7
 	output	[7:0]		orData, ogData, obData,
@@ -38,7 +39,8 @@ conveng r_conv
 	
 	.oReq(oReq),
 	.oRdAddress(oRdAddress),
-	.oWrAddress(oWrAddress),
+	//.oWrAddress(oWrAddress),
+	.oPixelCnt(oPixelCnt),
 	.oData(r_conv_out),
 	.oValid(oValid),
 	.oDone(oDone)
@@ -58,7 +60,8 @@ conveng g_conv
 	
 	.oReq(),
 	.oRdAddress(),
-	.oWrAddress(),
+	.oPixelCnt(),
+	//.oWrAddress(),
 	.oData(g_conv_out),
 	.oValid(),
 	.oDone()
@@ -78,7 +81,8 @@ conveng b_conv
 	
 	.oReq(),
 	.oRdAddress(),
-	.oWrAddress(),
+	.oPixelCnt(),
+	//.oWrAddress(),
 	.oData(b_conv_out),
 	.oValid(),
 	.oDone()

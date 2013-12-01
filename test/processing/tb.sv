@@ -42,9 +42,10 @@ logic							oValidFilter;
 logic							oDoneFilter;
 
 // Conveng
-logic	[255:0]				irData, igData, ibData;
+logic	[63:0]				irData, igData, ibData;
 logic							oReq;
 logic	[31:0]				oRdAddress, oWrAddress;
+logic	[31:0]				oConvPixelCnt;
 logic	[7:0]					orData, ogData, obData;
 
 // rgb2ycc
@@ -98,9 +99,9 @@ dut ( .* );
 initial clk = '1;
 always #2.5 clk = ~clk;  // 200 MHz clock
 
-logic unsigned	[7:0]		iR;
-logic unsigned	[7:0]		iG;
-logic unsigned	[7:0]		iB;
+//logic unsigned	[7:0]		iR;
+//logic unsigned	[7:0]		iG;
+//logic unsigned	[7:0]		iB;
 
 // Stream Producer
 //initial begin
@@ -219,7 +220,7 @@ logic unsigned	[7:0]		iB;
 //	reset = 1'b0;
 //end
 
-
+logic	[7:0] rInput [7:0];
 
 // Conveng Producer
 initial begin
@@ -274,7 +275,7 @@ initial begin
 	reset = 1'b0;	
 	@(negedge clk);
 	newFrame = 1;
-	for (int i = 0; i < 32; i++) begin
+	for (int i = 0; i < 8; i++) begin
 		@(negedge clk);
 		newFrame = 0;
 	end
@@ -284,62 +285,27 @@ initial begin
 		@(negedge clk);
 		
 		if (oReq == 1) begin
-			irData	<= {	o_irFilter[oRdAddress], o_irFilter[oRdAddress+1], o_irFilter[oRdAddress+2], o_irFilter[oRdAddress+3],
-								o_irFilter[oRdAddress+4], o_irFilter[oRdAddress+5], o_irFilter[oRdAddress+6], o_irFilter[oRdAddress+7],
-								o_irFilter[oRdAddress+8], o_irFilter[oRdAddress+9], o_irFilter[oRdAddress+10], o_irFilter[oRdAddress+11],
-								o_irFilter[oRdAddress+12], o_irFilter[oRdAddress+13], o_irFilter[oRdAddress+14], o_irFilter[oRdAddress+15],
-								o_irFilter[oRdAddress+16], o_irFilter[oRdAddress+17], o_irFilter[oRdAddress+18], o_irFilter[oRdAddress+19],
-								o_irFilter[oRdAddress+20], o_irFilter[oRdAddress+21], o_irFilter[oRdAddress+22], o_irFilter[oRdAddress+23],
-								o_irFilter[oRdAddress+24], o_irFilter[oRdAddress+25], o_irFilter[oRdAddress+26], o_irFilter[oRdAddress+27],
-								o_irFilter[oRdAddress+28], o_irFilter[oRdAddress+29], o_irFilter[oRdAddress+30], o_irFilter[oRdAddress+31],
-								o_irFilter[oRdAddress+32], o_irFilter[oRdAddress+33], o_irFilter[oRdAddress+34], o_irFilter[oRdAddress+35],
-								o_irFilter[oRdAddress+36], o_irFilter[oRdAddress+37], o_irFilter[oRdAddress+38], o_irFilter[oRdAddress+39],
-								o_irFilter[oRdAddress+40], o_irFilter[oRdAddress+41], o_irFilter[oRdAddress+42], o_irFilter[oRdAddress+43],
-								o_irFilter[oRdAddress+44], o_irFilter[oRdAddress+45], o_irFilter[oRdAddress+46], o_irFilter[oRdAddress+47],
-								o_irFilter[oRdAddress+48], o_irFilter[oRdAddress+49], o_irFilter[oRdAddress+50], o_irFilter[oRdAddress+51],
-								o_irFilter[oRdAddress+52], o_irFilter[oRdAddress+53], o_irFilter[oRdAddress+54], o_irFilter[oRdAddress+55],
-								o_irFilter[oRdAddress+56], o_irFilter[oRdAddress+57], o_irFilter[oRdAddress+58], o_irFilter[oRdAddress+59],
-								o_irFilter[oRdAddress+60], o_irFilter[oRdAddress+61], o_irFilter[oRdAddress+62], o_irFilter[oRdAddress+63]};
-								
-			igData	<= {	o_igFilter[oRdAddress], o_igFilter[oRdAddress+1], o_igFilter[oRdAddress+2], o_igFilter[oRdAddress+3],
-								o_igFilter[oRdAddress+4], o_igFilter[oRdAddress+5], o_igFilter[oRdAddress+6], o_igFilter[oRdAddress+7],
-								o_igFilter[oRdAddress+8], o_igFilter[oRdAddress+9], o_igFilter[oRdAddress+10], o_igFilter[oRdAddress+11],
-								o_igFilter[oRdAddress+12], o_igFilter[oRdAddress+13], o_igFilter[oRdAddress+14], o_igFilter[oRdAddress+15],
-								o_igFilter[oRdAddress+16], o_igFilter[oRdAddress+17], o_igFilter[oRdAddress+18], o_igFilter[oRdAddress+19],
-								o_igFilter[oRdAddress+20], o_igFilter[oRdAddress+21], o_igFilter[oRdAddress+22], o_igFilter[oRdAddress+23],
-								o_igFilter[oRdAddress+24], o_igFilter[oRdAddress+25], o_igFilter[oRdAddress+26], o_igFilter[oRdAddress+27],
-								o_igFilter[oRdAddress+28], o_igFilter[oRdAddress+29], o_igFilter[oRdAddress+30], o_igFilter[oRdAddress+31],
-								o_igFilter[oRdAddress+32], o_igFilter[oRdAddress+33], o_igFilter[oRdAddress+34], o_igFilter[oRdAddress+35],
-								o_igFilter[oRdAddress+36], o_igFilter[oRdAddress+37], o_igFilter[oRdAddress+38], o_igFilter[oRdAddress+39],
-								o_igFilter[oRdAddress+40], o_igFilter[oRdAddress+41], o_igFilter[oRdAddress+42], o_igFilter[oRdAddress+43],
-								o_igFilter[oRdAddress+44], o_igFilter[oRdAddress+45], o_igFilter[oRdAddress+46], o_igFilter[oRdAddress+47],
-								o_igFilter[oRdAddress+48], o_igFilter[oRdAddress+49], o_igFilter[oRdAddress+50], o_igFilter[oRdAddress+51],
-								o_igFilter[oRdAddress+52], o_igFilter[oRdAddress+53], o_igFilter[oRdAddress+54], o_igFilter[oRdAddress+55],
-								o_igFilter[oRdAddress+56], o_igFilter[oRdAddress+57], o_igFilter[oRdAddress+58], o_igFilter[oRdAddress+59],
-								o_igFilter[oRdAddress+60], o_igFilter[oRdAddress+61], o_igFilter[oRdAddress+62], o_igFilter[oRdAddress+63]};
+			irData	<= {	o_irFilter[oRdAddress+7], o_irFilter[oRdAddress+6], o_irFilter[oRdAddress+5], o_irFilter[oRdAddress+4],
+								o_irFilter[oRdAddress+3], o_irFilter[oRdAddress+2], o_irFilter[oRdAddress+1], o_irFilter[oRdAddress]};
+			rInput[7]	<= o_irFilter[oRdAddress+7]; 
+			rInput[6]	<= o_irFilter[oRdAddress+6];
+			rInput[5]	<= o_irFilter[oRdAddress+5];
+			rInput[4]	<= o_irFilter[oRdAddress+4];
+			rInput[3]	<= o_irFilter[oRdAddress+3];
+			rInput[2]	<= o_irFilter[oRdAddress+2];
+			rInput[1]	<= o_irFilter[oRdAddress+1];
+			rInput[0]	<= o_irFilter[oRdAddress];
+			
+			igData	<= {	o_igFilter[oRdAddress+7], o_igFilter[oRdAddress+6], o_igFilter[oRdAddress+5], o_igFilter[oRdAddress+4],
+								o_igFilter[oRdAddress+3], o_igFilter[oRdAddress+2], o_igFilter[oRdAddress+1], o_igFilter[oRdAddress]};
 				
-			ibData	<= {	o_ibFilter[oRdAddress], o_ibFilter[oRdAddress+1], o_ibFilter[oRdAddress+2], o_ibFilter[oRdAddress+3],
-								o_ibFilter[oRdAddress+4], o_ibFilter[oRdAddress+5], o_ibFilter[oRdAddress+6], o_ibFilter[oRdAddress+7],
-								o_ibFilter[oRdAddress+8], o_ibFilter[oRdAddress+9], o_ibFilter[oRdAddress+10], o_ibFilter[oRdAddress+11],
-								o_ibFilter[oRdAddress+12], o_ibFilter[oRdAddress+13], o_ibFilter[oRdAddress+14], o_ibFilter[oRdAddress+15],
-								o_ibFilter[oRdAddress+16], o_ibFilter[oRdAddress+17], o_ibFilter[oRdAddress+18], o_ibFilter[oRdAddress+19],
-								o_ibFilter[oRdAddress+20], o_ibFilter[oRdAddress+21], o_ibFilter[oRdAddress+22], o_ibFilter[oRdAddress+23],
-								o_ibFilter[oRdAddress+24], o_ibFilter[oRdAddress+25], o_ibFilter[oRdAddress+26], o_ibFilter[oRdAddress+27],
-								o_ibFilter[oRdAddress+28], o_ibFilter[oRdAddress+29], o_ibFilter[oRdAddress+30], o_ibFilter[oRdAddress+31],
-								o_ibFilter[oRdAddress+32], o_ibFilter[oRdAddress+33], o_ibFilter[oRdAddress+34], o_ibFilter[oRdAddress+35],
-								o_ibFilter[oRdAddress+36], o_ibFilter[oRdAddress+37], o_ibFilter[oRdAddress+38], o_ibFilter[oRdAddress+39],
-								o_ibFilter[oRdAddress+40], o_ibFilter[oRdAddress+41], o_ibFilter[oRdAddress+42], o_ibFilter[oRdAddress+43],
-								o_ibFilter[oRdAddress+44], o_ibFilter[oRdAddress+45], o_ibFilter[oRdAddress+46], o_ibFilter[oRdAddress+47],
-								o_ibFilter[oRdAddress+48], o_ibFilter[oRdAddress+49], o_ibFilter[oRdAddress+50], o_ibFilter[oRdAddress+51],
-								o_ibFilter[oRdAddress+52], o_ibFilter[oRdAddress+53], o_ibFilter[oRdAddress+54], o_ibFilter[oRdAddress+55],
-								o_ibFilter[oRdAddress+56], o_ibFilter[oRdAddress+57], o_ibFilter[oRdAddress+58], o_ibFilter[oRdAddress+59],
-								o_ibFilter[oRdAddress+60], o_ibFilter[oRdAddress+61], o_ibFilter[oRdAddress+62], o_ibFilter[oRdAddress+63]};
+			ibData	<= {	o_ibFilter[oRdAddress+7], o_ibFilter[oRdAddress+6], o_ibFilter[oRdAddress+5], o_ibFilter[oRdAddress+4],
+								o_ibFilter[oRdAddress+3], o_ibFilter[oRdAddress+2], o_ibFilter[oRdAddress+1], o_ibFilter[oRdAddress]};
+
 			iValid	= 1'b1;
 		end
-		
-		if (oDoneFilter == 1) begin
-			iValid = 0;
-			break;
+		else begin
+			iValid	= 0;
 		end
 	end	
 	
@@ -391,6 +357,14 @@ initial begin
 		while (!oValidFilter) begin
 			@(negedge clk);
 		end
+		
+		// 7x7
+		// Each stripe has 480 pixels
+		// Finished (oConvPixelCnt/480) stripes, each stripe has 2 pixels
+		// The current stripe has finished (oConvPixelCnt%480) pixels
+		// The start of the current line is (((oConvPixelCnt%480)-1)>>1)*320
+		// The pixel on the current stripe is (oConvPixelCnt%2)?2:1;
+		oWrAddress	= (oConvPixelCnt/480)*2 + (((oConvPixelCnt%480)-1)>>1)*320 + ((oConvPixelCnt%2)?2:1);
 		
 		filter_r		= orData;
 		filter_g		= ogData;

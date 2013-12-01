@@ -5,7 +5,7 @@ module conveng
 	input					clk,
 	input					reset,
 
-	input		[255:0]	iData,
+	input		[63:0]	iData,
 	input					iValid,
 	input		[2:0]		mode,
 	
@@ -14,7 +14,8 @@ module conveng
 	
 	output				oReq,
 	output	[31:0]	oRdAddress,
-	output	[31:0]	oWrAddress,
+	output	[31:0]	oPixelCnt,
+	//output	[31:0]	oWrAddress,
 	output	[31:0]	oData,
 	output				oValid,
 	output				oDone
@@ -87,33 +88,35 @@ always @(posedge clk) begin
 					end
 				endcase
 				
-				// stripeOffset	= 64 - 2*boundaryWidth
+				// stripeOffset	= 8 - 2*boundaryWidth	(when we do shift)
 				// totalStripes	= ceil(width/stripeOffset)
 				// Last stripe width = width%stripeOffset (if 0 then stripeOffset)
 				case (mode)
 					`pattern_3x3: begin
+						// This is special, maybe don't want to do horizontal shift
 						kernelSize			<= 'd3;
 						boundaryWidth		<= 'd1;
 						totalBoundry		<= 'd2;
-						stripeOffset		<= 'd62;
-						totalStripes		<= (height == 1080)? 'd31 :'d6;
-						lastStripeWidth	<= (height == 1080)? 'd60 :'d10;
+						stripeOffset		<= 'd4;
+						totalStripes		<= (height == 1080)? 'd480 : 'd80;
+						lastStripeWidth	<= (height == 1080)? 'd4 : 'd4;
 					end
 					`pattern_5x5: begin
+						// This is special, maybe don't want to do horizontal shift
 						kernelSize			<= 'd5;
 						boundaryWidth		<= 'd2;
 						totalBoundry		<= 'd4;
-						stripeOffset		<= 'd60;
-						totalStripes		<= (height == 1080)? 'd32 :'d6;
-						lastStripeWidth	<= (height == 1080)? 'd0  :'d20;
+						stripeOffset		<= 'd2;
+						totalStripes		<= (height == 1080)? 'd960 :'d160;
+						lastStripeWidth	<= (height == 1080)? 'd2  :'d2;
 					end
 					`pattern_7x7: begin
 						kernelSize			<= 'd7;
 						boundaryWidth		<= 'd3;
 						totalBoundry		<= 'd6;
-						stripeOffset		<= 'd58;
-						totalStripes		<= (height == 1080)? 'd34 :'d6;
-						lastStripeWidth	<= (height == 1080)? 'd6  :'d30;
+						stripeOffset		<= 'd2;
+						totalStripes		<= (height == 1080)? 'd960 :'d160;
+						lastStripeWidth	<= (height == 1080)? 'd2  :'d2;
 					end
 					default: begin
 						kernelSize		<= 'd0;
@@ -146,7 +149,11 @@ end
 
 reg				colShift;
 reg				rowShift;
-reg	[255:0]	rf	[6:0];
+reg	[63:0]	rf	[6:0];
+
+reg				r_iValid;
+reg	[63:0]	r_iData;
+reg	[3:0]		ctrlState;
 
 shift2drf shift2drf
 (
@@ -159,9 +166,7 @@ shift2drf shift2drf
 	
 	.rf(rf)
 );
-reg				r_iValid;
-reg	[255:0]	r_iData;
-reg	[3:0]		ctrlState;
+
 
 reg				valid;
 reg	[31:0]	wrAdress;
@@ -173,7 +178,7 @@ reg	[15:0]	stripeCnt;
 reg	[15:0]	stripeWidth;
 reg	[15:0]	stripeStart;
 reg	[31:0]	moRdAddress;
-reg	[31:0]	moWrAddress;
+//reg	[31:0]	moWrAddress;
 reg				req;
 
 reg				o_valid_pipeline[pipelineDepth-1:0];
@@ -201,7 +206,7 @@ always @(posedge clk) begin
 		r_iData			<= 'b0;
 	end
 	else begin
-		img_done	<= (pixelCnt == totalPixels) ? 1 : 0;
+		//img_done	<= (pixelCnt == totalPixels) ? 1 : 0;
 		
 		case (ctrlState)
 			'd0: begin
@@ -224,6 +229,7 @@ always @(posedge clk) begin
 			end
 			'd1: begin
 				req			<= 0;
+				rowShift		<= 0;
 				// Wait for iValid
 				if (iValid == 1) begin
 					// Cache iData
@@ -235,26 +241,32 @@ always @(posedge clk) begin
 					ctrlState	<= 'd1;
 				end
 			end
-			'd2: begin
-				// Row shift into the 2D RF
-				rowShift		<= 1;
-				
+			'd2: begin				
 				// Update address to get the next row
-				moRdAddress	<= moRdAddress + width;
-				
+				moRdAddress	<= moRdAddress + width + totalBoundry;
 				rowCnt		<= rowCnt + 1;
 				
 				// Check if have enough rows
-				if (rowCnt	< kernelSize-1) begin
+				if (rowCnt < kernelSize-1) begin
 					// At least need another row, go to
 					// state 1 to request another row
 					ctrlState	<= 'd1;
 					req			<= 1;
+					
+					// Row shift into the 2D RF
+					rowShift		<= 1;
+				end
+				else if (rowCnt == kernelSize-1) begin
+					// The last row needs to be shifted into the 2D RF
+					rowShift		<= 1;
+					req			<= 0;
+					ctrlState	<= 'd2;
 				end
 				else begin
 					// Have enough rows, ready to process
 					req			<= 0;
 					ctrlState	<= 'd3;
+					rowShift		<= 0;
 					
 					// Set stripeWidth
 					if (stripeCnt < totalStripes - 1) begin
@@ -272,6 +284,16 @@ always @(posedge clk) begin
 			'd3: begin
 				// Start to process
 				req			<= 0;
+				rowShift		<= 0;
+				
+				if (pixelCnt < totalPixels - 1) begin
+						// Count how many valid outputs has been processed.
+						pixelCnt	<= pixelCnt + 1;
+					end
+					else begin
+						pixelCnt	<= 'b0;
+					end
+				img_done	<= (pixelCnt == totalPixels-1) ? 1 : 0;				
 				
 				if (colCnt < stripeWidth - 1) begin
 					// Shift horizontally to get new data.
@@ -281,19 +303,11 @@ always @(posedge clk) begin
 					// Set the valid signal and pass through the
 					// delay pipeline
 					valid			<= 1;
-					
-					if (pixelCnt < totalPixels - 1) begin
-						// Count how many valid outputs has been processed.
-						pixelCnt	<= pixelCnt + 1;
-					end
-					else begin
-						pixelCnt	<= 'b0;
-					end
 					ctrlState	<= 'd3;
 				end
 				else begin
-					// Shifts to the boundry now, the output is invalid
-					valid			<= 0;
+					// Shifts to the boundry now, the output is still valid
+					valid			<= 1;
 					colShift		<= 0;
 					
 					if (stripeCnt == totalStripes) begin
@@ -330,9 +344,9 @@ always @(posedge clk) begin
 			'd4: begin
 				// Need to shift kernelSize times horizontally to align
 				// to the beginning of the row
-				if (rowCnt	> 0) begin
+				if (colCnt	> 0) begin
 					colShift 	<= 1;
-					rowCnt		<= rowCnt - 1;
+					colCnt		<= colCnt - 1;
 					ctrlState	<= 'd4;
 				end
 				else begin
@@ -449,37 +463,37 @@ generate
 				end
 			end
 			else begin
-				multIn[0][i] <= rf[0][255-i*8:248-i*8];	//	00-03
-				multIn[1][i] <= rf[1][255-i*8:248-i*8];	// 10-13
-				multIn[2][i] <= rf[2][255-i*8:248-i*8];	// 20-23
+				multIn[0][i] <= rf[0][7+i*8:i*8];	//	00-03
+				multIn[1][i] <= rf[1][7+i*8:i*8];	// 10-13
+				multIn[2][i] <= rf[2][7+i*8:i*8];	// 20-23
 		
 				// 7x7: 50-53, otherwise: 01-04
-				multIn[3][i] <= (mode==`pattern_7x7)?rf[5][255-i*8:248-i*8]:rf[0][247-i*8:240-i*8];
+				multIn[3][i] <= (mode==`pattern_7x7)?rf[5][7+i*8:i*8]:rf[0][15+i*8:8+i*8];
 				// 7x7: 60-63, otherwise: 11-14
-				multIn[4][i] <= (mode==`pattern_7x7)?rf[6][255-i*8:248-i*8]:rf[1][247-i*8:240-i*8];
+				multIn[4][i] <= (mode==`pattern_7x7)?rf[6][7+i*8:i*8]:rf[1][15+i*8:8+i*8];
 				// 7x7: 63-66, otherwise: 21-24
-				multIn[5][i] <= (mode==`pattern_7x7)?rf[6][231-i*8:224-i*8]:rf[2][247-i*8:240-i*8];
+				multIn[5][i] <= (mode==`pattern_7x7)?rf[6][31+i*8:24+i*8]:rf[2][15+i*8:8+i*8];
 			
 				// 3x3: 02-05, otherwise: 30-33
-				multIn[6][i] <= (mode==`pattern_3x3)?rf[0][239-i*8:232-i*8]:rf[3][255-i*8:248-i*8];
+				multIn[6][i] <= (mode==`pattern_3x3)?rf[0][23+i*8:16+i*8]:rf[3][7+i*8:i*8];
 				// 3x3: 12-15, otherwise: 40-43
-				multIn[7][i] <= (mode==`pattern_3x3)?rf[1][239-i*8:232-i*8]:rf[4][255-i*8:248-i*8];
+				multIn[7][i] <= (mode==`pattern_3x3)?rf[1][23+i*8:16+i*8]:rf[4][7+i*8:i*8];
 				// 3x3: 22-25, otherwise: 04-34
-				multIn[8][i] <= (mode==`pattern_3x3)?rf[2][239-i*8:232-i*8]:rf[i][223:216];
+				multIn[8][i] <= (mode==`pattern_3x3)?rf[2][23+i*8:16+i*8]:rf[i][39:32];
 			
 				// 5x5: 31-34, otherwise: 03-06
-				multIn[9][i] <= (mode==`pattern_5x5)?rf[3][247-i*8:240-i*8]:rf[0][231-i*8:224-i*8];
+				multIn[9][i] <= (mode==`pattern_5x5)?rf[3][15+i*8:8+i*8]:rf[0][31+i*8:24+i*8];
 				// 5x5: 41-44, otherwise: 13-16
-				multIn[10][i] <= (mode==`pattern_5x5)?rf[4][247-i*8:240-i*8]:rf[1][231-i*8:224-i*8];
+				multIn[10][i] <= (mode==`pattern_5x5)?rf[4][15+i*8:8+i*8]:rf[1][31+i*8:24+i*8];
 				// 5x5: 05-35, otherwise: 23-26
-				multIn[11][i] <= (mode==`pattern_5x5)?rf[i][215:208]:rf[2][231-i*8:224-i*8];	
+				multIn[11][i] <= (mode==`pattern_5x5)?rf[i][47:40]:rf[2][31+i*8:24+i*8];	
 		
 				// 5x5: 43-46(only using 44), otherwise: 33-36
-				multIn[12][i] <= (mode==`pattern_5x5)?rf[4][231-i*8:224-i*8]:rf[3][231-i*8:224-i*8];
+				multIn[12][i] <= (mode==`pattern_5x5)?rf[4][331+i*8:24+i*8]:rf[3][31+i*8:24+i*8];
 				// 43-46
-				multIn[13][i] <= rf[4][231-i*8:224-i*8];
+				multIn[13][i] <= rf[4][31+i*8:24+i*8];
 				// 53-56
-				multIn[14][i] <= rf[5][231-i*8:224-i*8];
+				multIn[14][i] <= rf[5][31+i*8:24+i*8];
 			end
 		end
 	end
@@ -586,7 +600,7 @@ generate
 			.datab_1(coefIn[i][1]),
 			.datab_2(coefIn[i][2]),
 			.datab_3(coefIn[i][3]),
-			.ena0(1),
+			.ena0(1'b1),
 			.result(multRes[i]));
 	end
 
@@ -727,7 +741,8 @@ assign	oReq			= req;
 assign	oRdAddress	= moRdAddress;
 assign	oData			= moData;
 assign	oValid		= o_valid_pipeline[pipelineDepth-1];
-assign	oWrAddress	= o_wrAddress_pipeline[pipelineDepth-1];
+assign	oPixelCnt	= pixelCnt;
+//assign	oWrAddress	= o_wrAddress_pipeline[pipelineDepth-1];
 assign	oDone			= o_done_pipeline[pipelineDepth-1];
 
 endmodule
@@ -737,15 +752,15 @@ module shift2drf
 (
 	input						clk,
 	input						reset,
-	input			[255:0]	iData,
+	input			[63:0]	iData,
 	input						colShift,
 	input						rowShift,
 	input			[2:0]		mode,
 	
-	output reg	[255:0]	rf	[6:0]
+	output reg	[63:0]	rf	[6:0]
 );
 
-localparam numCol			= 32;
+localparam numCol			= 8;
 localparam numRow			= 7;
 localparam numBits		= 8;
 localparam numBits3x3	= 8*4;
