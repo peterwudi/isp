@@ -1,10 +1,10 @@
 `timescale 1ns/1ns
 
-//localparam	width				= 1920;
-//localparam	height			= 1080;
+localparam	width				= 1920;
+localparam	height			= 1080;
 
-localparam	width				= 320;
-localparam	height			= 240;
+//localparam	width				= 320;
+//localparam	height			= 240;
 
 
 localparam	kernelSize		= 7;
@@ -362,7 +362,8 @@ initial begin
 		while (!oValidFilter) begin
 			@(negedge clk);
 		end
-		oWrAddress	= (pixelCnt/480)*2 + ((pixelCnt%480)>>1)*320 + (pixelCnt%2);
+		oWrAddress	= (pixelCnt/(height*2))*2 + ((pixelCnt%(height*2))>>1)*width + (pixelCnt%2);
+		
 		//$display("pixelCnt = %d @ time: ", pixelCnt, $time);
 		pixelCnt++;
 		

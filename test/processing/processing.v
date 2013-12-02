@@ -39,11 +39,11 @@ module processing(
 	output							oDoneRGB
 );
 
-//parameter	width			= 1920;
-//parameter	height		= 1080;
+parameter	width			= 1920;
+parameter	height		= 1080;
 
-parameter	width			= 320;
-parameter	height		= 240;
+//parameter	width			= 320;
+//parameter	height		= 240;
 
 localparam	frameSize	= width * height;
 
