@@ -323,7 +323,7 @@ end
 
 logic unsigned	[7:0]		filter_r, filter_g, filter_b;
 logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
-logic unsigned [7:0]		pixelCnt = 0;
+logic unsigned [31:0]	pixelCnt = 0;
 // Conveng Consumer
 initial begin
 	integer r_outFile;

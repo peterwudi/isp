@@ -173,6 +173,7 @@ reg				valid;
 reg	[31:0]	wrAdress;
 reg				img_done;
 reg	[15:0]	rowCnt;
+reg	[7:0]		readyRows;
 reg	[15:0]	colCnt;
 reg	[31:0]	pixelCnt;
 reg	[15:0]	stripeCnt;
@@ -197,6 +198,7 @@ always @(posedge clk) begin
 		wrAdress			<= 'b0;
 		img_done			<= 0;
 		rowCnt			<= 'b0;
+		readyRows		<= 'b0;
 		colCnt			<= 'b0;
 		pixelCnt			<= 'b0;
 		stripeCnt		<=	'b0;
@@ -207,7 +209,7 @@ always @(posedge clk) begin
 		r_iData			<= 'b0;
 	end
 	else begin
-		//img_done	<= (pixelCnt == totalPixels) ? 1 : 0;
+		img_done	<= (pixelCnt == totalPixels-1) ? 1 : 0;	
 		
 		case (ctrlState)
 			'd0: begin
@@ -220,6 +222,7 @@ always @(posedge clk) begin
 				wrAdress		<= 'b0;
 				img_done		<= 0;
 				rowCnt		<= 'b0;
+				readyRows	<= 'b0;
 				colCnt		<= 'b0;
 				pixelCnt		<= 'b0;
 				stripeCnt	<=	'b0;
@@ -243,27 +246,8 @@ always @(posedge clk) begin
 				end
 			end
 			'd2: begin				
-				// Update address to get the next row
-				moRdAddress	<= moRdAddress + width + totalBoundry;
-				rowCnt		<= rowCnt + 1;
-				
 				// Check if have enough rows
-				if (rowCnt < kernelSize-1) begin
-					// At least need another row, go to
-					// state 1 to request another row
-					ctrlState	<= 'd1;
-					req			<= 1;
-					
-					// Row shift into the 2D RF
-					rowShift		<= 1;
-				end
-				else if (rowCnt == kernelSize-1) begin
-					// The last row needs to be shifted into the 2D RF
-					rowShift		<= 1;
-					req			<= 0;
-					ctrlState	<= 'd2;
-				end
-				else begin
+				if (readyRows > kernelSize-1) begin
 					// Have enough rows, ready to process
 					req			<= 0;
 					ctrlState	<= 'd3;
@@ -284,7 +268,29 @@ always @(posedge clk) begin
 						// Last stripe
 						// lastStripeWidth valid data
 						stripeWidth	<= lastStripeWidth;
-					end					
+					end
+				end
+				else begin
+					// Row shift into the 2D RF
+					rowShift		<= 1;
+					readyRows	<= readyRows + 1;
+					rowCnt		<= rowCnt + 1;
+					
+					if (readyRows < kernelSize-1) begin
+						// At least need another row, go to
+						// state 1 to request another row
+						ctrlState	<= 'd1;
+						req			<= 1;
+						
+						// Update address to get the next row
+						moRdAddress	<= moRdAddress + width + totalBoundry;
+					end
+					else if (readyRows == kernelSize-1) begin
+						// The last row also needs to be shifted
+						// into the 2D RF
+						req			<= 0;
+						ctrlState	<= 'd2;
+					end
 				end
 			end
 			'd3: begin
@@ -293,13 +299,12 @@ always @(posedge clk) begin
 				rowShift		<= 0;
 				
 				if (pixelCnt < totalPixels - 1) begin
-						// Count how many valid outputs has been processed.
-						pixelCnt	<= pixelCnt + 1;
-					end
-					else begin
-						pixelCnt	<= 'b0;
-					end
-				img_done	<= (pixelCnt == totalPixels-1) ? 1 : 0;				
+					// Count how many valid outputs has been processed.
+					pixelCnt	<= pixelCnt + 1;
+				end
+				else begin
+					pixelCnt	<= 'b0;
+				end			
 				
 				// Set the valid signal and pass through the
 				// delay pipeline
@@ -321,55 +326,62 @@ always @(posedge clk) begin
 						ctrlState	<= 'd5;
 					end
 					
-					// Update new stripe address info
-					stripeStart	<= stripeStart + stripeOffset;
-					moRdAddress	<= stripeStart + stripeOffset;
+					// Go to a maintenace state 
+					ctrlState	<= 'd4;
 					
-					if (rowCnt	< height) begin
-						// Haven't finished the stripe yet, need to do:
-						//	(1) Maintain the 2D RF, i.e. shift everything
-						// to align at the beginning.
-						// (2) Get a new row
-						// So go to a maintenace state 
-						ctrlState	<= 'd4;
-						
-						// Set colCnt to totalBoundry-1 for
-						// the mainainance state 
-						colCnt		<= totalBoundry - 1;
-					end
-					else begin
-						// Already finished the strip, don't care what's
-						// in the 2D RF, start a new stripe.
-						req			<= 1;
-						ctrlState	<= 'd1;
-						colCnt		<= 'b0;
-						stripeCnt	<= stripeCnt + 1;
-					end
+					// Set colCnt to totalBoundry-1 for
+					// the maintenace state 
+					colCnt		<= totalBoundry - 1;
 				end
 			end
 			'd4: begin
 				valid	<= 0;
 				
-				// Need to shift kernelSize times horizontally to align
-				// to the beginning of the row
-				if (colCnt	> 0) begin
-					colShift 	<= 1;
-					colCnt		<= colCnt - 1;
-					ctrlState	<= 'd4;
+				if (rowCnt	< height+totalBoundry) begin
+					// Haven't finished the stripe yet, need to
+					//	maintain the 2D RF, i.e. shift everything
+					// to align at the beginning.
+					if (colCnt	> 0) begin
+						colShift 	<= 1;
+						colCnt		<= colCnt - 1;
+						ctrlState	<= 'd4;
+					end
+					else begin
+						// Maintenance done, request new data
+						req			<= 1;
+						colShift 	<= 0;
+						colCnt		<= 'b0;
+						ctrlState	<= 'd1;
+						
+						// Need a new row, decrement readyRows
+						readyRows	<= readyRows - 1;
+						// Update address to get the next row.
+						moRdAddress	<= moRdAddress + width + totalBoundry;	
+					end			
 				end
 				else begin
-					// Mainainance done, request new data, go to state 1
-					// to wait and start a new stripe.
+					// Already finished the stripe, don't care what's
+					// in the 2D RF, start a new stripe.
 					req			<= 1;
+					ctrlState	<= 'd1;
 					colShift 	<= 0;
 					colCnt		<= 'b0;
-					ctrlState	<= 'd1;
-				end			
+					rowCnt		<= 'b0;
+					readyRows	<= 'b0;
+					stripeCnt	<= stripeCnt + 1;
+					
+					// Update new stripe address info
+					stripeStart	<= stripeStart + stripeOffset;
+					moRdAddress	<= stripeStart + stripeOffset;
+				end
 			end
 			'd5: begin
 				// Stay here until reset
 				rowShift		<= 0;
 				colShift		<= 0;
+				colCnt		<= 'b0;
+				readyRows	<= 'b0;
+				rowCnt		<= 'b0;
 			end
 			default: begin
 				req			<= 0;
@@ -380,6 +392,7 @@ always @(posedge clk) begin
 				wrAdress		<= 'b0;
 				img_done		<= 0;
 				rowCnt		<= 'b0;
+				readyRows	<= 'b0;
 				colCnt		<= 'b0;
 				pixelCnt		<= 'b0;
 				stripeCnt	<=	'b0;
@@ -501,7 +514,7 @@ generate
 				multIn[11][i] <= (mode==`pattern_5x5)?rf[i][47:40]:rf[2][31+i*8:24+i*8];	
 		
 				// 5x5: 43-46(only using 44), otherwise: 33-36
-				multIn[12][i] <= (mode==`pattern_5x5)?rf[4][331+i*8:24+i*8]:rf[3][31+i*8:24+i*8];
+				multIn[12][i] <= (mode==`pattern_5x5)?rf[4][31+i*8:24+i*8]:rf[3][31+i*8:24+i*8];
 				// 43-46
 				multIn[13][i] <= rf[4][31+i*8:24+i*8];
 				// 53-56
