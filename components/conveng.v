@@ -77,7 +77,7 @@ always @(posedge clk) begin
 				width			<= iWidth;
 				height		<= iHeight;
 				
-				case (height)
+				case (iHeight)
 					'd1080: begin
 						totalPixels		<= 'd2073600;
 					end
