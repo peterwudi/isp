@@ -211,8 +211,22 @@ end
 //	.oDone(oDoneFilter)
 //);
 
+//filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
+//filter
+//(
+//	.clk(clk),
+//	.reset(reset | oDoneFilter),
+//	.iValid(iValidFilter | filterPipelineEn),
+//	.oValid(oValidFilter),
+//	.oDone(oDoneFilter),
+//	
+//	.iData(iDataFilter),
+//	.oData(oDataFilter)
+//);
 
-filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
+
+
+filter_fifo_7_sym #(.width(width), .height(height), .kernel_size(kernelSize))
 filter
 (
 	.clk(clk),
