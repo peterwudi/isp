@@ -30,18 +30,7 @@ assign	oDone		=	moDone;
 
 // 2 extra buffer rows
 // Depth is width
-//demosaic_neighbor_shift_reg buffer(
-//	.clock(clk),
-//	.clken(iValid),
-//	.shiftin(iData),
-//	.shiftout(),
-//	.taps0x(),
-//	.taps1x(),
-//	.taps2x(tap0),
-//	.taps3x(tap1)
-//);
-
-demosaic_neighbor_shift_reg_240p buffer(
+demosaic_neighbor_shift_reg buffer(
 	.clock(clk),
 	.clken(iValid),
 	.shiftin(iData),
@@ -52,6 +41,16 @@ demosaic_neighbor_shift_reg_240p buffer(
 	.taps3x(tap1)
 );
 
+//demosaic_neighbor_shift_reg_240p buffer(
+//	.clock(clk),
+//	.clken(iValid),
+//	.shiftin(iData),
+//	.shiftout(),
+//	.taps0x(),
+//	.taps1x(),
+//	.taps2x(tap0),
+//	.taps3x(tap1)
+//);
 
 parameter	width				= 1920;
 parameter	height			= 1080;

@@ -192,22 +192,7 @@ always @(posedge clk) begin
 end
 
 // Depth is width+boundary_width*2
-//filter_shift_reg_7tap u0
-//(
-//	.clken(r_iValid),
-//	.clock(clk),
-//	.shiftin(r_iData),
-//	.shiftout(),
-//	.taps0x(tap[0]),
-//	.taps1x(tap[1]),
-//	.taps2x(tap[2]),
-//	.taps3x(tap[3]),
-//	.taps4x(tap[4]),
-//	.taps5x(tap[5]),
-//	.taps6x(tap[6])
-//);
-
-filter_shift_reg_7tap_240p u0
+filter_shift_reg_7tap u0
 (
 	.clken(r_iValid),
 	.clock(clk),
@@ -221,6 +206,21 @@ filter_shift_reg_7tap_240p u0
 	.taps5x(tap[5]),
 	.taps6x(tap[6])
 );
+
+//filter_shift_reg_7tap_240p u0
+//(
+//	.clken(r_iValid),
+//	.clock(clk),
+//	.shiftin(r_iData),
+//	.shiftout(),
+//	.taps0x(tap[0]),
+//	.taps1x(tap[1]),
+//	.taps2x(tap[2]),
+//	.taps3x(tap[3]),
+//	.taps4x(tap[4]),
+//	.taps5x(tap[5]),
+//	.taps6x(tap[6])
+//);
 
 
 always @(posedge clk) begin
