@@ -93,11 +93,10 @@ logic unsigned	[17:0]	rMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	gMatrix [totalPixels-1:0];
 logic unsigned	[17:0]	bMatrix [totalPixels-1:0];
 
-processing #(.width(width),	.height(height), 	.kernelSize(kernelSize))
-dut ( .* );
+processing dut ( .* );
 
 initial clk = '1;
-always #2.5 clk = ~clk;  // 200 MHz clock
+always #10 clk = ~clk;  // 50 MHz clock
 
 logic unsigned	[7:0]		iR;
 logic unsigned	[7:0]		iG;

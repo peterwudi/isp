@@ -83,4 +83,14 @@ set_global_assignment -name VERILOG_FILE ../../components/demosaic.v
 set_global_assignment -name VERILOG_FILE processing.v
 set_global_assignment -name SYSTEMVERILOG_FILE tb.sv
 set_global_assignment -name SDC_FILE processing.sdc
+set_global_assignment -name EDA_MAP_ILLEGAL_CHARACTERS ON -section_id eda_simulation
+set_global_assignment -name EDA_ENABLE_GLITCH_FILTERING ON -section_id eda_simulation
+set_global_assignment -name EDA_WRITE_NODES_FOR_POWER_ESTIMATION ALL_NODES -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_DESIGN_INSTANCE_NAME dut -section_id eda_simulation
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name POWER_USE_INPUT_FILES ON
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE 12.5%
+set_global_assignment -name POWER_INPUT_FILE_NAME simulation/modelsim/processing.vcd -section_id processing.vcd
+set_instance_assignment -name POWER_READ_INPUT_FILE processing.vcd -to processing
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
