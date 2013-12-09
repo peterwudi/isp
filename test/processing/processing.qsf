@@ -90,7 +90,9 @@ set_global_assignment -name EDA_TEST_BENCH_DESIGN_INSTANCE_NAME dut -section_id 
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name POWER_USE_INPUT_FILES ON
-set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE 12.5%
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
 set_global_assignment -name POWER_INPUT_FILE_NAME simulation/modelsim/processing.vcd -section_id processing.vcd
 set_instance_assignment -name POWER_READ_INPUT_FILE processing.vcd -to processing
+set_global_assignment -name POWER_VCD_FILE_START_TIME "311 us" -section_id processing.vcd
+set_global_assignment -name POWER_VCD_FILE_END_TIME "700 us" -section_id processing.vcd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

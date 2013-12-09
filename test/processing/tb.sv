@@ -683,6 +683,11 @@ initial begin
 						oFinalR, g_rgb_r, oFinalG, g_rgb_g, oFinalB, g_rgb_b, $time);
 			failed = 1;
 		end
+		
+		// For power
+		if (i >= 19260) begin
+			$stop(0);
+		end
 	end
 	
 	if (failed == 1) begin
