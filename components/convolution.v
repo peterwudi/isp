@@ -18,16 +18,30 @@ localparam	kernel_size		= 7;
 //		-1,	9,		-1,
 //		-1,	-1,	-1
 //
-localparam signed [49*16-1:0] h = {
-	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
-	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
-	16'sd0, 	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
-	16'sd0, 	16'sd0, -16'sd1,  16'sd9, -16'sd1, 16'sd0, 16'sd0,
-	16'sd0,	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
-	16'sd0,	16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0,
-	16'sd0,  16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0
+//localparam signed [49*16-1:0] h = {
+//	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
+//	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
+//	16'sd0, 	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
+//	16'sd0, 	16'sd0, -16'sd1,  16'sd9, -16'sd1, 16'sd0, 16'sd0,
+//	16'sd0,	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
+//	16'sd0,	16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0,
+//	16'sd0,  16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0
+//
+//};
 
+// Power, putting everything to work!
+localparam signed [49*16-1:0] h = {
+	16'sd1234, 	16'sd2345, 	16'sd3456, 	16'sd4567,  16'sd5678, 16'sd6789, 16'sd7890,
+	-16'sd1234, -16'sd2345, -16'sd3456, -16'sd4567, -16'sd5678, -16'sd6789, -16'sd7890,
+	16'sd4321, 	16'sd5432, 	16'sd6543, 	16'sd7654,  16'sd8765, 16'sd9876, 16'sd0987,
+	-16'sd4321, -16'sd5432, -16'sd6543, -16'sd7654, -16'sd8765, -16'sd9876, -16'sd0987,
+	16'sd1234, 	16'sd2345, 	16'sd3456, 	16'sd4567,  16'sd5678, 16'sd6789, 16'sd7890,
+	-16'sd1234, -16'sd2345, -16'sd3456, -16'sd4567, -16'sd5678, -16'sd6789, -16'sd7890,
+	16'sd4321, 	16'sd5432, 	16'sd6543, 	16'sd7654,  16'sd8765, 16'sd9876, 16'sd0987,
+	-16'sd4321, -16'sd5432, -16'sd6543, -16'sd7654, -16'sd8765, -16'sd9876, -16'sd0987
 };
+
+
 
 // TODO: temporarily use the old one to verify
 // http://www.songho.ca/dsp/convolution/convolution2d_example.html
