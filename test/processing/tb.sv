@@ -42,8 +42,8 @@ logic							oValidFilter;
 logic							oDoneFilter;
 
 // Conveng
-//logic	[63:0]				irData, igData, ibData;
-logic	[111:0]				irData, igData, ibData;
+logic	[63:0]				irData, igData, ibData;
+//logic	[55:0]				irData, igData, ibData;
 logic	[2:0]					mode = 5;
 logic							oReq;
 logic	[31:0]				oRdAddress, oWrAddress;
@@ -364,18 +364,16 @@ initial begin
 			@(negedge clk);
 		end
 		
-		oWrAddress	= (pixelCnt/(height*2))*2 + ((pixelCnt%(height*2))>>1)*width + (pixelCnt%2);
-		
-		//$display("pixelCnt = %d @ time: ", pixelCnt, $time);
-		pixelCnt++;
-		
-		// 7x7
+		// 7x7 for stripe width 2 and 240p
 		// Each stripe has 480 pixels
 		// Finished (oConvPixelCnt/480) stripes, each stripe has 2 pixels
 		// The current stripe has finished (oConvPixelCnt%480) pixels
 		// The start of the current line is (((oConvPixelCnt%480)-1)>>1)*320
 		// The pixel on the current stripe is (oConvPixelCnt%2);
-		//oWrAddress	= (oConvPixelCnt/480)*2 + (((oConvPixelCnt%480)-1)>>1)*320 + ((oConvPixelCnt%2)?2:1)-1;
+		oWrAddress	= (pixelCnt/(height*2))*2 + ((pixelCnt%(height*2))>>1)*width + (pixelCnt%2);
+		
+		//$display("pixelCnt = %d @ time: ", pixelCnt, $time);
+		pixelCnt++;
 		
 		filter_r		= orData;
 		filter_g		= ogData;
@@ -385,16 +383,16 @@ initial begin
 		g_filter_g	= gFilter[oWrAddress];
 		g_filter_b	= bFilter[oWrAddress];
 		
-//		// For power, no validity check
-//		rDiff = (filter_r - g_filter_r);
-//		gDiff = (filter_g - g_filter_g);
-//		bDiff = (filter_b - g_filter_b);
+		// For power, no validity check
+		rDiff = (filter_r - g_filter_r);
+		gDiff = (filter_g - g_filter_g);
+		bDiff = (filter_b - g_filter_b);
 		
-//		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-//			$display("<Conv filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-//						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
-//			failed = 1;
-//		end
+		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+			$display("<Conv filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
+			failed = 1;
+		end
 		
 		if (oDoneFilter) begin
 			$display("i = %d, break\n", i, $time);
@@ -402,7 +400,7 @@ initial begin
 		end
 		
 		// For power
-		if (i >= 8640) begin
+		if (i >= 1080) begin
 			$stop(0);
 		end
 	end

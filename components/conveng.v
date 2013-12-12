@@ -5,8 +5,8 @@ module conveng
 	input					clk,
 	input					reset,
 
-	//input		[63:0]	iData,
-	input		[111:0]	iData,
+	input		[63:0]	iData,
+	//input		[55:0]	iData,
 	input					iValid,
 	input		[2:0]		mode,
 	
@@ -24,17 +24,6 @@ module conveng
 localparam	pipelineDepth	= 11;
 localparam	rfwidth			= 64;
 
-//localparam signed [49*16-1:0] h = {
-//	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
-//	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
-//	16'sd0, 	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
-//	16'sd0, 	16'sd0, -16'sd1,  16'sd9, -16'sd1, 16'sd0, 16'sd0,
-//	16'sd0,	16'sd0, -16'sd1, -16'sd1, -16'sd1, 16'sd0, 16'sd0,
-//	16'sd0,	16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0,
-//	16'sd0,  16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0
-//
-//};
-
 localparam signed [49*16-1:0] h = {
 	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
 	16'sd0, 	16'sd0, 	16'sd0, 	16'sd0,  16'sd0, 16'sd0, 16'sd0,
@@ -45,6 +34,19 @@ localparam signed [49*16-1:0] h = {
 	16'sd0,  16'sd0,  16'sd0,	16'sd0,  16'sd0, 16'sd0, 16'sd0
 
 };
+
+// Power, putting everything to work!
+//localparam signed [49*16-1:0] h = {
+//	16'sd1234, 	16'sd2345, 	16'sd3456, 	16'sd4567,  16'sd5678, 16'sd6789, 16'sd7890,
+//	-16'sd1234, -16'sd2345, -16'sd3456, -16'sd4567, -16'sd5678, -16'sd6789, -16'sd7890,
+//	16'sd4321, 	16'sd5432, 	16'sd6543, 	16'sd7654,  16'sd8765, 16'sd9876, 16'sd0987,
+//	-16'sd4321, -16'sd5432, -16'sd6543, -16'sd7654, -16'sd8765, -16'sd9876, -16'sd0987,
+//	16'sd1234, 	16'sd2345, 	16'sd3456, 	16'sd4567,  16'sd5678, 16'sd6789, 16'sd7890,
+//	-16'sd1234, -16'sd2345, -16'sd3456, -16'sd4567, -16'sd5678, -16'sd6789, -16'sd7890,
+//	16'sd4321, 	16'sd5432, 	16'sd6543, 	16'sd7654,  16'sd8765, 16'sd9876, 16'sd0987,
+//	-16'sd4321, -16'sd5432, -16'sd6543, -16'sd7654, -16'sd8765, -16'sd9876, -16'sd0987
+//};
+
 
 
 reg	[15:0]	width, height;
@@ -128,12 +130,12 @@ always @(posedge clk) begin
 						kernelSize			<= 'd7;
 						boundaryWidth		<= 'd3;
 						totalBoundry		<= 'd6;
-//						stripeOffset		<= 'd2;
-//						totalStripes		<= (height == 1080)? 'd960 :'d160;
-//						lastStripeWidth	<= (height == 1080)? 'd2  :'d2;
-						stripeOffset		<= 'd8;
-						totalStripes		<= (height == 1080)? 'd240 :'d40;
-						lastStripeWidth	<= (height == 1080)? 'd8  :'d8;
+						stripeOffset		<= 'd2;
+						totalStripes		<= (height == 1080)? 'd960 :'d160;
+						lastStripeWidth	<= (height == 1080)? 'd2  :'d2;
+//						stripeOffset		<= 'd1;
+//						totalStripes		<= (height == 1080)? 'd1960 :'d40;
+//						lastStripeWidth	<= (height == 1080)? 'd1  :'d8;
 					end
 					default: begin
 						kernelSize		<= 'd0;
@@ -166,12 +168,12 @@ end
 
 reg				colShift;
 reg				rowShift;
-//reg	[63:0]	rf	[6:0];
-reg	[111:0]	rf	[6:0];
+reg	[63:0]	rf	[6:0];
+//reg	[55:0]	rf	[6:0];
 
 reg				r_iValid;
-//reg	[63:0]	r_iData;
-reg	[111:0]	r_iData;
+reg	[63:0]	r_iData;
+//reg	[55:0]	r_iData;
 reg	[3:0]		ctrlState;
 
 shift2drf shift2drf
@@ -328,14 +330,14 @@ always @(posedge clk) begin
 				// delay pipeline
 				valid			<= 1;
 				
-				// Shift horizontally to get new data.
-				// Only shift stripeWidth - 1 times, but
-				// OK to shift before the maintenace state
-				colShift		<= 1;
-				
 				if (colCnt < stripeWidth - 1) begin
 					colCnt		<= colCnt + 1;
 					ctrlState	<= 'd3;
+					
+					// Shift horizontally to get new data.
+					// Only shift stripeWidth - 1 times, but
+					// OK to shift before the maintenace state
+					colShift		<= 1;
 				end
 				else begin
 					if (stripeCnt == totalStripes) begin
@@ -347,9 +349,17 @@ always @(posedge clk) begin
 					// Go to a maintenace state 
 					ctrlState	<= 'd4;
 					
-					// Set colCnt to totalBoundry-1 for
-					// the maintenace state 
-					colCnt		<= totalBoundry - 1;
+					if (stripeOffset == 1) begin
+						// No col shift
+						colShift		<= 0;
+						colCnt		<= 'b0;
+					end
+					else begin
+						// Set colCnt to totalBoundry-1 for
+						// the maintenace state iff we
+						colShift		<= 1;
+						colCnt		<= totalBoundry - 1;
+					end
 				end
 			end
 			'd4: begin
@@ -795,18 +805,18 @@ module shift2drf
 (
 	input						clk,
 	input						reset,
-	//input			[63:0]	iData,
-	input			[111:0]	iData,
+	input			[63:0]	iData,
+	//input			[55:0]	iData,
 	input						colShift,
 	input						rowShift,
 	input			[2:0]		mode,
 	
-	//output reg	[63:0]	rf	[6:0]
-	output reg	[111:0]	rf	[6:0]
+	output reg	[63:0]	rf	[6:0]
+	//output reg	[55:0]	rf	[6:0]
 );
 
-//localparam numCol			= 8;
-localparam numCol			= 14;
+localparam numCol			= 8;
+//localparam numCol			= 7;
 
 localparam numRow			= 7;
 localparam numBits		= 8;

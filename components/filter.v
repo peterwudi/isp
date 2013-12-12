@@ -6,8 +6,8 @@ module filter_fifo_conveng
 	input 				reset,
 	input					iValid,
 	input		[2:0]		mode,
-	//input		[63:0]	irData, igData, ibData,
-	input		[55:0]	irData, igData, ibData,
+	input		[63:0]	irData, igData, ibData,
+	//input		[55:0]	irData, igData, ibData,
 	
 	output				oReq,
 	output	[31:0]	oRdAddress,
