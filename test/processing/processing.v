@@ -22,7 +22,8 @@ module processing(
 	output							oDoneFilter,
 	
 	// Conveng
-	input		[63:0]				irData, igData, ibData,
+	//input		[63:0]				irData, igData, ibData,
+	input		[55:0]				irData, igData, ibData,
 	input		[2:0]					mode,
 	output							oReq,
 	output	[31:0]				oRdAddress,// oWrAddress,
@@ -172,47 +173,47 @@ always @(posedge clk) begin
 end
 
 
-//reg	[7:0]	convengResetCnt;
-//reg			convengReset;
-//always @(posedge clk) begin
-//	if (reset) begin
-//		convengReset		<= 1;
-//		convengResetCnt	<= 'b0;
-//	end
-//	else begin
-//		if (convengResetCnt == 15) begin
-//			convengReset	<= 0;
-//		end
-//		else begin 
-//			convengResetCnt	<= convengResetCnt + 1;
-//		end
-//	end
-//end
-//	
-//filter_fifo_conveng #(.width(width), .height(height))
-//filter
-//(
-//	.clk(clk),
-//	.reset(convengReset),
-//	.iValid(iValid),
-//	.mode(mode),
-//	.irData(irData),
-//	.igData(igData),
-//	.ibData(ibData),
-//	
-//	.oReq(oReq),
-//	.oRdAddress(oRdAddress),
-//	.oPixelCnt(oConvPixelCnt),
-//	//.oWrAddress(oWrAddress),
-//	.orData(orData),
-//	.ogData(ogData),
-//	.obData(obData),
-//	
-//	.oValid(oValidFilter),
-//	.oDone(oDoneFilter)
-//);
-//
-//assign oDataFilter = {orData, ogData, obData};
+reg	[7:0]	convengResetCnt;
+reg			convengReset;
+always @(posedge clk) begin
+	if (reset) begin
+		convengReset		<= 1;
+		convengResetCnt	<= 'b0;
+	end
+	else begin
+		if (convengResetCnt == 15) begin
+			convengReset	<= 0;
+		end
+		else begin 
+			convengResetCnt	<= convengResetCnt + 1;
+		end
+	end
+end
+	
+filter_fifo_conveng #(.width(width), .height(height))
+filter
+(
+	.clk(clk),
+	.reset(convengReset),
+	.iValid(iValid),
+	.mode(mode),
+	.irData(irData),
+	.igData(igData),
+	.ibData(ibData),
+	
+	.oReq(oReq),
+	.oRdAddress(oRdAddress),
+	.oPixelCnt(oConvPixelCnt),
+	//.oWrAddress(oWrAddress),
+	.orData(orData),
+	.ogData(ogData),
+	.obData(obData),
+	
+	.oValid(oValidFilter),
+	.oDone(oDoneFilter)
+);
+
+assign oDataFilter = {orData, ogData, obData};
 
 
 //filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
@@ -228,19 +229,19 @@ end
 //	.oData(oDataFilter)
 //);
 
-
-filter_fifo_7_sym #(.width(width), .height(height), .kernel_size(kernelSize))
-filter
-(
-	.clk(clk),
-	.reset(reset | oDoneFilter),
-	.iValid(iValidFilter | filterPipelineEn),
-	.oValid(oValidFilter),
-	.oDone(oDoneFilter),
-	
-	.iData(iDataFilter),
-	.oData(oDataFilter)
-);
+//
+//filter_fifo_7_sym #(.width(width), .height(height), .kernel_size(kernelSize))
+//filter
+//(
+//	.clk(clk),
+//	.reset(reset | oDoneFilter),
+//	.iValid(iValidFilter | filterPipelineEn),
+//	.oValid(oValidFilter),
+//	.oDone(oDoneFilter),
+//	
+//	.iData(iDataFilter),
+//	.oData(oDataFilter)
+//);
 
 
 // 18-bit singed fixed point number, 9 bits

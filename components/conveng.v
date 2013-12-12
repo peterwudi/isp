@@ -5,7 +5,8 @@ module conveng
 	input					clk,
 	input					reset,
 
-	input		[63:0]	iData,
+	//input		[63:0]	iData,
+	input		[111:0]	iData,
 	input					iValid,
 	input		[2:0]		mode,
 	
@@ -101,7 +102,7 @@ always @(posedge clk) begin
 					end
 				endcase
 				
-				// stripeOffset	= 8 - 2*boundaryWidth	(when we do shift)
+				// stripeOffset	= rfwidth - 2*boundaryWidth	(when we do shift)
 				// totalStripes	= ceil(width/stripeOffset)
 				// Last stripe width = width%stripeOffset (if 0 then stripeOffset)
 				case (mode)
@@ -127,9 +128,12 @@ always @(posedge clk) begin
 						kernelSize			<= 'd7;
 						boundaryWidth		<= 'd3;
 						totalBoundry		<= 'd6;
-						stripeOffset		<= 'd2;
-						totalStripes		<= (height == 1080)? 'd960 :'d160;
-						lastStripeWidth	<= (height == 1080)? 'd2  :'d2;
+//						stripeOffset		<= 'd2;
+//						totalStripes		<= (height == 1080)? 'd960 :'d160;
+//						lastStripeWidth	<= (height == 1080)? 'd2  :'d2;
+						stripeOffset		<= 'd8;
+						totalStripes		<= (height == 1080)? 'd240 :'d40;
+						lastStripeWidth	<= (height == 1080)? 'd8  :'d8;
 					end
 					default: begin
 						kernelSize		<= 'd0;
@@ -162,10 +166,12 @@ end
 
 reg				colShift;
 reg				rowShift;
-reg	[63:0]	rf	[6:0];
+//reg	[63:0]	rf	[6:0];
+reg	[111:0]	rf	[6:0];
 
 reg				r_iValid;
-reg	[63:0]	r_iData;
+//reg	[63:0]	r_iData;
+reg	[111:0]	r_iData;
 reg	[3:0]		ctrlState;
 
 shift2drf shift2drf
@@ -789,15 +795,19 @@ module shift2drf
 (
 	input						clk,
 	input						reset,
-	input			[63:0]	iData,
+	//input			[63:0]	iData,
+	input			[111:0]	iData,
 	input						colShift,
 	input						rowShift,
 	input			[2:0]		mode,
 	
-	output reg	[63:0]	rf	[6:0]
+	//output reg	[63:0]	rf	[6:0]
+	output reg	[111:0]	rf	[6:0]
 );
 
-localparam numCol			= 8;
+//localparam numCol			= 8;
+localparam numCol			= 14;
+
 localparam numRow			= 7;
 localparam numBits		= 8;
 localparam numBits3x3	= 8*4;
