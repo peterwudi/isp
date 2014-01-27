@@ -9,33 +9,33 @@ module abs_diff
 	output						oValid,
 	output signed	[17:0]	oRes
 );
-// Two stage pipeline
+// At least a 2 stage stage pipeline
 
-// Extra delay
-parameter	delay = 0;
+// Delay must be at least one
+parameter	delay = 1;
 
 reg signed	[17:0]	a_minus_b, b_minus_a;
-reg signed	[17:0]	res		[delay:0];
+reg signed	[17:0]	res		[delay-1:0];
 
 reg						r_iValid;
-reg						mValid	[delay:0];
+reg						moValid	[delay:0];
 
 genvar i;
 generate
-	for (i = 0; i < delay; i = i + 1) begin: a
+	for (i = 0; i < delay; i = i + 1) begin: absdiff
 		always @(posedge clk) begin
 			if (reset) begin
 				res[i]		<= 'b0;
-				mValid[i]	<= 0;
+				moValid[i]	<= 0;
 			end
 			else if (iValid) begin
 				if (i > 0) begin
 					res[i]		<= res[i-1];
-					mValid[i]	<= mValid[i-1];
+					moValid[i]	<= moValid[i-1];
 				end
 				else begin
 					res[i]		<= (a_minus_b[17] == 0) ? a_minus_b : b_minus_a;
-					mValid[i]	<= r_iValid;
+					moValid[i]	<= r_iValid;
 				end
 			end
 		end
@@ -44,21 +44,19 @@ endgenerate
 
 always @ (posedge clk) begin
 	if (reset) begin
-		mValid		<= 0;
-		oRes			<= 'b0;
 		a_minus_b	<= 'b0;
 		b_minus_a	<= 'b0;
+		r_iValid		<= 0;
 	end
 	else if (iValid) begin
 		a_minus_b	<= a - b;
 		b_minus_a	<= b - a;
 		r_iValid		<= iValid;
 	end
-	else
 end
 
-assign	oRes		= res[delay];
-assign	oValid	= mValid[delay];
+assign	oRes		= res[delay-1];
+assign	oValid	= moValid[delay-1];
 
 endmodule
 
@@ -86,16 +84,37 @@ reg	unsigned	[8:0]	moB;
 reg						moValid;
 reg						moDone;
 
+// Delayed signals
+reg				r_moValid	[4:0];
+reg				r_moDone		[4:0];
+
+// Pixel counter
+reg	[31:0]	cnt, x, y;
+
+// Delayed x and y for the RF
+reg	[31:0]	r_x			[4:0];
+reg	[31:0]	r_y			[4:0];
+reg	[31:0]	r_cnt			[4:0];
+
+assign	xCnt			= r_x[4];
+assign	yCnt			= r_y[4];
+assign	demosaicCnt = r_cnt[4];
+
+
+
+// Cached center pixel data
+reg	[7:0]		r_rf_center	[2:0];
+
 assign	oR			=	moR[7:0];
 assign	oG			=	moG[7:0];
 assign	oB			=	moB[7:0];
-assign	oValid	=	moValid;
-assign	oDone		=	moDone;
+assign	oValid	=	r_moValid[1];
+assign	oDone		=	r_moDone[1];
 
 // 2 extra buffer rows
 // Depth is width
 demosaic_acpi_G_interploation_240p g_interploation_buffer(
-	.aclr(0),
+	.aclr(),
 	.clock(clk),
 	.clken(iValid),
 	.shiftin(iData),
@@ -115,60 +134,104 @@ localparam	boundaryWidth	= (kernelSize-1)/2;
 localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 
 
-// Pixel counter
-reg	[31:0]	cnt, x, y;
-
 // Gradients
-reg	[7:0]		h, v;
+wire	[7:0]		h, v;
 
 // Result selection
-reg	[8:0]		gV;
-reg	[8:0]		gH;
-reg	[8:0]		gRes;
-
-assign	xCnt			= x;
-assign	yCnt			= y;
-assign	demosaicCnt = cnt;
+reg	[8:0]		gV	[1:0];
+reg	[8:0]		gH	[1:0];
+reg	[8:0]		gHV;
+reg	[7:0]		gRes;
 
 
-abs_diff #(.delay(0))
+abs_diff #(.delay(1))
 h_diff
 (
 	.clk(clk),
 	.reset(reset),
-	.a((x == 0) ? 0 : rf[1][0]),
-	.b((x == width - 1) ? 0 : rf[1][2]),
+	.a((r_x[1] == 0) ? 0 : rf[1][0]),
+	.b((r_x[1] == width - 1) ? 0 : rf[1][2]),
 	.iValid(iValid),
 	
 	.oValid(),
 	.oRes(h)
 );
 
-abs_diff #(.delay(0))
+abs_diff #(.delay(1))
 v_diff
 (
 	.clk(clk),
 	.reset(reset),
-	.a((y == 0) ? 0 : rf[0][1]),
-	.b((y == height - 1) ? 0 : rf[2][1]),
+	.a((r_y[1] == 0) ? 0 : rf[0][1]),
+	.b((r_y[1] == height - 1) ? 0 : rf[2][1]),
 	.iValid(iValid),
 	
 	.oValid(),
 	.oRes(v)
 );
 
-
-// 3x3 Register file
-genvar i, j;
+genvar i;
+integer j;
 generate
-	for (i = 0; i < 3; i = i + 1) begin: a
+	// 3x3 Register file
+	for (i = 0; i < 3; i = i + 1) begin: rf_a
 		always @(posedge clk) begin
-			for (j = 0; j < 3; j = j + 1) begin: b
+			for (j = 0; j < 3; j = j + 1) begin: rf_b
 				if (reset) begin
 					rf[i][j]	<= 'b0;
 				end
 				else if (iValid) begin
 					rf[i][0] <= tap[i];
+				end
+			end
+		end
+	end
+	
+	// Delay line of pixel counters and signals
+	// It takes 2 cycles for a pixel to get to the
+	// center of the RF.
+	// After that, it takes another 3 cycles to calculate
+	// the green interpolation results.
+	for (i = 0; i < 5; i = i + 1) begin: delayLine
+		always @(posedge clk) begin
+			if (reset) begin
+				r_x[i]			<= 'b0;
+				r_y[i]			<= 'b0;
+				r_cnt[i]			<= 'b0;
+				r_moValid[i]	<= 'b0;
+				r_moDone[i]		<= 'b0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					r_x[i]			<= r_x[i-1];
+					r_y[i]			<= r_y[i-1];
+					r_cnt[i]			<=	r_cnt[i-1];
+					r_moValid[i]	<= r_moValid[i-1];
+					r_moDone[i]		<= r_moDone[i-1];
+				end
+				else begin
+					r_x[i]			<= x;
+					r_y[i]			<= y;
+					r_cnt[i]			<= cnt;
+					r_moValid[i]	<= moValid;
+					r_moDone[i]		<= moDone;
+				end
+			end
+		end
+	end
+	
+	// Cached center pixel data
+	for (i = 0; i < 3; i = i + 1) begin: rfcenter
+		always @(posedge clk) begin
+			if (reset) begin
+				r_rf_center[i]	<= 'b0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					r_rf_center[i]	<= r_rf_center[i-1];
+				end
+				else begin
+					r_rf_center[i]	<= rf[1][1];
 				end
 			end
 		end
@@ -183,15 +246,16 @@ begin
 		moG		<=	'b0;
 		moB		<=	'b0;
 		moValid	<=	0;
-		moDone	<=	0;
+		moDone	<=	0;		
 		cnt		<= 'b0;
 		x			<= 'b0;
 		y			<= 'b0;
-		h			<= 'b0;
-		v			<= 'b0;
-		gMux		<= 'b0;
-		gV			<= 'b0;
-		gH			<= 'b0;
+		gV[0]		<= 'b0;
+		gV[1]		<= 'b0;
+		gH[0]		<= 'b0;
+		gH[1]		<= 'b0;
+		gHV		<= 'b0;
+		gRes		<= 'b0;
 	end
 	else if (iValid) begin
 		if (cnt <= totalCycles) begin
@@ -201,12 +265,10 @@ begin
 			cnt	<= 0;
 		end
 		
-		moDone	<= (cnt == totalCycles - 1) ? 1:0;
+		moDone	<= (cnt == totalCycles - 1) ? 1'b1 : 1'b0;
 		
-		if (cnt >= width * (2+boundaryWidth-1) + 4) begin
-			// Only start counter after the first 4 empty rows plus
-			// 2 cycles to get a filled rf and another 2 cycles to
-			// calculate gH/gV and gRes
+		if (cnt >= width * (2+boundaryWidth-1)) begin
+			// Only start counter after the first 4 empty rows
 			if (x < width - 1) begin
 				x	<= x + 1;
 			end
@@ -229,49 +291,57 @@ begin
 			end
 		end
 		else begin
-			//if (cnt < width*(2+boundaryWidth-1) + 4) begin
+			//if (cnt < width*(2+boundaryWidth-1)) begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end
 
-		if (y == 0) begin
+		// Cycle 1
+		if (r_y[1] == 0) begin
 			// First row
-			gV <= rf[0][1];
-		else if (y == height - 1) begin
+			gV[0] <= rf[0][1];
+		end
+		else if (r_y[1] == height - 1) begin
 			// Last row
-			gV	<= rf[2][1];
+			gV[0]	<= rf[2][1];
 		end
 		else begin
-			gV	<= (rf[0][1] + rf[2][1]) >> 1;
+			gV[0]	<= (rf[0][1] + rf[2][1]) >> 1;
 		end
 		
-		if (x == 0) begin
+		if (r_x[1] == 0) begin
 			// First column
-			gH	<= rf[1][0];
+			gH[0]	<= rf[1][0];
 		end
-		else if (x == width - 1) begin
+		else if (r_x[1] == width - 1) begin
 			// Last column
-			gH	<= rf[1][2];
+			gH[0]	<= rf[1][2];
 		end
 		else begin
-			gH	<= (rf[1][0] + rf[2][1]) >> 1;
+			gH[0]	<= (rf[1][0] + rf[2][1]) >> 1;
 		end
 		
+		// Cycle 2
+		gHV	<= (gH[0] + gV[0]) >> 1;
+		gH[1]	<= gH[0];
+		gV[1]	<= gV[0];
+		
+		// Cycle 3
 		if (h > v) begin
-			gRes	<= gV;
+			gRes	<= gV[1][7:0];
 		end
 		else if (h < v) begin
-			gRes	<= gH;
+			gRes	<= gH[1][7:0];
 		end
 		else begin
-			gRes	<= (gH + gV) >> 1;
+			gRes	<= gHV[7:0];
 		end
 		
-		case ({y[0], x[0]})
+		case ({r_y[4][0], r_x[4][0]})
 			2'b00, 2'b11: begin
 				// G at center, no need to interpolate
 				moR	<=	'b0;
-				moG	<=	rf[1][1];
+				moG	<=	r_rf_center[2];
 				moB	<=	'b0;
 			end
 			2'b01: begin
@@ -280,13 +350,13 @@ begin
 				//	R	G	R
 				moR	<=	'b0;
 				moG	<=	gRes;
-				moB	<=	rf[1][1];
+				moB	<=	r_rf_center[2];
 			end
 			2'b10: begin
 				//	B	G	B
 				//	G	R	G
 				//	B	G	B
-				moR	<=	rf[1][1];
+				moR	<=	r_rf_center[2];
 				moG	<=	gRes;
 				moB	<=	'b0;
 			end
@@ -298,10 +368,6 @@ begin
 end
 
 endmodule
-
-
-
-
 
 
 module demosaic_acpi
@@ -317,7 +383,13 @@ module demosaic_acpi
 	output				oDone
 );
 
-demosaic_acpi_ginter
+parameter	width				= 1920;
+parameter	height			= 1080;
+parameter	kernelSize		= 7;
+localparam	boundaryWidth	= (kernelSize-1)/2;
+
+demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
+ginter
 (
 	.clk(clk),
 	.iData(iData),
