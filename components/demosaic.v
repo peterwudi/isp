@@ -1,17 +1,46 @@
 
 module abs_diff
-{
+(
 	input							clk,
+	input							reset,
 	input	signed	[17:0]	a, b,
 	input							iValid,
 	
-	output						oValid
+	output						oValid,
 	output signed	[17:0]	oRes
-};
+);
+// Two stage pipeline
+
+// Extra delay
+parameter	delay = 0;
 
 reg signed	[17:0]	a_minus_b, b_minus_a;
+reg signed	[17:0]	res		[delay:0];
 
-reg	mValid;
+reg						r_iValid;
+reg						mValid	[delay:0];
+
+genvar i;
+generate
+	for (i = 0; i < delay; i = i + 1) begin: a
+		always @(posedge clk) begin
+			if (reset) begin
+				res[i]		<= 'b0;
+				mValid[i]	<= 0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					res[i]		<= res[i-1];
+					mValid[i]	<= mValid[i-1];
+				end
+				else begin
+					res[i]		<= (a_minus_b[17] == 0) ? a_minus_b : b_minus_a;
+					mValid[i]	<= r_iValid;
+				end
+			end
+		end
+	end
+endgenerate
 
 always @ (posedge clk) begin
 	if (reset) begin
@@ -20,15 +49,16 @@ always @ (posedge clk) begin
 		a_minus_b	<= 'b0;
 		b_minus_a	<= 'b0;
 	end
-	else begin
+	else if (iValid) begin
 		a_minus_b	<= a - b;
 		b_minus_a	<= b - a;
-		mValid		<= iValid;
+		r_iValid		<= iValid;
 	end
+	else
 end
 
-assign	oRes = (a_minus_b[17] == 0) ? a_minus_b : b_minus_a;
-assign	oValid = mValid;
+assign	oRes		= res[delay];
+assign	oValid	= mValid[delay];
 
 endmodule
 
@@ -88,12 +118,45 @@ localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 // Pixel counter
 reg	[31:0]	cnt, x, y;
 
+// Gradients
+reg	[7:0]		h, v;
+
+// Result selection
+reg	[8:0]		gV;
+reg	[8:0]		gH;
+reg	[8:0]		gRes;
+
 assign	xCnt			= x;
 assign	yCnt			= y;
 assign	demosaicCnt = cnt;
 
-// Last row, set all pixel values to 0
-assign	selectedTap0 = //(cnt <= width*(height+boundaryWidth)) ? tap0 : 'b0;
+
+abs_diff #(.delay(0))
+h_diff
+(
+	.clk(clk),
+	.reset(reset),
+	.a((x == 0) ? 0 : rf[1][0]),
+	.b((x == width - 1) ? 0 : rf[1][2]),
+	.iValid(iValid),
+	
+	.oValid(),
+	.oRes(h)
+);
+
+abs_diff #(.delay(0))
+v_diff
+(
+	.clk(clk),
+	.reset(reset),
+	.a((y == 0) ? 0 : rf[0][1]),
+	.b((y == height - 1) ? 0 : rf[2][1]),
+	.iValid(iValid),
+	
+	.oValid(),
+	.oRes(v)
+);
+
 
 // 3x3 Register file
 genvar i, j;
@@ -124,6 +187,11 @@ begin
 		cnt		<= 'b0;
 		x			<= 'b0;
 		y			<= 'b0;
+		h			<= 'b0;
+		v			<= 'b0;
+		gMux		<= 'b0;
+		gV			<= 'b0;
+		gH			<= 'b0;
 	end
 	else if (iValid) begin
 		if (cnt <= totalCycles) begin
@@ -135,8 +203,10 @@ begin
 		
 		moDone	<= (cnt == totalCycles - 1) ? 1:0;
 		
-		if (cnt >= width * (2+boundaryWidth-1)) begin
-			// Only start counter after the first 4 empty rows
+		if (cnt >= width * (2+boundaryWidth-1) + 4) begin
+			// Only start counter after the first 4 empty rows plus
+			// 2 cycles to get a filled rf and another 2 cycles to
+			// calculate gH/gV and gRes
 			if (x < width - 1) begin
 				x	<= x + 1;
 			end
@@ -149,20 +219,54 @@ begin
 					y	<= 0;
 				end
 			end
+			
+			if (cnt < totalCycles) begin	
+				// Outputs valid
+				moValid	<= 1;
+			end
+			else begin
+				moValid	<= 0;
+			end
 		end
-		
-		if (cnt < width*(2+boundaryWidth-1)) begin
+		else begin
+			//if (cnt < width*(2+boundaryWidth-1) + 4) begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end
-		else if (cnt < totalCycles) begin	
-			// Outputs valid
-			moValid	<= 1;
+
+		if (y == 0) begin
+			// First row
+			gV <= rf[0][1];
+		else if (y == height - 1) begin
+			// Last row
+			gV	<= rf[2][1];
 		end
 		else begin
-			moValid	<= 0;
+			gV	<= (rf[0][1] + rf[2][1]) >> 1;
 		end
-
+		
+		if (x == 0) begin
+			// First column
+			gH	<= rf[1][0];
+		end
+		else if (x == width - 1) begin
+			// Last column
+			gH	<= rf[1][2];
+		end
+		else begin
+			gH	<= (rf[1][0] + rf[2][1]) >> 1;
+		end
+		
+		if (h > v) begin
+			gRes	<= gV;
+		end
+		else if (h < v) begin
+			gRes	<= gH;
+		end
+		else begin
+			gRes	<= (gH + gV) >> 1;
+		end
+		
 		case ({y[0], x[0]})
 			2'b00, 2'b11: begin
 				// G at center, no need to interpolate
@@ -175,18 +279,16 @@ begin
 				//	G	B	G
 				//	R	G	R
 				moR	<=	'b0;
-				moG	<=	 >> 1;
+				moG	<=	gRes;
 				moB	<=	rf[1][1];
 			end
 			2'b10: begin
-				moR	<=	tap1[7:0];
-				moG	<=	(r_tap1 + selectedTap0) >> 1;
-				moB	<=	r_tap0[7:0];
-			end
-			2'b11: begin
-				moR	<=	r_tap1[7:0];
-				moG	<=	(tap1 + r_tap0) >> 1;
-				moB	<=	selectedTap0[7:0];
+				//	B	G	B
+				//	G	R	G
+				//	B	G	B
+				moR	<=	rf[1][1];
+				moG	<=	gRes;
+				moB	<=	'b0;
 			end
 		endcase
 	end

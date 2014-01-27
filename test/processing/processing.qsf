@@ -84,7 +84,6 @@ set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name SEED 1
 set_global_assignment -name FITTER_EFFORT "AUTO FIT"
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name VERILOG_FILE ../../components/demosaic_acpi_G_interploation_240p.v
 set_global_assignment -name VERILOG_FILE ../../components/params.v
 set_global_assignment -name VERILOG_FILE ../../components/ycclut.v
@@ -107,3 +106,4 @@ set_global_assignment -name VERILOG_FILE processing.v
 set_global_assignment -name SYSTEMVERILOG_FILE tb.sv
 set_global_assignment -name SDC_FILE processing.sdc
 set_global_assignment -name QIP_FILE ../../components/demosaic_acpi_G_interploation_240p.qip
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -223,205 +223,7 @@ end
 
 logic	[7:0] rInput [7:0];
 
-// Conveng Producer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-	
-	r_outFile = $fopen("demosaicROut", "r");
-	g_outFile = $fopen("demosaicGOut", "r");
-	b_outFile = $fopen("demosaicBOut", "r");
-
-	for (int i = 0; i < totalInFilter; i++) begin
-		integer out1, out2, out3;
-		if (		(i < frontSkip)
-			 ||	(i > totalInFilter - frontSkip)
-			 ||	((i % rowSize) < boundaryWidth)
-			 ||	((i % rowSize) >= (width + boundaryWidth)))
-		begin
-			o_irFilter[i] = 8'b0;
-			o_igFilter[i] = 8'b0;
-			o_ibFilter[i] = 8'b0;
-		end
-		else begin
-			// Read from file
-			out1 = $fscanf(r_outFile, "%d", o_irFilter[i]);
-			out2 = $fscanf(g_outFile, "%d", o_igFilter[i]);
-			out3 = $fscanf(b_outFile, "%d", o_ibFilter[i]);
-			
-			// Debug
-//			if (i > 76000) begin
-//				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
-//							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
-//			end
-		end
-	end
-	
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);
-	
-	iValid = 1'b0;
-	irData = 'd0;
-	igData = 'd0;
-	ibData = 'd0;
-	newFrame = 0;
-	
-	reset = 1'b1;
-	@(negedge clk);
-	@(negedge clk);
-	reset = 1'b0;	
-	@(negedge clk);
-	newFrame = 1;
-	for (int i = 0; i < 8; i++) begin
-		@(negedge clk);
-		newFrame = 0;
-	end
-	
-	// Provide data as requested
-	while(1) begin
-		@(negedge clk);
-		
-		if (oReq == 1) begin
-			irData	<= {	o_irFilter[oRdAddress+7], o_irFilter[oRdAddress+6], o_irFilter[oRdAddress+5], o_irFilter[oRdAddress+4],
-								o_irFilter[oRdAddress+3], o_irFilter[oRdAddress+2], o_irFilter[oRdAddress+1], o_irFilter[oRdAddress]};
-			rInput[7]	<= o_irFilter[oRdAddress+7]; 
-			rInput[6]	<= o_irFilter[oRdAddress+6];
-			rInput[5]	<= o_irFilter[oRdAddress+5];
-			rInput[4]	<= o_irFilter[oRdAddress+4];
-			rInput[3]	<= o_irFilter[oRdAddress+3];
-			rInput[2]	<= o_irFilter[oRdAddress+2];
-			rInput[1]	<= o_irFilter[oRdAddress+1];
-			rInput[0]	<= o_irFilter[oRdAddress];
-			
-			igData	<= {	o_igFilter[oRdAddress+7], o_igFilter[oRdAddress+6], o_igFilter[oRdAddress+5], o_igFilter[oRdAddress+4],
-								o_igFilter[oRdAddress+3], o_igFilter[oRdAddress+2], o_igFilter[oRdAddress+1], o_igFilter[oRdAddress]};
-				
-			ibData	<= {	o_ibFilter[oRdAddress+7], o_ibFilter[oRdAddress+6], o_ibFilter[oRdAddress+5], o_ibFilter[oRdAddress+4],
-								o_ibFilter[oRdAddress+3], o_ibFilter[oRdAddress+2], o_ibFilter[oRdAddress+1], o_ibFilter[oRdAddress]};
-
-			iValid	= 1'b1;
-		end
-		else begin
-			iValid	= 0;
-		end
-	end	
-	
-	for (int j = 0; j < 16; j++) begin
-		iValid = 0;
-		@(negedge clk);	
-	end
-	
-	@(negedge clk);
-	reset = 1'b0;
-	
-	@(negedge clk);
-	reset = 1'b0;
-end
-
-logic unsigned	[7:0]		filter_r, filter_g, filter_b;
-logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
-logic unsigned [31:0]	pixelCnt = 0;
-// Conveng Consumer
-initial begin
-	integer r_outFile;
-	integer g_outFile;
-	integer b_outFile;
-	
-	integer failed = 0;
-
-	r_outFile = $fopen("sharpenROut", "r");
-	g_outFile = $fopen("sharpenGOut", "r");
-	b_outFile = $fopen("sharpenBOut", "r");
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		integer out1, out2, out3;
-		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
-		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
-		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
-		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
-	end
-	$fclose(r_outFile);
-	$fclose(g_outFile);
-	$fclose(b_outFile);	
-	
-	// Wait for reset
-	for (int i = 0; i < 16; i++) begin
-		@(negedge clk);
-	end
-	
-	for (int i = 0; i < totalPixels; i++) begin
-		real rDiff;
-		real gDiff;
-		real bDiff;
-		
-		// Wait for a valid output
-		@(negedge clk);
-		while (!oValidFilter) begin
-			@(negedge clk);
-		end
-		
-		// 7x7 for stripe width 2 and 240p
-		// Each stripe has 480 pixels
-		// Finished (oConvPixelCnt/480) stripes, each stripe has 2 pixels
-		// The current stripe has finished (oConvPixelCnt%480) pixels
-		// The start of the current line is (((oConvPixelCnt%480)-1)>>1)*320
-		// The pixel on the current stripe is (oConvPixelCnt%2);
-		oWrAddress	= (pixelCnt/(height*2))*2 + ((pixelCnt%(height*2))>>1)*width + (pixelCnt%2);
-		
-		//$display("pixelCnt = %d @ time: ", pixelCnt, $time);
-		pixelCnt++;
-		
-		filter_r		= orData;
-		filter_g		= ogData;
-		filter_b		= obData;
-
-		g_filter_r	= rFilter[oWrAddress];
-		g_filter_g	= gFilter[oWrAddress];
-		g_filter_b	= bFilter[oWrAddress];
-		
-		// For power, no validity check
-		rDiff = (filter_r - g_filter_r);
-		gDiff = (filter_g - g_filter_g);
-		bDiff = (filter_b - g_filter_b);
-		
-		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-			$display("<Conv filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
-			failed = 1;
-		end
-		
-		if (oDoneFilter) begin
-			$display("i = %d, break\n", i, $time);
-			break;
-		end
-		
-		// For power
-		if (i >= 1080) begin
-			$stop(0);
-		end
-	end
-	
-	if (failed == 1) begin
-		$display("Conv filter is wrong");
-	end
-	else begin
-		$display("Conv filter great success!!");
-	end
-	
-	for (int i = 0; i < 10; i++) begin
-		@(negedge clk);
-	end
-	$stop(0);
-end
-
-//
-//logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
-//
-//// Demosaic Consumer
+//// Conveng Producer
 //initial begin
 //	integer r_outFile;
 //	integer g_outFile;
@@ -457,50 +259,248 @@ end
 ////			end
 //		end
 //	end
-//
+//	
 //	$fclose(r_outFile);
 //	$fclose(g_outFile);
 //	$fclose(b_outFile);
 //	
-//	for (int i = 0; i < totalInFilter; i++) begin
+//	iValid = 1'b0;
+//	irData = 'd0;
+//	igData = 'd0;
+//	ibData = 'd0;
+//	newFrame = 0;
+//	
+//	reset = 1'b1;
+//	@(negedge clk);
+//	@(negedge clk);
+//	reset = 1'b0;	
+//	@(negedge clk);
+//	newFrame = 1;
+//	for (int i = 0; i < 8; i++) begin
+//		@(negedge clk);
+//		newFrame = 0;
+//	end
+//	
+//	// Provide data as requested
+//	while(1) begin
+//		@(negedge clk);
+//		
+//		if (oReq == 1) begin
+//			irData	<= {	o_irFilter[oRdAddress+7], o_irFilter[oRdAddress+6], o_irFilter[oRdAddress+5], o_irFilter[oRdAddress+4],
+//								o_irFilter[oRdAddress+3], o_irFilter[oRdAddress+2], o_irFilter[oRdAddress+1], o_irFilter[oRdAddress]};
+//			rInput[7]	<= o_irFilter[oRdAddress+7]; 
+//			rInput[6]	<= o_irFilter[oRdAddress+6];
+//			rInput[5]	<= o_irFilter[oRdAddress+5];
+//			rInput[4]	<= o_irFilter[oRdAddress+4];
+//			rInput[3]	<= o_irFilter[oRdAddress+3];
+//			rInput[2]	<= o_irFilter[oRdAddress+2];
+//			rInput[1]	<= o_irFilter[oRdAddress+1];
+//			rInput[0]	<= o_irFilter[oRdAddress];
+//			
+//			igData	<= {	o_igFilter[oRdAddress+7], o_igFilter[oRdAddress+6], o_igFilter[oRdAddress+5], o_igFilter[oRdAddress+4],
+//								o_igFilter[oRdAddress+3], o_igFilter[oRdAddress+2], o_igFilter[oRdAddress+1], o_igFilter[oRdAddress]};
+//				
+//			ibData	<= {	o_ibFilter[oRdAddress+7], o_ibFilter[oRdAddress+6], o_ibFilter[oRdAddress+5], o_ibFilter[oRdAddress+4],
+//								o_ibFilter[oRdAddress+3], o_ibFilter[oRdAddress+2], o_ibFilter[oRdAddress+1], o_ibFilter[oRdAddress]};
+//
+//			iValid	= 1'b1;
+//		end
+//		else begin
+//			iValid	= 0;
+//		end
+//	end	
+//	
+//	for (int j = 0; j < 16; j++) begin
+//		iValid = 0;
+//		@(negedge clk);	
+//	end
+//	
+//	@(negedge clk);
+//	reset = 1'b0;
+//	
+//	@(negedge clk);
+//	reset = 1'b0;
+//end
+
+//logic unsigned	[7:0]		filter_r, filter_g, filter_b;
+//logic unsigned	[7:0]		g_filter_r, g_filter_g, g_filter_b;
+//logic unsigned [31:0]	pixelCnt = 0;
+//// Conveng Consumer
+//initial begin
+//	integer r_outFile;
+//	integer g_outFile;
+//	integer b_outFile;
+//	
+//	integer failed = 0;
+//
+//	r_outFile = $fopen("sharpenROut", "r");
+//	g_outFile = $fopen("sharpenGOut", "r");
+//	b_outFile = $fopen("sharpenBOut", "r");
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
+//		integer out1, out2, out3;
+//		out1 = $fscanf(r_outFile, "%d", rFilter[i]);
+//		out2 = $fscanf(g_outFile, "%d", gFilter[i]);
+//		out3 = $fscanf(b_outFile, "%d", bFilter[i]);
+//		//$display("d = %d, data[%d] = %d", d, i, o_data_arr[i]);
+//	end
+//	$fclose(r_outFile);
+//	$fclose(g_outFile);
+//	$fclose(b_outFile);	
+//	
+//	// Wait for reset
+//	for (int i = 0; i < 16; i++) begin
+//		@(negedge clk);
+//	end
+//	
+//	for (int i = 0; i < totalPixels; i++) begin
 //		real rDiff;
 //		real gDiff;
 //		real bDiff;
 //		
 //		// Wait for a valid output
 //		@(negedge clk);
-//		while (!o_iValidFilter) begin
+//		while (!oValidFilter) begin
 //			@(negedge clk);
 //		end
+//		
+//		// 7x7 for stripe width 2 and 240p
+//		// Each stripe has 480 pixels
+//		// Finished (oConvPixelCnt/480) stripes, each stripe has 2 pixels
+//		// The current stripe has finished (oConvPixelCnt%480) pixels
+//		// The start of the current line is (((oConvPixelCnt%480)-1)>>1)*320
+//		// The pixel on the current stripe is (oConvPixelCnt%2);
+//		oWrAddress	= (pixelCnt/(height*2))*2 + ((pixelCnt%(height*2))>>1)*width + (pixelCnt%2);
+//		
+//		//$display("pixelCnt = %d @ time: ", pixelCnt, $time);
+//		pixelCnt++;
+//		
+//		filter_r		= orData;
+//		filter_g		= ogData;
+//		filter_b		= obData;
 //
-//		g_demosaic_r 	= o_irFilter[i];
-//		g_demosaic_g	= o_igFilter[i];
-//		g_demosaic_b	= o_ibFilter[i];
-//
-//		rDiff = (iRFilter - g_demosaic_r);
-//		gDiff = (iGFilter - g_demosaic_g);
-//		bDiff = (iBFilter - g_demosaic_b);
+//		g_filter_r	= rFilter[oWrAddress];
+//		g_filter_g	= gFilter[oWrAddress];
+//		g_filter_b	= bFilter[oWrAddress];
+//		
+//		// For power, no validity check
+//		rDiff = (filter_r - g_filter_r);
+//		gDiff = (filter_g - g_filter_g);
+//		bDiff = (filter_b - g_filter_b);
 //		
 //		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
-//			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
-//						iRFilter, g_demosaic_r, iGFilter, g_demosaic_g, iBFilter, g_demosaic_b, $time);
+//			$display("<Conv filter> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+//						filter_r, g_filter_r, filter_g, g_filter_g, filter_b, g_filter_b, $time);
 //			failed = 1;
+//		end
+//		
+//		if (oDoneFilter) begin
+//			$display("i = %d, break\n", i, $time);
+//			break;
+//		end
+//		
+//		// For power
+//		if (i >= 1080) begin
+//			$stop(0);
 //		end
 //	end
 //	
 //	if (failed == 1) begin
-//		$display("Demosaic is wrong");
+//		$display("Conv filter is wrong");
 //	end
 //	else begin
-//		$display("Demosaic great success!!");
+//		$display("Conv filter great success!!");
 //	end
 //	
 //	for (int i = 0; i < 10; i++) begin
 //		@(negedge clk);
 //	end
-//	
-//	//$stop(0);
+//	$stop(0);
 //end
+
+
+logic unsigned	[7:0]		g_demosaic_r, g_demosaic_g, g_demosaic_b;
+
+// Demosaic Consumer
+initial begin
+	integer r_outFile;
+	integer g_outFile;
+	integer b_outFile;
+	
+	integer failed = 0;
+	
+	r_outFile = $fopen("demosaicROut", "r");
+	g_outFile = $fopen("demosaicGOut", "r");
+	b_outFile = $fopen("demosaicBOut", "r");
+
+	for (int i = 0; i < totalInFilter; i++) begin
+		integer out1, out2, out3;
+		if (		(i < frontSkip)
+			 ||	(i > totalInFilter - frontSkip)
+			 ||	((i % rowSize) < boundaryWidth)
+			 ||	((i % rowSize) >= (width + boundaryWidth)))
+		begin
+			o_irFilter[i] = 8'b0;
+			o_igFilter[i] = 8'b0;
+			o_ibFilter[i] = 8'b0;
+		end
+		else begin
+			// Read from file
+			out1 = $fscanf(r_outFile, "%d", o_irFilter[i]);
+			out2 = $fscanf(g_outFile, "%d", o_igFilter[i]);
+			out3 = $fscanf(b_outFile, "%d", o_ibFilter[i]);
+			
+			// Debug
+//			if (i > 76000) begin
+//				$display("in1 = %d, data[%d] = %d, in2 = %d, data[%d] = %d, in3 = %d, data[%d] = %d",
+//							in1, i, rOrig[i], in2, i, gOrig[i], in3, i, bOrig[i]);
+//			end
+		end
+	end
+
+	$fclose(r_outFile);
+	$fclose(g_outFile);
+	$fclose(b_outFile);
+	
+	for (int i = 0; i < totalInFilter; i++) begin
+		real rDiff;
+		real gDiff;
+		real bDiff;
+		
+		// Wait for a valid output
+		@(negedge clk);
+		while (!o_iValidFilter) begin
+			@(negedge clk);
+		end
+
+		g_demosaic_r 	= o_irFilter[i];
+		g_demosaic_g	= o_igFilter[i];
+		g_demosaic_b	= o_ibFilter[i];
+
+		rDiff = (iRFilter - g_demosaic_r);
+		gDiff = (iGFilter - g_demosaic_g);
+		bDiff = (iBFilter - g_demosaic_b);
+		
+		if ((rDiff != 0) || (gDiff != 0) || (bDiff != 0)) begin
+			$display("<Demosaic> r: %f, r_golden: %f; g: %f, g_golden: %f; b: %f, b_golden: %f, at time: ",
+						iRFilter, g_demosaic_r, iGFilter, g_demosaic_g, iBFilter, g_demosaic_b, $time);
+			failed = 1;
+		end
+	end
+	
+	if (failed == 1) begin
+		$display("Demosaic is wrong");
+	end
+	else begin
+		$display("Demosaic great success!!");
+	end
+	
+	for (int i = 0; i < 10; i++) begin
+		@(negedge clk);
+	end
+	
+	$stop(0);
+end
 //
 //
 //logic unsigned	[7:0]		filter_r, filter_g, filter_b;
