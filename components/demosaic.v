@@ -84,29 +84,29 @@ reg						moValid;
 reg						moDone;
 
 // Delayed signals
-reg				r_moValid	[4:0];
-reg				r_moDone		[4:0];
+reg				r_moValid	[5:0];
+reg				r_moDone		[5:0];
 
 // Pixel counter
 reg	[31:0]	cnt, x, y;
 
 // Delayed x and y for the RF
-reg	[31:0]	r_x			[4:0];
-reg	[31:0]	r_y			[4:0];
-reg	[31:0]	r_cnt			[4:0];
+reg	[31:0]	r_x			[5:0];
+reg	[31:0]	r_y			[5:0];
+reg	[31:0]	r_cnt			[5:0];
 
-assign	xCnt			= r_x[4];
-assign	yCnt			= r_y[4];
-assign	demosaicCnt = r_cnt[4];
+assign	xCnt			= r_x[5];
+assign	yCnt			= r_y[5];
+assign	demosaicCnt = r_cnt[5];
 
 // Cached center pixel data
-reg	[7:0]		r_rf_center	[2:0];
+reg	[7:0]		r_rf_center	[3:0];
 
 assign	oR			=	moR[7:0];
 assign	oG			=	moG[7:0];
 assign	oB			=	moB[7:0];
-assign	oValid	=	r_moValid[4] & iValid;
-assign	oDone		=	r_moDone[4] & iValid;
+assign	oValid	=	r_moValid[5] & iValid;
+assign	oDone		=	r_moDone[5] & iValid;
 
 // 2 extra buffer rows
 // Depth is width
@@ -136,19 +136,38 @@ localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 wire	[7:0]		h, v;
 
 // Result selection
-reg	[8:0]		gV	[1:0];
-reg	[8:0]		gH	[1:0];
+reg	[8:0]		gV		[2:0];
+reg	[8:0]		gH		[2:0];
 reg	[8:0]		gHV;
 reg	[7:0]		gRes;
 
+reg	[7:0]		hDiff_a, hDiff_b;
+reg	[7:0]		vDiff_a, vDiff_b;
+
+always @(posedge clk) begin
+	if (reset) begin
+		hDiff_a	<= 'b0;
+		hDiff_b	<= 'b0;
+		vDiff_a	<= 'b0;
+		vDiff_b	<= 'b0;
+	end
+	else if (iValid) begin
+		hDiff_a	<= (r_x[1] == 0) ? 0 : rf[1][2];
+		hDiff_b	<= (r_x[1] == width - 1) ? 0 : rf[1][0];
+		vDiff_a	<= (r_y[1] == 0) ? 0 : rf[2][1];
+		vDiff_b	<= (r_y[1] == height - 1) ? 0 : rf[0][1];
+	end
+end
 
 abs_diff #(.delay(1))
 h_diff
 (
 	.clk(clk),
 	.reset(reset),
-	.a((r_x[1] == 0) ? 0 : rf[1][2]),
-	.b((r_x[1] == width - 1) ? 0 : rf[1][0]),
+	//.a((r_x[1] == 0) ? 0 : rf[1][2]),
+	//.b((r_x[1] == width - 1) ? 0 : rf[1][0]),
+	.a({10'b0, hDiff_a}),
+	.b({10'b0, hDiff_b}),
 	.iValid(iValid),
 	
 	.oValid(),
@@ -160,8 +179,10 @@ v_diff
 (
 	.clk(clk),
 	.reset(reset),
-	.a((r_y[1] == 0) ? 0 : rf[2][1]),
-	.b((r_y[1] == height - 1) ? 0 : rf[0][1]),
+	//.a((r_y[1] == 0) ? 0 : rf[2][1]),
+	//.b((r_y[1] == height - 1) ? 0 : rf[0][1]),
+	.a({10'b0, vDiff_a}),
+	.b({10'b0, vDiff_b}),
 	.iValid(iValid),
 	
 	.oValid(),
@@ -193,9 +214,9 @@ generate
 	// Delay line of pixel counters and signals
 	// It takes 2 cycles for a pixel to get to the
 	// center of the RF.
-	// After that, it takes another 3 cycles to calculate
+	// After that, it takes another 4 cycles to calculate
 	// the green interpolation results.
-	for (i = 0; i < 5; i = i + 1) begin: delayLine
+	for (i = 0; i < 6; i = i + 1) begin: delayLine
 		always @(posedge clk) begin
 			if (reset) begin
 				r_x[i]			<= 'b0;
@@ -224,7 +245,7 @@ generate
 	end
 	
 	// Cached center pixel data
-	for (i = 0; i < 3; i = i + 1) begin: rfcenter
+	for (i = 0; i < 4; i = i + 1) begin: rfcenter
 		always @(posedge clk) begin
 			if (reset) begin
 				r_rf_center[i]	<= 'b0;
@@ -255,8 +276,10 @@ begin
 		y			<= 'b0;
 		gV[0]		<= 'b0;
 		gV[1]		<= 'b0;
+		gV[2]		<= 'b0;
 		gH[0]		<= 'b0;
 		gH[1]		<= 'b0;
+		gH[2]		<= 'b0;
 		gHV		<= 'b0;
 		gRes		<= 'b0;
 	end
@@ -325,26 +348,31 @@ begin
 		end
 		
 		// Cycle 2
-		gHV	<= (gH[0] + gV[0]) >> 1;
 		gH[1]	<= gH[0];
+		gH[2]	<= gH[1];
 		gV[1]	<= gV[0];
+		gV[2]	<= gV[1];
 		
 		// Cycle 3
+		gHV	<= (gH[1] + gV[1]) >> 1;
+		
+		// Cycle 4
 		if (h > v) begin
-			gRes	<= gV[1][7:0];
+			gRes	<= gV[2][7:0];
 		end
 		else if (h < v) begin
-			gRes	<= gH[1][7:0];
+			gRes	<= gH[2][7:0];
 		end
 		else begin
 			gRes	<= gHV[7:0];
 		end
+	
 		
-		case ({r_y[4][0], r_x[4][0]})
+		case ({r_y[5][0], r_x[5][0]})
 			2'b00, 2'b11: begin
 				// G at center, no need to interpolate
 				moR	<=	'b0;
-				moG	<=	r_rf_center[2];
+				moG	<=	r_rf_center[3];
 				moB	<=	'b0;
 			end
 			2'b01: begin
@@ -353,13 +381,13 @@ begin
 				//	R	G	R
 				moR	<=	'b0;
 				moG	<=	gRes;
-				moB	<=	r_rf_center[2];
+				moB	<=	r_rf_center[3];
 			end
 			2'b10: begin
 				//	B	G	B
 				//	G	R	G
 				//	B	G	B
-				moR	<=	r_rf_center[2];
+				moR	<=	r_rf_center[3];
 				moG	<=	gRes;
 				moB	<=	'b0;
 			end
