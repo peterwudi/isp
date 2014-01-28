@@ -75,7 +75,6 @@ module demosaic_acpi_ginter
 );
 
 wire	unsigned	[7:0]	tap	[2:0];
-wire	unsigned	[7:0]	selectedTap0;
 reg	unsigned	[7:0]	rf	[2:0][2:0];
 
 reg	unsigned	[8:0]	moR;
@@ -100,28 +99,27 @@ assign	xCnt			= r_x[4];
 assign	yCnt			= r_y[4];
 assign	demosaicCnt = r_cnt[4];
 
-
-
 // Cached center pixel data
 reg	[7:0]		r_rf_center	[2:0];
 
 assign	oR			=	moR[7:0];
 assign	oG			=	moG[7:0];
 assign	oB			=	moB[7:0];
-assign	oValid	=	r_moValid[1];
-assign	oDone		=	r_moDone[1];
+assign	oValid	=	r_moValid[4] & iValid;
+assign	oDone		=	r_moDone[4] & iValid;
 
 // 2 extra buffer rows
 // Depth is width
 demosaic_acpi_G_interploation_240p g_interploation_buffer(
-	.aclr(),
 	.clock(clk),
 	.clken(iValid),
 	.shiftin(iData),
 	.shiftout(),
-	.taps0x(tap[0]),
-	.taps1x(tap[1]),
-	.taps2x(tap[2])
+	.taps0x(),
+	.taps1x(),
+	.taps2x(tap[0]),
+	.taps3x(tap[1]),
+	.taps4x(tap[2])
 );
 
 parameter	width				= 1920;
@@ -149,8 +147,8 @@ h_diff
 (
 	.clk(clk),
 	.reset(reset),
-	.a((r_x[1] == 0) ? 0 : rf[1][0]),
-	.b((r_x[1] == width - 1) ? 0 : rf[1][2]),
+	.a((r_x[1] == 0) ? 0 : rf[1][2]),
+	.b((r_x[1] == width - 1) ? 0 : rf[1][0]),
 	.iValid(iValid),
 	
 	.oValid(),
@@ -162,8 +160,8 @@ v_diff
 (
 	.clk(clk),
 	.reset(reset),
-	.a((r_y[1] == 0) ? 0 : rf[0][1]),
-	.b((r_y[1] == height - 1) ? 0 : rf[2][1]),
+	.a((r_y[1] == 0) ? 0 : rf[2][1]),
+	.b((r_y[1] == height - 1) ? 0 : rf[0][1]),
 	.iValid(iValid),
 	
 	.oValid(),
@@ -181,7 +179,12 @@ generate
 					rf[i][j]	<= 'b0;
 				end
 				else if (iValid) begin
-					rf[i][0] <= tap[i];
+					if (j > 0) begin
+						rf[i][j]	<= rf[i][j-1];
+					end
+					else begin
+						rf[i][0] <= tap[i];
+					end
 				end
 			end
 		end
@@ -318,7 +321,7 @@ begin
 			gH[0]	<= rf[1][2];
 		end
 		else begin
-			gH[0]	<= (rf[1][0] + rf[2][1]) >> 1;
+			gH[0]	<= (rf[1][0] + rf[1][2]) >> 1;
 		end
 		
 		// Cycle 2
@@ -361,9 +364,6 @@ begin
 				moB	<=	'b0;
 			end
 		endcase
-	end
-	else begin
-		moValid <= 0;
 	end
 end
 

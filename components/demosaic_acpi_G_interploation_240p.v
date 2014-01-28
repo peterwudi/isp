@@ -37,7 +37,6 @@
 `timescale 1 ps / 1 ps
 // synopsys translate_on
 module demosaic_acpi_G_interploation_240p (
-	aclr,
 	clken,
 	clock,
 	shiftin,
@@ -48,7 +47,6 @@ module demosaic_acpi_G_interploation_240p (
 	taps3x,
 	taps4x);
 
-	input	  aclr;
 	input	  clken;
 	input	  clock;
 	input	[7:0]  shiftin;
@@ -61,7 +59,6 @@ module demosaic_acpi_G_interploation_240p (
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
-	tri1	  aclr;
 	tri1	  clken;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_on
@@ -85,12 +82,16 @@ module demosaic_acpi_G_interploation_240p (
 	wire [7:0] taps2x = sub_wire9[23:16];
 
 	altshift_taps	ALTSHIFT_TAPS_component (
-				.aclr (aclr),
 				.clock (clock),
 				.clken (clken),
 				.shiftin (shiftin),
 				.taps (sub_wire0),
-				.shiftout (sub_wire7));
+				.shiftout (sub_wire7)
+				// synopsys translate_off
+				,
+				.aclr ()
+				// synopsys translate_on
+				);
 	defparam
 		ALTSHIFT_TAPS_component.intended_device_family = "Stratix III",
 		ALTSHIFT_TAPS_component.lpm_hint = "RAM_BLOCK_TYPE=AUTO",
@@ -105,7 +106,7 @@ endmodule
 // ============================================================
 // CNX file retrieval info
 // ============================================================
-// Retrieval info: PRIVATE: ACLR NUMERIC "1"
+// Retrieval info: PRIVATE: ACLR NUMERIC "0"
 // Retrieval info: PRIVATE: CLKEN NUMERIC "1"
 // Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "1"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix III"
@@ -121,7 +122,6 @@ endmodule
 // Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "5"
 // Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "320"
 // Retrieval info: CONSTANT: WIDTH NUMERIC "8"
-// Retrieval info: USED_PORT: aclr 0 0 0 0 INPUT VCC "aclr"
 // Retrieval info: USED_PORT: clken 0 0 0 0 INPUT VCC "clken"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
 // Retrieval info: USED_PORT: shiftin 0 0 8 0 INPUT NODEFVAL "shiftin[7..0]"
@@ -131,7 +131,6 @@ endmodule
 // Retrieval info: USED_PORT: taps2x 0 0 8 0 OUTPUT NODEFVAL "taps2x[7..0]"
 // Retrieval info: USED_PORT: taps3x 0 0 8 0 OUTPUT NODEFVAL "taps3x[7..0]"
 // Retrieval info: USED_PORT: taps4x 0 0 8 0 OUTPUT NODEFVAL "taps4x[7..0]"
-// Retrieval info: CONNECT: @aclr 0 0 0 0 aclr 0 0 0 0
 // Retrieval info: CONNECT: @clken 0 0 0 0 clken 0 0 0 0
 // Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
 // Retrieval info: CONNECT: @shiftin 0 0 8 0 shiftin 0 0 8 0
@@ -146,5 +145,5 @@ endmodule
 // Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p.cmp FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p.bsf FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p_bb.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p_bb.v FALSE
 // Retrieval info: LIB_FILE: altera_mf
