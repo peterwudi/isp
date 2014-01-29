@@ -9,6 +9,7 @@ module processing(
 	
 	// Demosaic
 	output	unsigned	[7:0]		oDemosaicR, oDemosaicG, oDemosaicB,
+	output				[7:0]		oT,
 	output							oValidDemosaic,
 	output							oDoneDemosaic,
 	
@@ -71,6 +72,7 @@ demosaic
 	.xCnt(xCnt),
 	.yCnt(yCnt),
 	.demosaicCnt(demosaicCnt),
+	.oT(oT),
 	.oValid(oValidDemosaic),
 	.oDone(oDoneDemosaic)
 );

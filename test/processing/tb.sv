@@ -29,6 +29,7 @@ logic	unsigned [7:0]		iData;
 
 // Demosaic
 logic	unsigned [7:0]		oDemosaicR, oDemosaicG, oDemosaicB;
+logic				[7:0]		oT;
 logic							oValidDemosaic;
 logic							oDoneDemosaic;
 

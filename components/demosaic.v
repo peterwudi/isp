@@ -70,6 +70,7 @@ module demosaic_acpi_ginter
 	
 	output	[7:0]		oR, oG, oB,
 	output	[31:0]	xCnt, yCnt, demosaicCnt,
+	output	[31:0]	oF,
 	output				oValid,
 	output				oDone
 );
@@ -102,9 +103,14 @@ assign	demosaicCnt = r_cnt[5];
 // Cached center pixel data
 reg	[7:0]		r_rf_center	[3:0];
 
+// Calculate grey level difference to get threshold T
+reg	[31:0]	f;
+reg	[8:0]		greyDiff;
+
 assign	oR			=	moR[7:0];
 assign	oG			=	moG[7:0];
 assign	oB			=	moB[7:0];
+assign	oF			=	f;
 assign	oValid	=	r_moValid[5] & iValid;
 assign	oDone		=	r_moDone[5] & iValid;
 
@@ -164,8 +170,6 @@ h_diff
 (
 	.clk(clk),
 	.reset(reset),
-	//.a((r_x[1] == 0) ? 0 : rf[1][2]),
-	//.b((r_x[1] == width - 1) ? 0 : rf[1][0]),
 	.a({10'b0, hDiff_a}),
 	.b({10'b0, hDiff_b}),
 	.iValid(iValid),
@@ -179,8 +183,6 @@ v_diff
 (
 	.clk(clk),
 	.reset(reset),
-	//.a((r_y[1] == 0) ? 0 : rf[2][1]),
-	//.b((r_y[1] == height - 1) ? 0 : rf[0][1]),
 	.a({10'b0, vDiff_a}),
 	.b({10'b0, vDiff_b}),
 	.iValid(iValid),
@@ -282,6 +284,8 @@ begin
 		gH[2]		<= 'b0;
 		gHV		<= 'b0;
 		gRes		<= 'b0;
+		f			<= 'b0;
+		greyDiff	<= 'b0;
 	end
 	else if (iValid) begin
 		if (cnt <= totalCycles) begin
@@ -317,7 +321,6 @@ begin
 			end
 		end
 		else begin
-			//if (cnt < width*(2+boundaryWidth-1)) begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end
@@ -366,7 +369,17 @@ begin
 		else begin
 			gRes	<= gHV[7:0];
 		end
-	
+		
+		greyDiff	<= h + v;
+		
+		// Calculate f
+		case ({r_y[4][0], r_x[4][0]})
+			2'b01, 2'b10: begin
+				f	<= f + greyDiff;
+			end
+			default:	begin
+			end
+		endcase
 		
 		case ({r_y[5][0], r_x[5][0]})
 			2'b00, 2'b11: begin
@@ -407,6 +420,7 @@ module demosaic_acpi
 	
 	output	[7:0]		oR, oG, oB,
 	output	[31:0]	xCnt, yCnt, demosaicCnt,
+	output	[7:0]		oT,
 	output				oValid,
 	output				oDone
 );
@@ -415,6 +429,10 @@ parameter	width				= 1920;
 parameter	height			= 1080;
 parameter	kernelSize		= 7;
 localparam	boundaryWidth	= (kernelSize-1)/2;
+
+wire	[31:0]	f;
+reg	[7:0]		T;
+wire				oGinterDone;
 
 demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
 ginter
@@ -430,10 +448,48 @@ ginter
 	.xCnt(xCnt),
 	.yCnt(yCnt),
 	.demosaicCnt(demosaicCnt),
+	.oF(f),
 	.oValid(oValid),
-	.oDone(oDone)
+	.oDone(oGinterDone)
 );
 
+always @(posedge clk) begin
+	if (reset) begin
+		T		<= 'b0;
+	end
+	else begin
+		if (oGinterDone) begin
+			if (f < 73242) begin
+				T	<= 'd50;
+			end
+			else if (f < 102539) begin
+				T	<= 'd40;
+			end
+			else if (f < 146484) begin
+				T	<= 'd20;
+			end
+			else if (f < 292965) begin
+				T	<= 'd15;
+			end
+			else begin
+				T	<= 'd8;
+			end
+		end
+	end
+end
+
+assign oT = T;
+
+reg	moDone;
+
+always @(posedge clk) begin
+	if (reset) begin
+		moDone	<= 0;
+	end
+	else begin
+		moDone	<= oGinterDone;
+	end
+end	
 
 endmodule
 
