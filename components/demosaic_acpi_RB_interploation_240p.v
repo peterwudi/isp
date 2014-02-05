@@ -1,10 +1,10 @@
-// megafunction wizard: %Shift register (RAM-based)%VBB%
+// megafunction wizard: %Shift register (RAM-based)%
 // GENERATION: STANDARD
 // VERSION: WM1.0
 // MODULE: ALTSHIFT_TAPS 
 
 // ============================================================
-// File Name: demosaic_acpi_G_interploation_240p.v
+// File Name: demosaic_acpi_RB_interploation_240p.v
 // Megafunction Name(s):
 // 			ALTSHIFT_TAPS
 //
@@ -16,6 +16,7 @@
 //
 // 13.0.1 Build 232 06/12/2013 SP 1 SJ Full Version
 // ************************************************************
+
 
 //Copyright (C) 1991-2013 Altera Corporation
 //Your use of Altera Corporation's design tools, logic functions 
@@ -31,7 +32,11 @@
 //Altera or its authorized distributors.  Please refer to the 
 //applicable agreement for further details.
 
-module demosaic_acpi_G_interploation_240p (
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
+module demosaic_acpi_RB_interploation_240p (
 	aclr,
 	clken,
 	clock,
@@ -39,20 +44,16 @@ module demosaic_acpi_G_interploation_240p (
 	shiftout,
 	taps0x,
 	taps1x,
-	taps2x,
-	taps3x,
-	taps4x);
+	taps2x);
 
 	input	  aclr;
 	input	  clken;
 	input	  clock;
-	input	[7:0]  shiftin;
-	output	[7:0]  shiftout;
-	output	[7:0]  taps0x;
-	output	[7:0]  taps1x;
-	output	[7:0]  taps2x;
-	output	[7:0]  taps3x;
-	output	[7:0]  taps4x;
+	input	[23:0]  shiftin;
+	output	[23:0]  shiftout;
+	output	[23:0]  taps0x;
+	output	[23:0]  taps1x;
+	output	[23:0]  taps2x;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -61,6 +62,33 @@ module demosaic_acpi_G_interploation_240p (
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_on
 `endif
+
+	wire [23:0] sub_wire0;
+	wire [71:0] sub_wire1;
+	wire [23:0] shiftout = sub_wire0[23:0];
+	wire [47:24] sub_wire5 = sub_wire1[47:24];
+	wire [71:48] sub_wire4 = sub_wire1[71:48];
+	wire [71:48] sub_wire3 = sub_wire4[71:48];
+	wire [23:0] sub_wire2 = sub_wire1[23:0];
+	wire [23:0] taps0x = sub_wire2[23:0];
+	wire [23:0] taps2x = sub_wire3[71:48];
+	wire [23:0] taps1x = sub_wire5[47:24];
+
+	altshift_taps	ALTSHIFT_TAPS_component (
+				.aclr (aclr),
+				.clock (clock),
+				.clken (clken),
+				.shiftin (shiftin),
+				.shiftout (sub_wire0),
+				.taps (sub_wire1));
+	defparam
+		ALTSHIFT_TAPS_component.intended_device_family = "Stratix III",
+		ALTSHIFT_TAPS_component.lpm_hint = "RAM_BLOCK_TYPE=AUTO",
+		ALTSHIFT_TAPS_component.lpm_type = "altshift_taps",
+		ALTSHIFT_TAPS_component.number_of_taps = 3,
+		ALTSHIFT_TAPS_component.tap_distance = 320,
+		ALTSHIFT_TAPS_component.width = 24;
+
 
 endmodule
 
@@ -71,42 +99,38 @@ endmodule
 // Retrieval info: PRIVATE: CLKEN NUMERIC "1"
 // Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "1"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Stratix III"
-// Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "5"
+// Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "3"
 // Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "3"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
 // Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "320"
-// Retrieval info: PRIVATE: WIDTH NUMERIC "8"
+// Retrieval info: PRIVATE: WIDTH NUMERIC "24"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Stratix III"
 // Retrieval info: CONSTANT: LPM_HINT STRING "RAM_BLOCK_TYPE=AUTO"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altshift_taps"
-// Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "5"
+// Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "3"
 // Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "320"
-// Retrieval info: CONSTANT: WIDTH NUMERIC "8"
+// Retrieval info: CONSTANT: WIDTH NUMERIC "24"
 // Retrieval info: USED_PORT: aclr 0 0 0 0 INPUT VCC "aclr"
 // Retrieval info: USED_PORT: clken 0 0 0 0 INPUT VCC "clken"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
-// Retrieval info: USED_PORT: shiftin 0 0 8 0 INPUT NODEFVAL "shiftin[7..0]"
-// Retrieval info: USED_PORT: shiftout 0 0 8 0 OUTPUT NODEFVAL "shiftout[7..0]"
-// Retrieval info: USED_PORT: taps0x 0 0 8 0 OUTPUT NODEFVAL "taps0x[7..0]"
-// Retrieval info: USED_PORT: taps1x 0 0 8 0 OUTPUT NODEFVAL "taps1x[7..0]"
-// Retrieval info: USED_PORT: taps2x 0 0 8 0 OUTPUT NODEFVAL "taps2x[7..0]"
-// Retrieval info: USED_PORT: taps3x 0 0 8 0 OUTPUT NODEFVAL "taps3x[7..0]"
-// Retrieval info: USED_PORT: taps4x 0 0 8 0 OUTPUT NODEFVAL "taps4x[7..0]"
+// Retrieval info: USED_PORT: shiftin 0 0 24 0 INPUT NODEFVAL "shiftin[23..0]"
+// Retrieval info: USED_PORT: shiftout 0 0 24 0 OUTPUT NODEFVAL "shiftout[23..0]"
+// Retrieval info: USED_PORT: taps0x 0 0 24 0 OUTPUT NODEFVAL "taps0x[23..0]"
+// Retrieval info: USED_PORT: taps1x 0 0 24 0 OUTPUT NODEFVAL "taps1x[23..0]"
+// Retrieval info: USED_PORT: taps2x 0 0 24 0 OUTPUT NODEFVAL "taps2x[23..0]"
 // Retrieval info: CONNECT: @aclr 0 0 0 0 aclr 0 0 0 0
 // Retrieval info: CONNECT: @clken 0 0 0 0 clken 0 0 0 0
 // Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
-// Retrieval info: CONNECT: @shiftin 0 0 8 0 shiftin 0 0 8 0
-// Retrieval info: CONNECT: shiftout 0 0 8 0 @shiftout 0 0 8 0
-// Retrieval info: CONNECT: taps0x 0 0 8 0 @taps 0 0 8 0
-// Retrieval info: CONNECT: taps1x 0 0 8 0 @taps 0 0 8 8
-// Retrieval info: CONNECT: taps2x 0 0 8 0 @taps 0 0 8 16
-// Retrieval info: CONNECT: taps3x 0 0 8 0 @taps 0 0 8 24
-// Retrieval info: CONNECT: taps4x 0 0 8 0 @taps 0 0 8 32
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p.v TRUE
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p.inc FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p.cmp FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p.bsf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_G_interploation_240p_bb.v TRUE
+// Retrieval info: CONNECT: @shiftin 0 0 24 0 shiftin 0 0 24 0
+// Retrieval info: CONNECT: shiftout 0 0 24 0 @shiftout 0 0 24 0
+// Retrieval info: CONNECT: taps0x 0 0 24 0 @taps 0 0 24 0
+// Retrieval info: CONNECT: taps1x 0 0 24 0 @taps 0 0 24 24
+// Retrieval info: CONNECT: taps2x 0 0 24 0 @taps 0 0 24 48
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_RB_interploation_240p.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_RB_interploation_240p.inc FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_RB_interploation_240p.cmp FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_RB_interploation_240p.bsf FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_RB_interploation_240p_inst.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL demosaic_acpi_RB_interploation_240p_bb.v FALSE
 // Retrieval info: LIB_FILE: altera_mf
