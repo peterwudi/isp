@@ -488,9 +488,6 @@ demosaic_acpi_RB_interploation_240p rb_interploation_buffer(
 // Need to buffer boundaryWidth-1 empty and 2 full rows before intrapolation
 localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 
-// Gradients
-wire	[7:0]		n, p;
-
 // Edge detection
 reg	[7:0]		g_h;
 reg	[7:0]		g_v;
@@ -679,6 +676,116 @@ d37_diff
 	.oRes(g_d37)
 );
 
+// Gradients
+reg	[7:0]		n1_a, n1_b, p1_a, p1_b;
+wire	[7:0]		n1, p1;
+wire	[8:0]		n2, p2;
+reg	[9:0]		n, p;
+
+// Select R or B
+always @(posedge clk) begin
+	if (reset) begin
+		n1_a	<= 'b0;
+		n1_b	<= 'b0;
+		p1_a	<= 'b0;
+		p1_b	<= 'b0;
+	end
+	else if (iValid) begin
+		case ({r_y[2][0], r_x[2][0]})
+			2'b00, 2'b11: begin
+				// G at center, don't need n/p
+				n1_a	<= 'b0;
+				n1_b	<= 'b0;
+				p1_a	<= 'b0;
+				p1_b	<= 'b0;
+			end
+			2'b01: begin
+				//	R	G	R
+				//	G	B	G
+				//	R	G	R
+				n1_a	<= r_rf[0][0][23:16];
+				n1_b	<= r_rf[2][2][23:16];
+				p1_a	<= r_rf[0][2][23:16];
+				p1_b	<= r_rf[2][0][23:16];
+			end
+			2'b10: begin
+				//	B	G	B
+				//	G	R	G
+				//	B	G	B
+				n1_a	<= r_rf[0][0][7:0];
+				n1_b	<= r_rf[2][2][7:0];
+				p1_a	<= r_rf[0][2][7:0];
+				p1_b	<= r_rf[2][0][7:0];
+			end
+		endcase
+	end
+end
+
+abs_diff #(.delay(1))
+n_diff_1
+(
+	.clk(clk),
+	.reset(reset),
+	.a({10'b0, n1_a}),
+	.b({10'b0, n1_b}),
+	.iValid(iValid),
+	
+	.oValid(),
+	.oRes(n1)
+);
+
+abs_diff #(.delay(1))
+p_diff_1
+(
+	.clk(clk),
+	.reset(reset),
+	.a({10'b0, p1_a}),
+	.b({10'b0, p1_b}),
+	.iValid(iValid),
+	
+	.oValid(),
+	.oRes(p1)
+);
+
+abs_diff #(.delay(1))
+n_diff_2
+(
+	.clk(clk),
+	.reset(reset),
+	.a({10'b0, g5ls1}),
+	.b({10'b0, rgb19[17:9]),
+	.iValid(iValid),
+	
+	.oValid(),
+	.oRes(n2)
+);
+
+
+abs_diff #(.delay(1))
+p_diff_b_2
+(
+	.clk(clk),
+	.reset(reset),
+	.a({10'b0, g5ls1}),
+	.b({10'b0, rgb37[17:9]),
+	.iValid(iValid),
+	
+	.oValid(),
+	.oRes(p2)
+);
+
+// Calculate n and p
+always @(posedge clk) begin
+	if (reset) begin
+		n			<= 'b0;
+		p			<= 'b0;
+	end
+	else if (iValid) begin
+		n			<= n1 + n2;
+		p			<= p1 + p2;
+	end
+end
+
 reg	edgeRes [4:0];
 
 always @(posedge clk) begin
@@ -690,11 +797,22 @@ always @(posedge clk) begin
 	end
 end
 
-// Add and right shift by 1. Calculate R, G and B
-reg	[23:0]	rgb28rs1;
-reg	[23:0]	rgb46rs1;
-reg	[23:0]	rgb19rs1;
-reg	[23:0]	rgb37rs1;
+// Add. Calculate R, G and B
+reg	[26:0]	rgb28;
+reg	[26:0]	rgb46;
+reg	[26:0]	rgb19;
+reg	[26:0]	rgb37;
+reg	[8:0]		g5ls1;
+
+reg	[7:0]		case1_1r, case2_1r, case3_1r, case4_1r;
+reg	[7:0]		case1_1b, case2_1b, case3_1b, case4_1b;
+reg	[7:0]		case1_2, case2_2, case3_2, case4_2;
+
+reg	[8:0]		case1r, case2r, case3r, case4r, case1b, case2b, case3b, case4b	[1:0];
+reg	[8:0]		case5r, case5b;
+
+// Cached center pixel data
+reg	[23:0]	r_rf_center [3:0];
 
 genvar i;
 integer j;
@@ -718,21 +836,111 @@ generate
 		end
 	end
 	
-	// Calculate bilinear in all directions
+	// Cycle 1, calculate bilinear in all directions, and g5 * 2
 	for (i = 0; i < 3; i = i + 1) begin: sum_a
 		always @(posedge clk) begin
 			if (reset) begin
-				rgb28rs1		<= 'b0;
-				rgb46rs1		<= 'b0;
-				rgb19rs1		<= 'b0;
-				rgb37rs1		<= 'b0;
+				rgb28		<= 'b0;
+				rgb46		<= 'b0;
+				rgb19		<= 'b0;
+				rgb37		<= 'b0;
+				g5ls1		<= 'b0;
 			end
 			else if (iValid) begin
-				rgb28rs1[i*8+7:i*8]	<= (r_rf[0][1][i*8+7:i*8] + r_rf[2][1][i*8+7:i*8]) >> 1;
-				rgb46rs1[i*8+7:i*8]	<= (r_rf[1][0][i*8+7:i*8] + r_rf[1][2][i*8+7:i*8]) >> 1;
-				rgb19rs1[i*8+7:i*8]	<= (r_rf[0][0][i*8+7:i*8] + r_rf[2][2][i*8+7:i*8]) >> 1;
-				rgb37rs1[i*8+7:i*8]	<= (r_rf[2][0][i*8+7:i*8] + r_rf[0][2][i*8+7:i*8]) >> 1;
+				rgb28[i*9+8:i*9]	<= (r_rf[0][1][i*8+7:i*8] + r_rf[2][1][i*8+7:i*8]);
+				rgb46[i*9+8:i*9]	<= (r_rf[1][0][i*8+7:i*8] + r_rf[1][2][i*8+7:i*8]);
+				rgb19[i*9+8:i*9]	<= (r_rf[0][0][i*8+7:i*8] + r_rf[2][2][i*8+7:i*8]);
+				rgb37[i*9+8:i*9]	<= (r_rf[2][0][i*8+7:i*8] + r_rf[0][2][i*8+7:i*8]);
+				
+				g5ls1					<= r_rf[1][1] << 1;
 			end
+		end
+	end
+	
+	// Cycle 2, start to calculate 5 laplacian cases
+	always @(posedge clk) begin
+		if (reset) begin
+			case1_1r		<= 'b0;
+			case2_1r		<= 'b0;
+			case3_1r		<= 'b0;
+			case4_1r		<= 'b0;
+			case1_1b		<= 'b0;
+			case2_1b		<= 'b0;
+			case3_1b		<= 'b0;
+			case4_1b		<= 'b0;
+			case1_2		<= 'b0;
+			case2_2		<= 'b0;
+			case3_2		<= 'b0;
+			case4_2		<= 'b0;
+		end
+		else if (iValid) begin
+			case1_1r		<= rgb46[26:19];
+			case2_1r		<= rgb28[26:19];
+			case3_1r		<= rgb19[26:19];
+			case4_1r		<= rgb37[26:19];
+			
+			case1_1b		<= rgb46[8:1];
+			case2_1b		<= rgb28[8:1];
+			case3_1b		<= rgb19[8:1];
+			case4_1b		<= rgb37[8:1];
+		
+			case1_2		<= (g5ls1 - rgb46[17:9]) >> 1;
+			case2_2		<= (g5ls1 - rgb28[17:9]) >> 1;
+			case3_2		<= (g5ls1 - rgb19[17:9]) >> 1;
+			case4_2		<= (g5ls1 - rgb37[17:9]) >> 1;
+		end
+	end
+	
+	// Cycle 3, get laplacian results except for the last case
+	always @(posedge clk) begin
+		if (reset) begin
+			case1r[0]	<= 'b0;
+			case2r[0]	<= 'b0;
+			case3r[0]	<= 'b0;
+			case4r[0]	<= 'b0;
+			case1b[0]	<= 'b0;
+			case2b[0]	<= 'b0;
+			case3b[0]	<= 'b0;
+			case4b[0]	<= 'b0;
+		else if (iValid) begin
+			case1r[0]	<= case1_1r + case1_2;
+			case2r[0]	<= case2_1r + case2_2;
+			case3r[0]	<= case3_1r + case3_2;
+			case4r[0]	<= case4_1r + case4_2;
+			
+			case1b[0]	<= case1_1b + case1_2;
+			case2b[0]	<= case2_1b + case2_2;
+			case3b[0]	<= case3_1b + case3_2;
+			case4b[0]	<= case4_1b + case4_2;
+		end
+	end
+	
+	// Cycle 4, get case 5
+	always @(posedge clk) begin
+		if (reset) begin
+			case1r[1]	<= 'b0;
+			case2r[1]	<= 'b0;
+			case3r[1]	<= 'b0;
+			case4r[1]	<= 'b0;
+			case1b[1]	<= 'b0;
+			case2b[1]	<= 'b0;
+			case3b[1]	<= 'b0;
+			case4b[1]	<= 'b0;
+			case5r		<= 'b0;
+			case5b		<= 'b0;
+		else if (iValid) begin
+			case1r[1]	<= case1r[0];
+			case2r[1]	<= case2r[0];
+			case3r[1]	<= case3r[0];
+			case4r[1]	<= case4r[0];
+			
+			case1b[1]	<= case1b[0];
+			case2b[1]	<= case2b[0];
+			case3b[1]	<= case3b[0];
+			case4b[1]	<= case4b[0];
+			
+			case5r		<= (case3r[0] + case4r[0]) >> 1;
+			case5b		<= (case3b[0] + case4b[0]) >> 1;
 		end
 	end
 	
@@ -799,16 +1007,6 @@ begin
 		cnt		<= 'b0;
 		x			<= 'b0;
 		y			<= 'b0;
-		gV[0]		<= 'b0;
-		gV[1]		<= 'b0;
-		gV[2]		<= 'b0;
-		gH[0]		<= 'b0;
-		gH[1]		<= 'b0;
-		gH[2]		<= 'b0;
-		gHV		<= 'b0;
-		gRes		<= 'b0;
-		f			<= 'b0;
-		greyDiff	<= 'b0;
 	end
 	else if (iValid) begin
 		if (cnt <= totalCycles) begin
@@ -847,62 +1045,6 @@ begin
 			// Haven't filled the fifo yet
 			moValid	<= 0;
 		end
-
-		// Cycle 1
-		if (r_y[1] == 0) begin
-			// First row
-			gV[0] <= rf[0][1];
-		end
-		else if (r_y[1] == height - 1) begin
-			// Last row
-			gV[0]	<= rf[2][1];
-		end
-		else begin
-			gV[0]	<= (rf[0][1] + rf[2][1]) >> 1;
-		end
-		
-		if (r_x[1] == 0) begin
-			// First column
-			gH[0]	<= rf[1][0];
-		end
-		else if (r_x[1] == width - 1) begin
-			// Last column
-			gH[0]	<= rf[1][2];
-		end
-		else begin
-			gH[0]	<= (rf[1][0] + rf[1][2]) >> 1;
-		end
-		
-		// Cycle 2
-		gH[1]	<= gH[0];
-		gH[2]	<= gH[1];
-		gV[1]	<= gV[0];
-		gV[2]	<= gV[1];
-		
-		// Cycle 3
-		gHV	<= (gH[1] + gV[1]) >> 1;
-		
-		// Cycle 4
-		if (h > v) begin
-			gRes	<= gV[2][7:0];
-		end
-		else if (h < v) begin
-			gRes	<= gH[2][7:0];
-		end
-		else begin
-			gRes	<= gHV[7:0];
-		end
-		
-		greyDiff	<= h + v;
-		
-		// Calculate f
-		case ({r_y[4][0], r_x[4][0]})
-			2'b01, 2'b10: begin
-				f	<= f + greyDiff;
-			end
-			default:	begin
-			end
-		endcase
 		
 		case ({r_y[5][0], r_x[5][0]})
 			2'b00, 2'b11: begin
