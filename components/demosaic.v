@@ -474,16 +474,15 @@ demosaic_acpi_RB_interploation_240p rb_interploation_buffer(
 	.clken(iValid),
 	.shiftin(iData),
 	.shiftout(),
-	.taps0x(),
-	.taps1x(),
-	.taps2x(tap[0]),
-	.taps3x(tap[1]),
-	.taps4x(tap[2])
+	.taps0x(tap[0]),
+	.taps1x(tap[1]),
+	.taps2x(tap[2])
 );
 
 
 // TODO: Figure this out later
 // Need to buffer boundaryWidth-1 empty and 2 full rows before intrapolation
+//localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 
 // Edge detection
@@ -867,24 +866,35 @@ generate
 	
 	
 	// Cycle 1, calculate bilinear in all directions, and g5 * 2
-	for (i = 0; i < 3; i = i + 1) begin: sum_cycle1
-		always @(posedge clk) begin
-			if (reset) begin
-				rgb28		<= 'b0;
-				rgb46		<= 'b0;
-				rgb19		<= 'b0;
-				rgb37		<= 'b0;
-				g5ls1		<= 'b0;
-			end
-			else if (iValid) begin
-				rgb28[i*9+8:i*9]	<= (r_rf[0][1][i*8+7:i*8] + r_rf[2][1][i*8+7:i*8]);
-				rgb46[i*9+8:i*9]	<= (r_rf[1][0][i*8+7:i*8] + r_rf[1][2][i*8+7:i*8]);
-				rgb19[i*9+8:i*9]	<= (r_rf[0][0][i*8+7:i*8] + r_rf[2][2][i*8+7:i*8]);
-				rgb37[i*9+8:i*9]	<= (r_rf[2][0][i*8+7:i*8] + r_rf[0][2][i*8+7:i*8]);
-				g5ls1					<= r_rf[1][1] << 1;
-			end
+	always @(posedge clk) begin
+		if (reset) begin
+			rgb28		<= 'b0;
+			rgb46		<= 'b0;
+			rgb19		<= 'b0;
+			rgb37		<= 'b0;
+			g5ls1		<= 'b0;
+		end
+		else if (iValid) begin
+			rgb28[8:0]		<= r_rf[0][1][7:0] + r_rf[2][1][7:0];
+			rgb28[17:9]		<= r_rf[0][1][15:8] + r_rf[2][1][15:8];
+			rgb28[26:18]	<= r_rf[0][1][23:16] + r_rf[2][1][23:16];
+		
+			rgb46[8:0]		<= r_rf[1][0][7:0] + r_rf[1][2][7:0];
+			rgb46[17:9]		<= r_rf[1][0][15:8] + r_rf[1][2][15:8];
+			rgb46[26:18]	<= r_rf[1][0][23:16] + r_rf[1][2][23:16];
+		
+			rgb19[8:0]		<= r_rf[0][0][7:0] + r_rf[2][2][7:0];
+			rgb19[17:9]		<= r_rf[0][0][15:8] + r_rf[2][2][15:8];
+			rgb19[26:18]	<= r_rf[0][0][23:16] + r_rf[2][2][23:16];
+		
+			rgb37[8:0]		<= r_rf[2][0][7:0] + r_rf[0][2][7:0];
+			rgb37[17:9]		<= r_rf[2][0][15:8] + r_rf[0][2][15:8];
+			rgb37[26:18]	<= r_rf[2][0][23:16] + r_rf[0][2][23:16];
+			
+			g5ls1					<= r_rf[1][1] << 1;
 		end
 	end
+	
 	
 	// Cycle 2, start to calculate 5 laplacian cases
 	always @(posedge clk) begin
@@ -976,56 +986,58 @@ generate
 	end
 	
 	// Cycle 5, select R or B for case 1-5
-	for (i = 0; i < 5; i = i + 1) begin: caseRes1_5
-		always @(posedge clk) begin
-			if (reset) begin
-				caseRes[i]	<= 'b0;
-			end
-			else if (iValid) begin
-				// Select R or B
-				case ({r_y[6][0], r_x[6][0]})
-					2'b00: begin
-						//	G	R	G
-						//	B	G	B
-						//	G	R	G
-						caseRes[0]	<= case1b[1];
-						caseRes[1]	<= case2r[1];
-						caseRes[2]	<=	'b0;
-						caseRes[3]	<= 'b0;
-						caseRes[4]	<= 'b0;
-					end
-					2'b01: begin
-						//	R	G	R
-						//	G	B	G
-						//	R	G	R
-						caseRes[0]	<= 'b0;
-						caseRes[1]	<= 'b0;
-						caseRes[2]	<=	case3r[1];
-						caseRes[3]	<= case4r[1];
-						caseRes[4]	<= case5r[1];
-					end
-					2'b10: begin
-						//	B	G	B
-						//	G	R	G
-						//	B	G	B
-						caseRes[0]	<= 'b0;
-						caseRes[1]	<= 'b0;
-						caseRes[2]	<=	case3b[1];
-						caseRes[3]	<= case4b[1];
-						caseRes[4]	<= case5b[1];
-					end
-					2'b11: begin
-						//	G	B	G
-						//	R	G	R
-						//	G	B	G
-						caseRes[0]	<= case1r[1];
-						caseRes[1]	<= case2b[1];
-						caseRes[2]	<=	'b0;
-						caseRes[3]	<= 'b0;
-						caseRes[4]	<= 'b0;
-					end
-				endcase
-			end
+	always @(posedge clk) begin
+		if (reset) begin
+			caseRes[0]	<= 'b0;
+			caseRes[1]	<= 'b0;
+			caseRes[2]	<= 'b0;
+			caseRes[3]	<= 'b0;
+			caseRes[4]	<= 'b0;
+		end
+		else if (iValid) begin
+			// Select R or B
+			case ({r_y[6][0], r_x[6][0]})
+				2'b00: begin
+					//	G	R	G
+					//	B	G	B
+					//	G	R	G
+					caseRes[0]	<= case1b[1];
+					caseRes[1]	<= case2r[1];
+					caseRes[2]	<=	'b0;
+					caseRes[3]	<= 'b0;
+					caseRes[4]	<= 'b0;
+				end
+				2'b01: begin
+					//	R	G	R
+					//	G	B	G
+					//	R	G	R
+					caseRes[0]	<= 'b0;
+					caseRes[1]	<= 'b0;
+					caseRes[2]	<=	case3r[1];
+					caseRes[3]	<= case4r[1];
+					caseRes[4]	<= case5r[1];
+				end
+				2'b10: begin
+					//	B	G	B
+					//	G	R	G
+					//	B	G	B
+					caseRes[0]	<= 'b0;
+					caseRes[1]	<= 'b0;
+					caseRes[2]	<=	case3b[1];
+					caseRes[3]	<= case4b[1];
+					caseRes[4]	<= case5b[1];
+				end
+				2'b11: begin
+					//	G	B	G
+					//	R	G	R
+					//	G	B	G
+					caseRes[0]	<= case1r[1];
+					caseRes[1]	<= case2b[1];
+					caseRes[2]	<=	'b0;
+					caseRes[3]	<= 'b0;
+					caseRes[4]	<= 'b0;
+				end
+			endcase
 		end
 	end
 	
