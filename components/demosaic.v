@@ -137,7 +137,6 @@ localparam	boundaryWidth	= (kernelSize-1)/2;
 // Need to buffer boundaryWidth-1 empty and 2 full rows before intrapolation
 localparam	totalCycles	= width*(height+2+boundaryWidth-1);
 
-
 // Gradients
 wire	[7:0]		h, v;
 
@@ -417,7 +416,6 @@ module demosaic_acpi_RBinter
 	input		[23:0]	iData,
 	input					reset,
 	input					iValid,
-	input					gInteriValid,
 	input		[7:0]		T,
 	
 	output	[7:0]		oR, oG, oB,
@@ -425,8 +423,8 @@ module demosaic_acpi_RBinter
 	output				oValid,
 	output				oDone
 );
-
-localparam	pipelineDepth = 6;
+// Starting from x and y, i.e. the depth of r_x and r_y
+localparam	pipelineDepth	= 10;
 
 parameter	width				= 1920;
 parameter	height			= 1080;
@@ -441,37 +439,37 @@ localparam	boundaryWidth	= (kernelSize-1)/2;
 wire	unsigned	[23:0]	tap	[2:0];
 reg	unsigned	[23:0]	rf		[2:0][2:0];
 
-reg	unsigned	[8:0]		moR;
-reg	unsigned	[8:0]		moG;
-reg	unsigned	[8:0]		moB;
+reg	unsigned	[7:0]		moR;
+reg	unsigned	[7:0]		moG;
+reg	unsigned	[7:0]		moB;
 reg							moValid;
 reg							moDone;
 
 // Delayed signals
-reg				r_moValid	[5:0];
-reg				r_moDone		[5:0];
+reg				r_moValid	[pipelineDepth-1:0];
+reg				r_moDone		[pipelineDepth-1:0];
 
 // Pixel counter
 reg	[31:0]	cnt, x, y;
 
 // Delayed x and y for the RF
-reg	[31:0]	r_x			[5:0];
-reg	[31:0]	r_y			[5:0];
-reg	[31:0]	r_cnt			[5:0];
+reg	[31:0]	r_x			[pipelineDepth-1:0];
+reg	[31:0]	r_y			[pipelineDepth-1:0];
+reg	[31:0]	r_cnt			[pipelineDepth-1:0];
 
-assign	xCnt			= r_x[5];
-assign	yCnt			= r_y[5];
-assign	demosaicCnt = r_cnt[5];
+assign	xCnt			= r_x[pipelineDepth-1];
+assign	yCnt			= r_y[pipelineDepth-1];
+assign	demosaicCnt = r_cnt[pipelineDepth-1];
 
-assign	oR			=	moR[7:0];
-assign	oG			=	moG[7:0];
-assign	oB			=	moB[7:0];
-assign	oValid	=	r_moValid[5] & iValid;
-assign	oDone		=	r_moDone[5] & iValid;
+assign	oR			=	moR;
+assign	oG			=	moG;
+assign	oB			=	moB;
+assign	oValid	=	r_moValid[pipelineDepth-1] & iValid;
+assign	oDone		=	r_moDone[pipelineDepth-1] & iValid;
 
 // Depth is width
 demosaic_acpi_RB_interploation_240p rb_interploation_buffer(
-	.aclr(reset)
+	.aclr(reset),
 	.clock(clk),
 	.clken(iValid),
 	.shiftin(iData),
@@ -494,7 +492,7 @@ reg	[7:0]		g_v;
 reg	[7:0]		g_d19;
 reg	[7:0]		g_d37;
 
-// Cached pixel data
+// Registered pixel data (for inserting 0's at the boundary)
 reg	unsigned	[23:0]	r_rf [2:0][2:0];
 
 always @(posedge clk) begin
@@ -547,6 +545,7 @@ always @(posedge clk) begin
 				r_rf[2][1]	<= rf[2][1];
 				r_rf[2][2]	<= 'b0;
 			end
+		end
 		else if (r_x[1] == width - 1) begin
 			// Last column
 			if (r_y[1] == 0) begin
@@ -584,6 +583,7 @@ always @(posedge clk) begin
 				r_rf[2][1]	<= rf[2][1];
 				r_rf[2][2]	<= rf[2][2];
 			end
+		end
 		else begin
 			if (r_y[1] == 0) begin
 				// First row
@@ -676,6 +676,20 @@ d37_diff
 	.oRes(g_d37)
 );
 
+// Edge detection result
+reg	[4:0]		edgeSel;
+reg				isEdge	[pipelineDepth - 9:0];
+
+always @(posedge clk) begin
+	if (reset) begin
+		edgeSel	<= 'b0;
+	end
+	else if (iValid) begin
+		// Use the last bit to select the diagnal
+		edgeSel	<= {(g_h > T), (g_v > T), (g_d19 > T), (g_d37 > T), (g_d19 > g_d37)};
+	end
+end
+
 // Gradients
 reg	[7:0]		n1_a, n1_b, p1_a, p1_b;
 wire	[7:0]		n1, p1;
@@ -753,13 +767,12 @@ n_diff_2
 	.clk(clk),
 	.reset(reset),
 	.a({10'b0, g5ls1}),
-	.b({10'b0, rgb19[17:9]),
+	.b({10'b0, rgb19[17:9]}),
 	.iValid(iValid),
 	
 	.oValid(),
 	.oRes(n2)
 );
-
 
 abs_diff #(.delay(1))
 p_diff_b_2
@@ -767,35 +780,12 @@ p_diff_b_2
 	.clk(clk),
 	.reset(reset),
 	.a({10'b0, g5ls1}),
-	.b({10'b0, rgb37[17:9]),
+	.b({10'b0, rgb37[17:9]}),
 	.iValid(iValid),
 	
 	.oValid(),
 	.oRes(p2)
 );
-
-// Calculate n and p
-always @(posedge clk) begin
-	if (reset) begin
-		n			<= 'b0;
-		p			<= 'b0;
-	end
-	else if (iValid) begin
-		n			<= n1 + n2;
-		p			<= p1 + p2;
-	end
-end
-
-reg	edgeRes [4:0];
-
-always @(posedge clk) begin
-	if (reset) begin
-		edgeRes	<= 'b0;
-	end
-	else if (iValid) begin
-		edgeRes	<= {(g_h > T), (g_v > T), (g_d19 > T), (g_d37 > T), (g_d19 > g_d37)}
-	end
-end
 
 // Add. Calculate R, G and B
 reg	[26:0]	rgb28;
@@ -804,15 +794,37 @@ reg	[26:0]	rgb19;
 reg	[26:0]	rgb37;
 reg	[8:0]		g5ls1;
 
+reg	[26:0]	r_rgb28	[1:0];
+reg	[26:0]	r_rgb46	[1:0];
+reg	[26:0]	r_rgb19	[1:0];
+reg	[26:0]	r_rgb37	[1:0];
+
 reg	[7:0]		case1_1r, case2_1r, case3_1r, case4_1r;
 reg	[7:0]		case1_1b, case2_1b, case3_1b, case4_1b;
 reg	[7:0]		case1_2, case2_2, case3_2, case4_2;
 
-reg	[8:0]		case1r, case2r, case3r, case4r, case1b, case2b, case3b, case4b	[1:0];
-reg	[8:0]		case5r, case5b;
+// Truncate
+reg	[7:0]		case1r	[1:0];
+reg	[7:0]		case2r	[1:0];
+reg	[7:0]		case3r	[1:0];
+reg	[7:0]		case4r	[1:0];
+reg	[7:0]		case1b	[1:0];
+reg	[7:0]		case2b	[1:0];
+reg	[7:0]		case3b	[1:0];
+reg	[7:0]		case4b	[1:0];
+
+reg	[7:0]		case5r, case5b;
+
+reg	[7:0]		caseRes	[4:0];
+
+// smoothRes[0]	-- R, smoothRes[1]	-- B
+reg	[7:0]		smoothRes [1:0][pipelineDepth - 9:0];
+
+// edgeRes[0]	-- R, edgeRes[1]	-- B
+reg	[7:0]		edgeRes [1:0];
 
 // Cached center pixel data
-reg	[23:0]	r_rf_center [3:0];
+reg	[23:0]	r_rf_center [pipelineDepth - 4:0];
 
 genvar i;
 integer j;
@@ -836,8 +848,26 @@ generate
 		end
 	end
 	
+	// isEdge
+	for (i = 0; i < pipelineDepth - 8; i = i + 1) begin: isEdgeDelay
+		always @(posedge clk) begin
+			if (reset) begin
+				isEdge[i]		<= 'b0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					isEdge[i]	<= isEdge[i-1];
+				end
+				else begin
+					isEdge[i]	<= (edgeSel[0] | edgeSel[1] | edgeSel[2] | edgeSel[3]);
+				end
+			end
+		end
+	end
+	
+	
 	// Cycle 1, calculate bilinear in all directions, and g5 * 2
-	for (i = 0; i < 3; i = i + 1) begin: sum_a
+	for (i = 0; i < 3; i = i + 1) begin: sum_cycle1
 		always @(posedge clk) begin
 			if (reset) begin
 				rgb28		<= 'b0;
@@ -851,7 +881,6 @@ generate
 				rgb46[i*9+8:i*9]	<= (r_rf[1][0][i*8+7:i*8] + r_rf[1][2][i*8+7:i*8]);
 				rgb19[i*9+8:i*9]	<= (r_rf[0][0][i*8+7:i*8] + r_rf[2][2][i*8+7:i*8]);
 				rgb37[i*9+8:i*9]	<= (r_rf[2][0][i*8+7:i*8] + r_rf[0][2][i*8+7:i*8]);
-				
 				g5ls1					<= r_rf[1][1] << 1;
 			end
 		end
@@ -902,6 +931,7 @@ generate
 			case2b[0]	<= 'b0;
 			case3b[0]	<= 'b0;
 			case4b[0]	<= 'b0;
+		end
 		else if (iValid) begin
 			case1r[0]	<= case1_1r + case1_2;
 			case2r[0]	<= case2_1r + case2_2;
@@ -915,7 +945,7 @@ generate
 		end
 	end
 	
-	// Cycle 4, get case 5
+	// Cycle 4, get case 5rb
 	always @(posedge clk) begin
 		if (reset) begin
 			case1r[1]	<= 'b0;
@@ -928,6 +958,7 @@ generate
 			case4b[1]	<= 'b0;
 			case5r		<= 'b0;
 			case5b		<= 'b0;
+		end
 		else if (iValid) begin
 			case1r[1]	<= case1r[0];
 			case2r[1]	<= case2r[0];
@@ -944,12 +975,199 @@ generate
 		end
 	end
 	
+	// Cycle 5, select R or B for case 1-5
+	for (i = 0; i < 5; i = i + 1) begin: caseRes1_5
+		always @(posedge clk) begin
+			if (reset) begin
+				caseRes[i]	<= 'b0;
+			end
+			else if (iValid) begin
+				// Select R or B
+				case ({r_y[6][0], r_x[6][0]})
+					2'b00: begin
+						//	G	R	G
+						//	B	G	B
+						//	G	R	G
+						caseRes[0]	<= case1b[1];
+						caseRes[1]	<= case2r[1];
+						caseRes[2]	<=	'b0;
+						caseRes[3]	<= 'b0;
+						caseRes[4]	<= 'b0;
+					end
+					2'b01: begin
+						//	R	G	R
+						//	G	B	G
+						//	R	G	R
+						caseRes[0]	<= 'b0;
+						caseRes[1]	<= 'b0;
+						caseRes[2]	<=	case3r[1];
+						caseRes[3]	<= case4r[1];
+						caseRes[4]	<= case5r[1];
+					end
+					2'b10: begin
+						//	B	G	B
+						//	G	R	G
+						//	B	G	B
+						caseRes[0]	<= 'b0;
+						caseRes[1]	<= 'b0;
+						caseRes[2]	<=	case3b[1];
+						caseRes[3]	<= case4b[1];
+						caseRes[4]	<= case5b[1];
+					end
+					2'b11: begin
+						//	G	B	G
+						//	R	G	R
+						//	G	B	G
+						caseRes[0]	<= case1r[1];
+						caseRes[1]	<= case2b[1];
+						caseRes[2]	<=	'b0;
+						caseRes[3]	<= 'b0;
+						caseRes[4]	<= 'b0;
+					end
+				endcase
+			end
+		end
+	end
+	
+	// rgb delay
+	for (i = 0; i < 2; i = i + 1) begin: rgbDealy
+		always @(posedge clk) begin
+			if (reset) begin
+				r_rgb28[i]	<=	'b0;
+				r_rgb46[i]	<=	'b0;
+				r_rgb19[i]	<=	'b0;
+				r_rgb37[i]	<=	'b0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					r_rgb28[i]	<=	r_rgb28[i-1];
+					r_rgb46[i]	<=	r_rgb46[i-1];
+					r_rgb19[i]	<=	r_rgb19[i-1];
+					r_rgb37[i]	<=	r_rgb37[i-1];
+				end
+				else begin
+					r_rgb28[i]	<=	rgb28;
+					r_rgb46[i]	<=	rgb46;
+					r_rgb19[i]	<=	rgb19;
+					r_rgb37[i]	<=	rgb37;
+				end
+			end
+		end
+	end
+	
+	// Determine smooth area
+	for (i = 0; i < pipelineDepth - 8; i = i + 1) begin: smoothDealy
+		always @(posedge clk) begin
+			if (reset) begin
+				smoothRes[0][i]	<= 'b0;
+				smoothRes[1][i]	<= 'b0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					smoothRes[0][i]	<= smoothRes[0][i-1];
+					smoothRes[1][i]	<= smoothRes[1][i-1];
+				end
+				else begin
+					case ({r_y[6][0], r_x[6][0]})
+						2'b00: begin
+							//	G	R	G
+							//	B	G	B
+							//	G	R	G
+							smoothRes[0][i]	<= r_rgb28[1][26:19];
+							smoothRes[1][i]	<= r_rgb46[1][8:1];
+						end
+						2'b01: begin
+							//	R	G	R
+							//	G	B	G
+							//	R	G	R
+							smoothRes[0][i]	<= (edgeSel[0] == 0) ? r_rgb19[1][26:19] : r_rgb37[1][26:19];
+							smoothRes[1][i]	<= r_rf_center[3][7:0];
+						end
+						2'b10: begin
+							//	B	G	B
+							//	G	R	G
+							//	B	G	B
+							smoothRes[0][i]	<= r_rf_center[3][23:16];
+							smoothRes[1][i]	<= (edgeSel[0] == 0) ? r_rgb19[1][8:1] : r_rgb37[1][8:1];
+						end
+						2'b11: begin
+							//	G	B	G
+							//	R	G	R
+							//	G	B	G
+							smoothRes[0][i]	<= r_rgb46[1][26:19];
+							smoothRes[1][i]	<= r_rgb28[1][8:1];
+						end
+					endcase
+				end
+			end
+		end
+	end
+	
+	// Selection based on n and p
+	always @(posedge clk) begin
+		if (reset) begin
+			n			<= 'b0;
+			p			<= 'b0;
+		end
+		else if (iValid) begin
+			n			<= n1 + n2;
+			p			<= p1 + p2;
+			
+			case ({r_y[7][0], r_x[7][0]})
+				2'b00: begin
+					//	G	R	G
+					//	B	G	B
+					//	G	R	G
+					edgeRes[0]	<= caseRes[1];
+					edgeRes[1]	<= caseRes[0];
+				end
+				2'b01: begin
+					//	R	G	R
+					//	G	B	G
+					//	R	G	R
+					if (n < p) begin
+						edgeRes[0]	<= caseRes[2];
+					end
+					else if (n < p) begin
+						edgeRes[0]	<= caseRes[3];
+					end
+					else begin
+						edgeRes[0]	<= caseRes[4];
+					end
+					edgeRes[1]	<= 'b0;
+				end
+				2'b10: begin
+					//	B	G	B
+					//	G	R	G
+					//	B	G	B
+					if (n < p) begin
+						edgeRes[1]	<= caseRes[2];
+					end
+					else if (n < p) begin
+						edgeRes[1]	<= caseRes[3];
+					end
+					else begin
+						edgeRes[1]	<= caseRes[4];
+					end
+					edgeRes[0]	<= 'b0;
+				end
+				2'b11: begin
+					//	G	B	G
+					//	R	G	R
+					//	G	B	G
+					edgeRes[0]	<= caseRes[0];
+					edgeRes[1]	<= caseRes[1];
+				end
+			endcase
+		end
+	end
+	
 	// Delay line of pixel counters and signals
 	// It takes 2 cycles for a pixel to get to the
 	// center of the RF.
 	// After that, it takes another 4 cycles to calculate
 	// the green interpolation results.
-	for (i = 0; i < 6; i = i + 1) begin: delayLine
+	for (i = 0; i < pipelineDepth; i = i + 1) begin: delayLine
 		always @(posedge clk) begin
 			if (reset) begin
 				r_x[i]			<= 'b0;
@@ -978,7 +1196,7 @@ generate
 	end
 	
 	// Cached center pixel data
-	for (i = 0; i < 4; i = i + 1) begin: rfcenter
+	for (i = 0; i < pipelineDepth - 3; i = i + 1) begin: rfcenter
 		always @(posedge clk) begin
 			if (reset) begin
 				r_rf_center[i]	<= 'b0;
@@ -995,10 +1213,8 @@ generate
 	end
 endgenerate
 
-always@ (posedge clk)
-begin
-	if(reset)
-	begin
+always@ (posedge clk) begin
+	if(reset) begin
 		moR		<=	'b0;
 		moG		<=	'b0;
 		moB		<=	'b0;
@@ -1046,38 +1262,13 @@ begin
 			moValid	<= 0;
 		end
 		
-		case ({r_y[5][0], r_x[5][0]})
-			2'b00, 2'b11: begin
-				// G at center, no need to interpolate
-				moR	<=	'b0;
-				moG	<=	r_rf_center[3];
-				moB	<=	'b0;
-			end
-			2'b01: begin
-				//	R	G	R
-				//	G	B	G
-				//	R	G	R
-				moR	<=	'b0;
-				moG	<=	gRes;
-				moB	<=	r_rf_center[3];
-			end
-			2'b10: begin
-				//	B	G	B
-				//	G	R	G
-				//	B	G	B
-				moR	<=	r_rf_center[3];
-				moG	<=	gRes;
-				moB	<=	'b0;
-			end
-		endcase
+		moR	<= (isEdge[pipelineDepth-9] == 1) ? edgeRes[0] : smoothRes[0][pipelineDepth-9];
+		moG	<= r_rf_center[pipelineDepth-4][15:8];
+		moB	<= (isEdge[pipelineDepth-9] == 1) ? edgeRes[1] : smoothRes[1][pipelineDepth-9];
 	end
 end
 
 endmodule
-
-
-
-
 
 
 module demosaic_acpi
@@ -1102,6 +1293,7 @@ localparam	boundaryWidth	= (kernelSize-1)/2;
 wire	[31:0]	f;
 reg	[7:0]		T;
 wire				oGinterDone;
+wire	[7:0]		oGinterR, oGinterG, oGinterB;
 
 demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
 ginter
@@ -1111,14 +1303,14 @@ ginter
 	.reset(reset),
 	.iValid(iValid),
 	
-	.oR(oR),
-	.oG(oG),
-	.oB(oB),
-	.xCnt(xCnt),
-	.yCnt(yCnt),
-	.demosaicCnt(demosaicCnt),
+	.oR(oGinterR),
+	.oG(oGinterG),
+	.oB(oGinterB),
+	.xCnt(),
+	.yCnt(),
+	.demosaicCnt(),
 	.oF(f),
-	.oValid(oValid),
+	.oValid(),
 	.oDone(oGinterDone)
 );
 
@@ -1149,16 +1341,24 @@ end
 
 assign oT = T;
 
-reg	moDone;
-
-always @(posedge clk) begin
-	if (reset) begin
-		moDone	<= 0;
-	end
-	else begin
-		moDone	<= oGinterDone;
-	end
-end	
+demosaic_acpi_RBinter #(.width(width), .height(height), .kernelSize(kernelSize))
+RBinter
+(
+	.clk(clk),
+	.iData({oGinterR, oGinterG, oGinterB}),
+	.reset(reset),
+	.iValid(iValid),
+	.T(T),
+	
+	.oR(oR),
+	.oG(oG),
+	.oB(oB),
+	.xCnt(xCnt),
+	.yCnt(yCnt),
+	.demosaicCnt(demosaicCnt),
+	.oValid(oValid),
+	.oDone(oDone)
+);
 
 endmodule
 
