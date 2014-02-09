@@ -416,6 +416,7 @@ module demosaic_acpi_RBinter
 	input		[23:0]	iData,
 	input					reset,
 	input					iValid,
+	input		[31:0]	cnt,
 	input		[7:0]		T,
 	
 	output	[7:0]		oR, oG, oB,
@@ -449,8 +450,8 @@ reg							moDone;
 reg				r_moValid	[pipelineDepth-1:0];
 reg				r_moDone		[pipelineDepth-1:0];
 
-// Pixel counter
-reg	[31:0]	cnt, x, y;
+// Pixel counters
+reg	[31:0]	x, y;
 
 // Delayed x and y for the RF
 reg	[31:0]	r_x			[pipelineDepth-1:0];
@@ -734,6 +735,14 @@ always @(posedge clk) begin
 	end
 end
 
+// Add. Calculate R, G and B
+reg	[26:0]	rgb28;
+reg	[26:0]	rgb46;
+reg	[26:0]	rgb19;
+reg	[26:0]	rgb37;
+reg	[8:0]		g5ls1;
+
+
 abs_diff #(.delay(1))
 n_diff_1
 (
@@ -785,13 +794,6 @@ p_diff_b_2
 	.oValid(),
 	.oRes(p2)
 );
-
-// Add. Calculate R, G and B
-reg	[26:0]	rgb28;
-reg	[26:0]	rgb46;
-reg	[26:0]	rgb19;
-reg	[26:0]	rgb37;
-reg	[8:0]		g5ls1;
 
 reg	[26:0]	r_rgb28	[1:0];
 reg	[26:0]	r_rgb46	[1:0];
@@ -1232,17 +1234,17 @@ always@ (posedge clk) begin
 		moB		<=	'b0;
 		moValid	<=	0;
 		moDone	<=	0;		
-		cnt		<= 'b0;
+		//cnt		<= 'b1;
 		x			<= 'b0;
 		y			<= 'b0;
 	end
 	else if (iValid) begin
-		if (cnt <= totalCycles) begin
-			cnt	<= cnt + 1;
-		end
-		else begin
-			cnt	<= 0;
-		end
+//		if (cnt <= totalCycles) begin
+//			cnt	<= cnt + 1;
+//		end
+//		else begin
+//			cnt	<= 'b1;
+//		end
 		
 		moDone	<= (cnt == totalCycles - 1) ? 1'b1 : 1'b0;
 		
@@ -1301,10 +1303,11 @@ parameter	width				= 1920;
 parameter	height			= 1080;
 parameter	kernelSize		= 7;
 localparam	boundaryWidth	= (kernelSize-1)/2;
+localparam	totalPixels		= width * height;
 
 wire	[31:0]	f;
 reg	[7:0]		T;
-wire				oGinterDone;
+wire				oGinterDone, oGinterValid;
 wire	[7:0]		oGinterR, oGinterG, oGinterB;
 
 demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
@@ -1322,7 +1325,7 @@ ginter
 	.yCnt(),
 	.demosaicCnt(),
 	.oF(f),
-	.oValid(),
+	.oValid(oGinterValid),
 	.oDone(oGinterDone)
 );
 
@@ -1353,13 +1356,45 @@ end
 
 assign oT = T;
 
+reg	[31:0]	rbCnt;
+reg				rbCntStart;
+reg				iValidRBinter;
+reg	[23:0]	iDataRBinter;
+
+always @(posedge clk) begin
+	if (reset) begin
+		rbCnt				<= 'b1;
+		rbCntStart		<= 'b0;
+		iValidRBinter	<= 'b0;
+		iDataRBinter	<= 'b0;
+	end
+	else begin
+		iDataRBinter	<= {oGinterR, oGinterG, oGinterB};
+	
+		if (oGinterValid) begin
+			// Initiating rbCnt to count for totalPixels + width cycles
+			rbCntStart	<= 'b1;
+		end
+		
+		if (rbCntStart && (rbCnt <= totalPixels + width)) begin
+			rbCnt				<= rbCnt + 1;
+			iValidRBinter	<= 'b1;
+		end
+		else begin
+			rbCnt				<= 1;
+			iValidRBinter	<= 'b0;
+		end
+	end
+end
+
 demosaic_acpi_RBinter #(.width(width), .height(height), .kernelSize(kernelSize))
 RBinter
 (
 	.clk(clk),
-	.iData({oGinterR, oGinterG, oGinterB}),
+	.iData(iDataRBinter),
 	.reset(reset),
-	.iValid(iValid),
+	.iValid(iValidRBinter),
+	.cnt(rbCnt),
 	.T(T),
 	
 	.oR(oR),

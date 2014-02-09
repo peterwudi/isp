@@ -199,8 +199,7 @@ initial begin
 	while(1) begin
 		@(negedge clk);
 		// Still need to move the pipeline and leave blanks each row
-		// New: demosaic now needs two passes
-		for (int i = 0; i < width*2+totalPixels; i++) begin
+		for (int i = 0; i < width; i++) begin
 			iValid	= 1'b1;
 			@(negedge clk);
 		end
