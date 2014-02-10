@@ -743,7 +743,7 @@ reg	[26:0]	rgb37;
 reg	[8:0]		g5ls1;
 
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 n_diff_1
 (
 	.clk(clk),
@@ -756,7 +756,7 @@ n_diff_1
 	.oRes(n1)
 );
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 p_diff_1
 (
 	.clk(clk),
@@ -769,7 +769,7 @@ p_diff_1
 	.oRes(p1)
 );
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 n_diff_2
 (
 	.clk(clk),
@@ -782,7 +782,7 @@ n_diff_2
 	.oRes(n2)
 );
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 p_diff_b_2
 (
 	.clk(clk),
@@ -1017,7 +1017,7 @@ generate
 					caseRes[1]	<= 'b0;
 					caseRes[2]	<=	case3r[1];
 					caseRes[3]	<= case4r[1];
-					caseRes[4]	<= case5r[1];
+					caseRes[4]	<= case5r;
 				end
 				2'b10: begin
 					//	B	G	B
@@ -1027,7 +1027,7 @@ generate
 					caseRes[1]	<= 'b0;
 					caseRes[2]	<=	case3b[1];
 					caseRes[3]	<= case4b[1];
-					caseRes[4]	<= case5b[1];
+					caseRes[4]	<= case5b;
 				end
 				2'b11: begin
 					//	G	B	G
@@ -1070,50 +1070,42 @@ generate
 	end
 	
 	// Determine smooth area
-	for (i = 0; i < 1; i = i + 1) begin: smoothDealy
-		always @(posedge clk) begin
-			if (reset) begin
-				smoothRes[0][i]	<= 'b0;
-				smoothRes[1][i]	<= 'b0;
-			end
-			else if (iValid) begin
-				if (i > 0) begin
-					smoothRes[0][i]	<= smoothRes[0][i-1];
-					smoothRes[1][i]	<= smoothRes[1][i-1];
+	always @(posedge clk) begin
+		if (reset) begin
+			smoothRes[0]	<= 'b0;
+			smoothRes[1]	<= 'b0;
+		end
+		else if (iValid) begin
+			case ({r_y[6][0], r_x[6][0]})
+				2'b00: begin
+					//	G	R	G
+					//	B	G	B
+					//	G	R	G
+					smoothRes[0]	<= r_rgb28[1][26:19];
+					smoothRes[1]	<= r_rgb46[1][8:1];
 				end
-				else begin
-					case ({r_y[6][0], r_x[6][0]})
-						2'b00: begin
-							//	G	R	G
-							//	B	G	B
-							//	G	R	G
-							smoothRes[0][i]	<= r_rgb28[1][26:19];
-							smoothRes[1][i]	<= r_rgb46[1][8:1];
-						end
-						2'b01: begin
-							//	R	G	R
-							//	G	B	G
-							//	R	G	R
-							smoothRes[0][i]	<= (edgeSel[0] == 0) ? r_rgb19[1][26:19] : r_rgb37[1][26:19];
-							smoothRes[1][i]	<= r_rf_center[3][7:0];
-						end
-						2'b10: begin
-							//	B	G	B
-							//	G	R	G
-							//	B	G	B
-							smoothRes[0][i]	<= r_rf_center[3][23:16];
-							smoothRes[1][i]	<= (edgeSel[0] == 0) ? r_rgb19[1][8:1] : r_rgb37[1][8:1];
-						end
-						2'b11: begin
-							//	G	B	G
-							//	R	G	R
-							//	G	B	G
-							smoothRes[0][i]	<= r_rgb46[1][26:19];
-							smoothRes[1][i]	<= r_rgb28[1][8:1];
-						end
-					endcase
+				2'b01: begin
+					//	R	G	R
+					//	G	B	G
+					//	R	G	R
+					smoothRes[0]	<= (edgeSel[0] == 0) ? r_rgb19[1][26:19] : r_rgb37[1][26:19];
+					smoothRes[1]	<= r_rf_center[3][7:0];
 				end
-			end
+				2'b10: begin
+					//	B	G	B
+					//	G	R	G
+					//	B	G	B
+					smoothRes[0]	<= r_rf_center[3][23:16];
+					smoothRes[1]	<= (edgeSel[0] == 0) ? r_rgb19[1][8:1] : r_rgb37[1][8:1];
+				end
+				2'b11: begin
+					//	G	B	G
+					//	R	G	R
+					//	G	B	G
+					smoothRes[0]	<= r_rgb46[1][26:19];
+					smoothRes[1]	<= r_rgb28[1][8:1];
+				end
+			endcase
 		end
 	end
 	
@@ -1142,13 +1134,13 @@ generate
 					if (n < p) begin
 						edgeRes[0]	<= caseRes[2];
 					end
-					else if (n < p) begin
+					else if (n > p) begin
 						edgeRes[0]	<= caseRes[3];
 					end
 					else begin
 						edgeRes[0]	<= caseRes[4];
 					end
-					edgeRes[1]	<= 'b0;
+					edgeRes[1]	<= r_rf_center[5][7:0];
 				end
 				2'b10: begin
 					//	B	G	B
@@ -1157,13 +1149,13 @@ generate
 					if (n < p) begin
 						edgeRes[1]	<= caseRes[2];
 					end
-					else if (n < p) begin
+					else if (n > p) begin
 						edgeRes[1]	<= caseRes[3];
 					end
 					else begin
 						edgeRes[1]	<= caseRes[4];
 					end
-					edgeRes[0]	<= 'b0;
+					edgeRes[0]	<= r_rf_center[5][23:16];
 				end
 				2'b11: begin
 					//	G	B	G
@@ -1276,9 +1268,9 @@ always@ (posedge clk) begin
 			moValid	<= 0;
 		end
 		
-		moR	<= (isEdge[0] == 1) ? edgeRes[0] : smoothRes[0][pipelineDepth-9];
+		moR	<= (isEdge[0] == 1) ? edgeRes[0] : smoothRes[0];
 		moG	<= r_rf_center[6][15:8];
-		moB	<= (isEdge[0] == 1) ? edgeRes[1] : smoothRes[1][pipelineDepth-9];
+		moB	<= (isEdge[0] == 1) ? edgeRes[1] : smoothRes[1];
 	end
 end
 
