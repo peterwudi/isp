@@ -814,7 +814,7 @@ reg	[7:0]		case2b	[1:0];
 reg	[7:0]		case3b	[1:0];
 reg	[7:0]		case4b	[1:0];
 
-reg	[7:0]		case5r, case5b;
+reg	[8:0]		case5r, case5b;
 
 reg	[7:0]		caseRes	[4:0];
 
@@ -982,8 +982,8 @@ generate
 			case3b[1]	<= case3b[0];
 			case4b[1]	<= case4b[0];
 			
-			case5r		<= (case3r[0] + case4r[0]) >> 1;
-			case5b		<= (case3b[0] + case4b[0]) >> 1;
+			case5r		<= ({1'b0, case3r[0]} + {1'b0, case4r[0]}) >> 1;
+			case5b		<= ({1'b0, case3b[0]} + {1'b0, case4b[0]}) >> 1;
 		end
 	end
 	
@@ -1017,7 +1017,7 @@ generate
 					caseRes[1]	<= 'b0;
 					caseRes[2]	<=	case3r[1];
 					caseRes[3]	<= case4r[1];
-					caseRes[4]	<= case5r;
+					caseRes[4]	<= case5r[7:0];
 				end
 				2'b10: begin
 					//	B	G	B
@@ -1027,7 +1027,7 @@ generate
 					caseRes[1]	<= 'b0;
 					caseRes[2]	<=	case3b[1];
 					caseRes[3]	<= case4b[1];
-					caseRes[4]	<= case5b;
+					caseRes[4]	<= case5b[7:0];
 				end
 				2'b11: begin
 					//	G	B	G
