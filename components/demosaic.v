@@ -134,8 +134,8 @@ parameter	kernelSize		= 7;
 localparam	boundaryWidth	= (kernelSize-1)/2;
 
 // TODO: Figure this out later
-// Need to buffer boundaryWidth-1 empty and 2 full rows before intrapolation
-localparam	totalCycles	= width*(height+2+boundaryWidth-1);
+// Need to buffer boundaryWidth-1 empty and 2 full rows before interpolation
+localparam	totalCycles	= width*(height+4);
 
 // Gradients
 wire	[7:0]		h, v;
@@ -296,8 +296,8 @@ begin
 		
 		moDone	<= (cnt == totalCycles - 1) ? 1'b1 : 1'b0;
 		
-		if (cnt >= width * (2+boundaryWidth-1)) begin
-			// Only start counter after the first 4 empty rows
+		if (cnt >= width * (2+2)) begin
+			// Only start counter after the first 5 empty rows
 			if (x < width - 1) begin
 				x	<= x + 1;
 			end
@@ -416,7 +416,7 @@ module demosaic_acpi_RBinter
 	input		[23:0]	iData,
 	input					reset,
 	input					iValid,
-	input		[31:0]	cnt,
+	//input		[31:0]	cnt,
 	input		[7:0]		T,
 	
 	output	[7:0]		oR, oG, oB,
@@ -425,7 +425,7 @@ module demosaic_acpi_RBinter
 	output				oDone
 );
 // Starting from x and y, i.e. the depth of r_x and r_y
-localparam	pipelineDepth	= 10;
+localparam	pipelineDepth	= 9;
 
 parameter	width				= 1920;
 parameter	height			= 1080;
@@ -451,7 +451,7 @@ reg				r_moValid	[pipelineDepth-1:0];
 reg				r_moDone		[pipelineDepth-1:0];
 
 // Pixel counters
-reg	[31:0]	x, y;
+reg	[31:0]	cnt, x, y;
 
 // Delayed x and y for the RF
 reg	[31:0]	r_x			[pipelineDepth-1:0];
@@ -624,7 +624,7 @@ always @(posedge clk) begin
 	end
 end
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 h_diff
 (
 	.clk(clk),
@@ -637,7 +637,7 @@ h_diff
 	.oRes(g_h)
 );
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 v_diff
 (
 	.clk(clk),
@@ -650,7 +650,7 @@ v_diff
 	.oRes(g_v)
 );
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 d19_diff
 (
 	.clk(clk),
@@ -663,7 +663,7 @@ d19_diff
 	.oRes(g_d19)
 );
 
-abs_diff #(.delay(1))
+abs_diff #(.delay(2))
 d37_diff
 (
 	.clk(clk),
@@ -678,7 +678,7 @@ d37_diff
 
 // Edge detection result
 reg	[4:0]		edgeSel;
-reg				isEdge	[pipelineDepth - 9:0];
+reg				isEdge	[0:0];
 
 always @(posedge clk) begin
 	if (reset) begin
@@ -819,13 +819,13 @@ reg	[7:0]		case5r, case5b;
 reg	[7:0]		caseRes	[4:0];
 
 // smoothRes[0]	-- R, smoothRes[1]	-- B
-reg	[7:0]		smoothRes [1:0][pipelineDepth - 9:0];
+reg	[7:0]		smoothRes [1:0];
 
 // edgeRes[0]	-- R, edgeRes[1]	-- B
 reg	[7:0]		edgeRes [1:0];
 
 // Cached center pixel data
-reg	[23:0]	r_rf_center [pipelineDepth - 4:0];
+reg	[23:0]	r_rf_center [6:0];
 
 genvar i;
 integer j;
@@ -850,7 +850,7 @@ generate
 	end
 	
 	// isEdge
-	for (i = 0; i < pipelineDepth - 8; i = i + 1) begin: isEdgeDelay
+	for (i = 0; i < 1; i = i + 1) begin: isEdgeDelay
 		always @(posedge clk) begin
 			if (reset) begin
 				isEdge[i]		<= 'b0;
@@ -865,7 +865,7 @@ generate
 			end
 		end
 	end
-	
+
 	
 	// Cycle 1, calculate bilinear in all directions, and g5 * 2
 	always @(posedge clk) begin
@@ -893,7 +893,7 @@ generate
 			rgb37[17:9]		<= r_rf[2][0][15:8] + r_rf[0][2][15:8];
 			rgb37[26:18]	<= r_rf[2][0][23:16] + r_rf[0][2][23:16];
 			
-			g5ls1					<= r_rf[1][1] << 1;
+			g5ls1				<= r_rf[1][1][15:8] << 1;
 		end
 	end
 	
@@ -1070,7 +1070,7 @@ generate
 	end
 	
 	// Determine smooth area
-	for (i = 0; i < pipelineDepth - 8; i = i + 1) begin: smoothDealy
+	for (i = 0; i < 1; i = i + 1) begin: smoothDealy
 		always @(posedge clk) begin
 			if (reset) begin
 				smoothRes[0][i]	<= 'b0;
@@ -1210,7 +1210,7 @@ generate
 	end
 	
 	// Cached center pixel data
-	for (i = 0; i < pipelineDepth - 3; i = i + 1) begin: rfcenter
+	for (i = 0; i < 7; i = i + 1) begin: rfcenter
 		always @(posedge clk) begin
 			if (reset) begin
 				r_rf_center[i]	<= 'b0;
@@ -1234,22 +1234,22 @@ always@ (posedge clk) begin
 		moB		<=	'b0;
 		moValid	<=	0;
 		moDone	<=	0;		
-		//cnt		<= 'b1;
+		cnt		<= 'b1;
 		x			<= 'b0;
 		y			<= 'b0;
 	end
 	else if (iValid) begin
-//		if (cnt <= totalCycles) begin
-//			cnt	<= cnt + 1;
-//		end
-//		else begin
-//			cnt	<= 'b1;
-//		end
+		if (cnt <= totalCycles) begin
+			cnt	<= cnt + 1;
+		end
+		else begin
+			cnt	<= 'b1;
+		end
 		
 		moDone	<= (cnt == totalCycles - 1) ? 1'b1 : 1'b0;
 		
-		if (cnt >= width * (2+boundaryWidth-1)) begin
-			// Only start counter after the first 4 empty rows
+		if (cnt > width * 2) begin
+			// Only start counter after the empty rows
 			if (x < width - 1) begin
 				x	<= x + 1;
 			end
@@ -1276,9 +1276,9 @@ always@ (posedge clk) begin
 			moValid	<= 0;
 		end
 		
-		moR	<= (isEdge[pipelineDepth-9] == 1) ? edgeRes[0] : smoothRes[0][pipelineDepth-9];
-		moG	<= r_rf_center[pipelineDepth-4][15:8];
-		moB	<= (isEdge[pipelineDepth-9] == 1) ? edgeRes[1] : smoothRes[1][pipelineDepth-9];
+		moR	<= (isEdge[0] == 1) ? edgeRes[0] : smoothRes[0][pipelineDepth-9];
+		moG	<= r_rf_center[6][15:8];
+		moB	<= (isEdge[0] == 1) ? edgeRes[1] : smoothRes[1][pipelineDepth-9];
 	end
 end
 
@@ -1309,6 +1309,7 @@ wire	[31:0]	f;
 reg	[7:0]		T;
 wire				oGinterDone, oGinterValid;
 wire	[7:0]		oGinterR, oGinterG, oGinterB;
+wire	[31:0]	oGinterCnt;
 
 demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
 ginter
@@ -1323,15 +1324,36 @@ ginter
 	.oB(oGinterB),
 	.xCnt(),
 	.yCnt(),
-	.demosaicCnt(),
+	.demosaicCnt(oGinterCnt),
 	.oF(f),
 	.oValid(oGinterValid),
 	.oDone(oGinterDone)
 );
 
+// For testing ginter only
+//demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
+//ginter
+//(
+//	.clk(clk),
+//	.iData(iData),
+//	.reset(reset),
+//	.iValid(iValid),
+//	
+//	.oR(oR),
+//	.oG(oG),
+//	.oB(oB),
+//	.xCnt(),
+//	.yCnt(),
+//	.demosaicCnt(),
+//	.oF(f),
+//	.oValid(oValid),
+//	.oDone(oDone)
+//);
+
+
 always @(posedge clk) begin
 	if (reset) begin
-		T		<= 'b0;
+		T		<= 'd8;
 	end
 	else begin
 		if (oGinterDone) begin
@@ -1356,33 +1378,32 @@ end
 
 assign oT = T;
 
-reg	[31:0]	rbCnt;
+reg	[9:0]		rbCnt;
 reg				rbCntStart;
-reg				iValidRBinter;
-reg	[23:0]	iDataRBinter;
+//reg	[23:0]	iDataRBinter;
+
+wire				iValidRBinter = (rbCntStart && (rbCnt <= width)) | oGinterValid;
 
 always @(posedge clk) begin
 	if (reset) begin
-		rbCnt				<= 'b1;
+		rbCnt				<= 'b0;
 		rbCntStart		<= 'b0;
-		iValidRBinter	<= 'b0;
-		iDataRBinter	<= 'b0;
+		//iDataRBinter	<= 'b0;
 	end
 	else begin
-		iDataRBinter	<= {oGinterR, oGinterG, oGinterB};
+		//iDataRBinter	<= {oGinterR, oGinterG, oGinterB};
 	
-		if (oGinterValid) begin
-			// Initiating rbCnt to count for totalPixels + width cycles
+		if (oGinterDone) begin
+			// Initiating rbCnt to count for an additional width cycles
 			rbCntStart	<= 'b1;
 		end
 		
-		if (rbCntStart && (rbCnt <= totalPixels + width)) begin
-			rbCnt				<= rbCnt + 1;
-			iValidRBinter	<= 'b1;
+		if ((rbCntStart == 1) && (rbCnt <= width)) begin
+			rbCnt			<= rbCnt + 1;
 		end
 		else begin
-			rbCnt				<= 1;
-			iValidRBinter	<= 'b0;
+			rbCnt			<= 'b0;
+			rbCntStart	<= 'b0;
 		end
 	end
 end
@@ -1391,10 +1412,10 @@ demosaic_acpi_RBinter #(.width(width), .height(height), .kernelSize(kernelSize))
 RBinter
 (
 	.clk(clk),
-	.iData(iDataRBinter),
+	.iData({oGinterR, oGinterG, oGinterB}),
 	.reset(reset),
 	.iValid(iValidRBinter),
-	.cnt(rbCnt),
+	//.cnt(rbCnt),
 	.T(T),
 	
 	.oR(oR),

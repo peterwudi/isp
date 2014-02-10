@@ -50,7 +50,8 @@ parameter	height		= 240;
 
 localparam	frameSize	= width * height;
 
-parameter	kernelSize					= 7;
+//parameter	kernelSize					= 7;
+parameter	kernelSize					= 3;
 localparam	boundaryWidth				= (kernelSize-1)/2;
 localparam	rows_needed_before_proc = (kernelSize-1)/2;
 localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;

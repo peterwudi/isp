@@ -196,23 +196,16 @@ initial begin
 	
 	
 	// Need iValid to be high to keep the pipeline moving
-	while(1) begin
+	@(negedge clk);
+	// Still need to move the pipeline and leave blanks each row
+	for (int i = 0; i < width; i++) begin
+		iValid	= 1'b1;
 		@(negedge clk);
-		// Still need to move the pipeline and leave blanks each row
-		for (int i = 0; i < width; i++) begin
-			iValid	= 1'b1;
-			@(negedge clk);
-		end
-		
+	
 		if (oDoneDemosaic == 1) begin
 			iValid = 0;
 			break;
 		end
-		
-		for (int j = 0; j < 16; j++) begin
-			iValid = 0;
-			@(negedge clk);
-		end	
 	end
 	
 	@(negedge clk);
