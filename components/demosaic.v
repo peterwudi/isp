@@ -678,7 +678,7 @@ d37_diff
 
 // Edge detection result
 reg	[4:0]		edgeSel;
-reg				isEdge	[0:0];
+reg				isEdge	[1:0];
 
 always @(posedge clk) begin
 	if (reset) begin
@@ -795,10 +795,10 @@ p_diff_b_2
 	.oRes(p2)
 );
 
-reg	[26:0]	r_rgb28	[1:0];
-reg	[26:0]	r_rgb46	[1:0];
-reg	[26:0]	r_rgb19	[1:0];
-reg	[26:0]	r_rgb37	[1:0];
+reg	[26:0]	r_rgb28	[2:0];
+reg	[26:0]	r_rgb46	[2:0];
+reg	[26:0]	r_rgb19	[2:0];
+reg	[26:0]	r_rgb37	[2:0];
 
 reg	[7:0]		case1_1r, case2_1r, case3_1r, case4_1r;
 reg	[7:0]		case1_1b, case2_1b, case3_1b, case4_1b;
@@ -850,7 +850,7 @@ generate
 	end
 	
 	// isEdge
-	for (i = 0; i < 1; i = i + 1) begin: isEdgeDelay
+	for (i = 0; i < 2; i = i + 1) begin: isEdgeDelay
 		always @(posedge clk) begin
 			if (reset) begin
 				isEdge[i]		<= 'b0;
@@ -860,7 +860,7 @@ generate
 					isEdge[i]	<= isEdge[i-1];
 				end
 				else begin
-					isEdge[i]	<= (edgeSel[0] | edgeSel[1] | edgeSel[2] | edgeSel[3]);
+					isEdge[i]	<= (edgeSel[4] | edgeSel[3] | edgeSel[2] | edgeSel[1]);
 				end
 			end
 		end
@@ -1044,7 +1044,7 @@ generate
 	end
 	
 	// rgb delay
-	for (i = 0; i < 2; i = i + 1) begin: rgbDealy
+	for (i = 0; i < 3; i = i + 1) begin: rgbDealy
 		always @(posedge clk) begin
 			if (reset) begin
 				r_rgb28[i]	<=	'b0;
@@ -1081,29 +1081,29 @@ generate
 					//	G	R	G
 					//	B	G	B
 					//	G	R	G
-					smoothRes[0]	<= r_rgb28[1][26:19];
-					smoothRes[1]	<= r_rgb46[1][8:1];
+					smoothRes[0]	<= r_rgb28[2][26:19];
+					smoothRes[1]	<= r_rgb46[2][8:1];
 				end
 				2'b01: begin
 					//	R	G	R
 					//	G	B	G
 					//	R	G	R
-					smoothRes[0]	<= (edgeSel[0] == 0) ? r_rgb19[1][26:19] : r_rgb37[1][26:19];
-					smoothRes[1]	<= r_rf_center[3][7:0];
+					smoothRes[0]	<= (edgeSel[0] == 0) ? r_rgb19[2][26:19] : r_rgb37[2][26:19];
+					smoothRes[1]	<= r_rf_center[4][7:0];
 				end
 				2'b10: begin
 					//	B	G	B
 					//	G	R	G
 					//	B	G	B
-					smoothRes[0]	<= r_rf_center[3][23:16];
-					smoothRes[1]	<= (edgeSel[0] == 0) ? r_rgb19[1][8:1] : r_rgb37[1][8:1];
+					smoothRes[0]	<= r_rf_center[4][23:16];
+					smoothRes[1]	<= (edgeSel[0] == 0) ? r_rgb19[2][8:1] : r_rgb37[2][8:1];
 				end
 				2'b11: begin
 					//	G	B	G
 					//	R	G	R
 					//	G	B	G
-					smoothRes[0]	<= r_rgb46[1][26:19];
-					smoothRes[1]	<= r_rgb28[1][8:1];
+					smoothRes[0]	<= r_rgb46[2][26:19];
+					smoothRes[1]	<= r_rgb28[2][8:1];
 				end
 			endcase
 		end
@@ -1268,9 +1268,9 @@ always@ (posedge clk) begin
 			moValid	<= 0;
 		end
 		
-		moR	<= (isEdge[0] == 1) ? edgeRes[0] : smoothRes[0];
+		moR	<= (isEdge[1] == 1) ? edgeRes[0] : smoothRes[0];
 		moG	<= r_rf_center[6][15:8];
-		moB	<= (isEdge[0] == 1) ? edgeRes[1] : smoothRes[1];
+		moB	<= (isEdge[1] == 1) ? edgeRes[1] : smoothRes[1];
 	end
 end
 
