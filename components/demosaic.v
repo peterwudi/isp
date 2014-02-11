@@ -817,7 +817,7 @@ reg	[7:0]		case2b	[1:0];
 reg	[7:0]		case3b	[1:0];
 reg	[7:0]		case4b	[1:0];
 
-reg	[8:0]		case5r, case5b;
+reg	[7:0]		case5r, case5b;
 
 reg	[7:0]		caseRes	[4:0];
 
