@@ -678,15 +678,18 @@ d37_diff
 
 // Edge detection result
 reg	[4:0]		edgeSel;
+reg				smoothSel;
 reg				isEdge	[1:0];
 
 always @(posedge clk) begin
 	if (reset) begin
-		edgeSel	<= 'b0;
+		edgeSel		<= 'b0;
+		smoothSel	<= 'b0;
 	end
 	else if (iValid) begin
 		// Use the last bit to select the diagnal
-		edgeSel	<= {(g_h > T), (g_v > T), (g_d19 > T), (g_d37 > T), (g_d19 > g_d37)};
+		edgeSel		<= {(g_h > T), (g_v > T), (g_d19 > T), (g_d37 > T), (g_d19 > g_d37)};
+		smoothSel	<= edgeSel[0];
 	end
 end
 
@@ -795,10 +798,10 @@ p_diff_b_2
 	.oRes(p2)
 );
 
-reg	[26:0]	r_rgb28	[2:0];
-reg	[26:0]	r_rgb46	[2:0];
-reg	[26:0]	r_rgb19	[2:0];
-reg	[26:0]	r_rgb37	[2:0];
+reg	[26:0]	r_rgb28	[3:0];
+reg	[26:0]	r_rgb46	[3:0];
+reg	[26:0]	r_rgb19	[3:0];
+reg	[26:0]	r_rgb37	[3:0];
 
 reg	[7:0]		case1_1r, case2_1r, case3_1r, case4_1r;
 reg	[7:0]		case1_1b, case2_1b, case3_1b, case4_1b;
@@ -1044,7 +1047,7 @@ generate
 	end
 	
 	// rgb delay
-	for (i = 0; i < 3; i = i + 1) begin: rgbDealy
+	for (i = 0; i < 4; i = i + 1) begin: rgbDealy
 		always @(posedge clk) begin
 			if (reset) begin
 				r_rgb28[i]	<=	'b0;
@@ -1076,34 +1079,34 @@ generate
 			smoothRes[1]	<= 'b0;
 		end
 		else if (iValid) begin
-			case ({r_y[6][0], r_x[6][0]})
+			case ({r_y[7][0], r_x[7][0]})
 				2'b00: begin
 					//	G	R	G
 					//	B	G	B
 					//	G	R	G
-					smoothRes[0]	<= r_rgb28[2][26:19];
-					smoothRes[1]	<= r_rgb46[2][8:1];
+					smoothRes[0]	<= r_rgb28[3][26:19];
+					smoothRes[1]	<= r_rgb46[3][8:1];
 				end
 				2'b01: begin
 					//	R	G	R
 					//	G	B	G
 					//	R	G	R
-					smoothRes[0]	<= (edgeSel[0] == 0) ? r_rgb19[2][26:19] : r_rgb37[2][26:19];
-					smoothRes[1]	<= r_rf_center[4][7:0];
+					smoothRes[0]	<= (smoothSel	== 0) ? r_rgb19[3][26:19] : r_rgb37[3][26:19];
+					smoothRes[1]	<= r_rf_center[5][7:0];
 				end
 				2'b10: begin
 					//	B	G	B
 					//	G	R	G
 					//	B	G	B
-					smoothRes[0]	<= r_rf_center[4][23:16];
-					smoothRes[1]	<= (edgeSel[0] == 0) ? r_rgb19[2][8:1] : r_rgb37[2][8:1];
+					smoothRes[0]	<= r_rf_center[5][23:16];
+					smoothRes[1]	<= (smoothSel == 0) ? r_rgb19[3][8:1] : r_rgb37[3][8:1];
 				end
 				2'b11: begin
 					//	G	B	G
 					//	R	G	R
 					//	G	B	G
-					smoothRes[0]	<= r_rgb46[2][26:19];
-					smoothRes[1]	<= r_rgb28[2][8:1];
+					smoothRes[0]	<= r_rgb46[3][26:19];
+					smoothRes[1]	<= r_rgb28[3][8:1];
 				end
 			endcase
 		end
