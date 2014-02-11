@@ -454,13 +454,13 @@ reg				r_moDone		[pipelineDepth-1:0];
 reg	[31:0]	cnt, x, y;
 
 // Delayed x and y for the RF
-reg	[31:0]	r_x			[pipelineDepth-1:0];
-reg	[31:0]	r_y			[pipelineDepth-1:0];
-reg	[31:0]	r_cnt			[pipelineDepth-1:0];
+reg	[31:0]	r_x			[pipelineDepth:0];
+reg	[31:0]	r_y			[pipelineDepth:0];
+reg	[31:0]	r_cnt			[pipelineDepth:0];
 
-assign	xCnt			= r_x[pipelineDepth-1];
-assign	yCnt			= r_y[pipelineDepth-1];
-assign	demosaicCnt = r_cnt[pipelineDepth-1];
+assign	xCnt			= r_x[pipelineDepth];
+assign	yCnt			= r_y[pipelineDepth];
+assign	demosaicCnt = r_cnt[pipelineDepth];
 
 assign	oR			=	moR;
 assign	oG			=	moG;
@@ -1179,26 +1179,39 @@ generate
 	for (i = 0; i < pipelineDepth; i = i + 1) begin: delayLine
 		always @(posedge clk) begin
 			if (reset) begin
+				r_moValid[i]	<= 'b0;
+				r_moDone[i]		<= 'b0;
+			end
+			else if (iValid) begin
+				if (i > 0) begin
+					r_moValid[i]	<= r_moValid[i-1];
+					r_moDone[i]		<= r_moDone[i-1];
+				end
+				else begin
+					r_moValid[i]	<= moValid;
+					r_moDone[i]		<= moDone;
+				end
+			end
+		end
+	end
+	
+	for (i = 0; i < pipelineDepth + 1; i = i + 1) begin: delayLine2
+		always @(posedge clk) begin
+			if (reset) begin
 				r_x[i]			<= 'b0;
 				r_y[i]			<= 'b0;
 				r_cnt[i]			<= 'b0;
-				r_moValid[i]	<= 'b0;
-				r_moDone[i]		<= 'b0;
 			end
 			else if (iValid) begin
 				if (i > 0) begin
 					r_x[i]			<= r_x[i-1];
 					r_y[i]			<= r_y[i-1];
 					r_cnt[i]			<=	r_cnt[i-1];
-					r_moValid[i]	<= r_moValid[i-1];
-					r_moDone[i]		<= r_moDone[i-1];
 				end
 				else begin
 					r_x[i]			<= x;
 					r_y[i]			<= y;
 					r_cnt[i]			<= cnt;
-					r_moValid[i]	<= moValid;
-					r_moDone[i]		<= moDone;
 				end
 			end
 		end
@@ -1229,7 +1242,7 @@ always@ (posedge clk) begin
 		moB		<=	'b0;
 		moValid	<=	0;
 		moDone	<=	0;		
-		cnt		<= 'b1;
+		cnt		<= 'b0;
 		x			<= 'b0;
 		y			<= 'b0;
 	end
@@ -1238,12 +1251,12 @@ always@ (posedge clk) begin
 			cnt	<= cnt + 1;
 		end
 		else begin
-			cnt	<= 'b1;
+			cnt	<= 'b0;
 		end
 		
 		moDone	<= (cnt == totalCycles - 1) ? 1'b1 : 1'b0;
 		
-		if (cnt > width * 2) begin
+		if (cnt >= width * 2) begin
 			// Only start counter after the empty rows
 			if (x < width - 1) begin
 				x	<= x + 1;
