@@ -1317,7 +1317,7 @@ wire	[31:0]	f;
 reg	[7:0]		T;
 wire				oGinterDone, oGinterValid;
 wire	[7:0]		oGinterR, oGinterG, oGinterB;
-wire	[31:0]	oGinterCnt;
+wire	[31:0]	oGinterCnt, oGinterXCnt, oGinterYCnt;
 
 demosaic_acpi_ginter #(.width(width), .height(height), .kernelSize(kernelSize))
 ginter
@@ -1330,8 +1330,8 @@ ginter
 	.oR(oGinterR),
 	.oG(oGinterG),
 	.oB(oGinterB),
-	.xCnt(),
-	.yCnt(),
+	.xCnt(oGinterXCnt),
+	.yCnt(oGinterYCnt),
 	.demosaicCnt(oGinterCnt),
 	.oF(f),
 	.oValid(oGinterValid),

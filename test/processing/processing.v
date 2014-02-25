@@ -50,11 +50,17 @@ parameter	height		= 240;
 
 localparam	frameSize	= width * height;
 
-//parameter	kernelSize					= 7;
-parameter	kernelSize					= 3;
+parameter	kernelSize					= 7;
+//parameter	kernelSize					= 3;
 localparam	boundaryWidth				= (kernelSize-1)/2;
 localparam	rows_needed_before_proc = (kernelSize-1)/2;
-localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;
+
+// For demosaic_neighbor
+//localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;
+
+// For demosaic_acpi
+localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1-boundaryWidth;
+
 localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 wire	[31:0]	xCnt, yCnt, demosaicCnt;
@@ -78,20 +84,134 @@ demosaic
 	.oDone(oDoneDemosaic)
 );
 
-//
-//reg				[31:0]	skipCnt;
-//reg							skipCntEn;
-//
-//reg							iValidFilter;
-//reg	unsigned	[2:0]		boundaryCnt;
-//reg				[23:0]	iDataFilter;
-//reg	unsigned	[31:0]	startBoundary;
-//
-//// Test
-//assign	iRFilter			= iDataFilter[23:16];
-//assign	iGFilter 		= iDataFilter[15:8];
-//assign	iBFilter 		= iDataFilter[7:0];
-//assign	o_iValidFilter = iValidFilter;
+
+reg				[31:0]	skipCnt;
+reg							skipCntEn;
+
+reg							iValidFilter;
+reg	unsigned	[2:0]		boundaryCnt;
+reg				[23:0]	iDataFilter;
+reg	unsigned	[31:0]	startBoundary;
+
+// Test
+assign	iRFilter			= iDataFilter[23:16];
+assign	iGFilter 		= iDataFilter[15:8];
+assign	iBFilter 		= iDataFilter[7:0];
+assign	o_iValidFilter = iValidFilter;
+
+
+wire		[23:0]	oBoundaryFIFO;
+wire					boundaryFIFOEmpty;
+reg					r_boundaryFIFOEmpty;
+
+wire					boundaryFIFOFull;
+reg					boundaryFIFOrdreq;
+wire					boundaryFIFOwrreq;
+
+assign				boundaryFIFOwrreq = oValidDemosaic;
+
+boundaryFIFO boundaryFIFO (
+	.clock(clk),
+	.data({oDemosaicR, oDemosaicG, oDemosaicB}),
+	.rdreq(boundaryFIFOrdreq),
+	.sclr(reset),
+	.wrreq(boundaryFIFOwrreq),
+	.empty(boundaryFIFOEmpty),
+	.full(boundaryFIFOFull),
+	.q(oBoundaryFIFO)
+);
+
+
+//	For demosaic_acpi
+always @ (posedge clk) begin
+	if (reset) begin
+		skipCnt			<= 'b0;
+		skipCntEn		<= 0;
+		iValidFilter	<= 0;
+		boundaryCnt		<= 'b0;
+		iDataFilter		<= 'b0;
+		startBoundary	<= width*2-boundaryWidth-1;
+		
+		boundaryFIFOrdreq	<= 'b0;
+		r_boundaryFIFOEmpty	<= 'b0;
+	end
+	else begin
+		r_boundaryFIFOEmpty	<= boundaryFIFOEmpty;
+	
+		if (newFrame|oDoneDemosaic) begin
+			skipCntEn	<= 1;
+		end
+		else begin
+			//	Skip empty rows and the first boundary
+			if ((skipCnt < skipPixelCnt) && skipCntEn) begin
+				skipCnt		<= skipCnt + 1;
+			end
+			else begin
+				skipCnt		<= 'b0;
+				skipCntEn	<= 0;
+			end
+		end
+		
+		// At this point all skips has to be done
+		if (!skipCntEn) begin
+			// At start/end boundary
+			if (demosaicCnt == startBoundary) begin
+				// Need 2 boundaries, 1 at the end and the other at the beginning
+				// of the next row.
+				// NOTE: the kernelSize should be an odd number
+				boundaryCnt		<= kernelSize-1;
+				
+				startBoundary	<= startBoundary + width;
+			end
+		end
+		
+		if (skipCntEn) begin
+			iDataFilter			<= 'b0;
+			iValidFilter		<=	1;
+			boundaryFIFOrdreq	<= 'b0;
+		end
+		else if (boundaryCnt > 1) begin
+			// Need to add boundary to the input
+			iDataFilter			<= 'b0;
+			iValidFilter		<=	1;
+			boundaryCnt			<= boundaryCnt - 1;
+			boundaryFIFOrdreq	<= 'b0;
+		end
+		else if (boundaryCnt == 1) begin
+			// Need to request read, otherwise it's not ready in the next cycle
+			// The FIFO must be non-empty
+			boundaryFIFOrdreq	<= 1;
+			iDataFilter			<= 'b0;
+			iValidFilter		<= 1;
+			boundaryCnt			<= boundaryCnt - 1;
+		end
+		else begin
+			// Actual data
+			if (boundaryFIFOEmpty == 0) begin
+				if (r_boundaryFIFOEmpty	== 1) begin
+					// The FIFO was empty last cycle, need to request first
+					iDataFilter			<= 'b0;
+					boundaryFIFOrdreq	<= 1;
+					iValidFilter		<= 0;
+				end
+				else begin
+					// Last cycle requested read, we're good :)
+					iDataFilter			<= oBoundaryFIFO;
+					boundaryFIFOrdreq	<= 1;
+					iValidFilter		<= (demosaicCnt >= width*2+1)?1:0;
+				end
+			end
+			else begin
+				iDataFilter			<= 'b0;
+				boundaryFIFOrdreq	<= 0;
+				iValidFilter		<= 0;
+			end
+		end
+	end
+end
+
+
+
 //
 //always @ (posedge clk) begin
 //	if (reset) begin
