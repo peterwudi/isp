@@ -556,10 +556,10 @@ initial begin
 	end
 	
 	if (failed == 1) begin
-		$display("Demosaic is wrong");
+		$display("Demosaic before filter is wrong");
 	end
 	else begin
-		$display("Demosaic great success!!");
+		$display("Demosaic before filter great success!!");
 	end
 	
 	for (int i = 0; i < 10; i++) begin

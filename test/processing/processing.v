@@ -62,7 +62,7 @@ localparam	rows_needed_before_proc = (kernelSize-1)/2;
 // For demosaic_acpi
 localparam	skipPixelCnt				= widthWithBoundary*rows_needed_before_proc+boundaryWidth-1;
 
-localparam	startBoundaryCnt			= widthWithBoundary*(rows_needed_before_proc+1)-1-boundaryWidth-1;
+localparam	startBoundaryCnt			= widthWithBoundary*(rows_needed_before_proc+1)-1-boundaryWidth-2;
 localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 wire	[31:0]	xCnt, yCnt, demosaicCnt;
@@ -180,8 +180,9 @@ always @ (posedge clk) begin
 			if (filterInputCnt == startBoundary) begin
 				// Need 2 boundaries, 1 at the end and the other at the beginning
 				// of the next row.
-				// NOTE: the kernelSize should be an odd number
-				boundaryCnt		<= kernelSize-1;
+				// NOTE: need only kernelSize - 1 empty pixels, but when boundaryCnt
+				// 		is kernelSize, it means we need to lower the read request
+				boundaryCnt		<= kernelSize;
 				
 				startBoundary	<= startBoundary + widthWithBoundary;
 			end
@@ -192,7 +193,7 @@ always @ (posedge clk) begin
 			iValidFilter		<=	1;
 			boundaryFIFOrdreq	<= 'b0;
 		end
-		else if (boundaryCnt > 1) begin
+		else if ((boundaryCnt > 1) && (boundaryCnt < kernelSize)) begin
 			// Need to add boundary to the input
 			iDataFilter			<= 'b0;
 			iValidFilter		<=	1;
@@ -221,6 +222,16 @@ always @ (posedge clk) begin
 					iDataFilter			<= oBoundaryFIFO;
 					boundaryFIFOrdreq	<= 1;
 					iValidFilter		<= (demosaicCnt >= width*2+1)?1:0;
+					
+					if (boundaryCnt == kernelSize) begin
+						// Not actually marking boundary, but need to lower
+						// the FIFO read request.
+						boundaryFIFOrdreq	<= 0;
+						boundaryCnt	<= boundaryCnt - 1;
+					end
+					else begin
+						boundaryFIFOrdreq	<= 1;
+					end
 				end
 			end
 			else begin
