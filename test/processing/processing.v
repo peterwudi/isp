@@ -53,14 +53,16 @@ localparam	frameSize	= width * height;
 parameter	kernelSize					= 7;
 //parameter	kernelSize					= 3;
 localparam	boundaryWidth				= (kernelSize-1)/2;
+localparam	widthWithBoundary			= width + kernelSize - 1;
 localparam	rows_needed_before_proc = (kernelSize-1)/2;
 
 // For demosaic_neighbor
 //localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1;
 
 // For demosaic_acpi
-localparam	skipPixelCnt				= rows_needed_before_proc*(width+boundaryWidth*2)-1-boundaryWidth;
+localparam	skipPixelCnt				= widthWithBoundary*rows_needed_before_proc+boundaryWidth-1;
 
+localparam	startBoundaryCnt			= widthWithBoundary*(rows_needed_before_proc+1)-1-boundaryWidth-1;
 localparam	totalPixelCnt				= (rows_needed_before_proc*2+height)*(width+boundaryWidth*2);
 
 wire	[31:0]	xCnt, yCnt, demosaicCnt;
@@ -122,6 +124,26 @@ boundaryFIFO boundaryFIFO (
 );
 
 
+reg				filterPipelineEn;
+reg	[31:0]	filterInputCnt;
+
+always @(posedge clk) begin
+	if (reset | oDoneFilter) begin
+		filterPipelineEn	<= 0;
+		filterInputCnt		<= 'b0;
+	end
+	else begin
+		if (iValidFilter | filterPipelineEn) begin
+			filterInputCnt	<= filterInputCnt + 1;
+		end
+		
+		if (filterInputCnt >= totalPixelCnt) begin
+			// Input is finished, need to keep enabling the filter pipeline
+			filterPipelineEn	<= 1;
+		end
+	end
+end
+
 //	For demosaic_acpi
 always @ (posedge clk) begin
 	if (reset) begin
@@ -130,7 +152,7 @@ always @ (posedge clk) begin
 		iValidFilter	<= 0;
 		boundaryCnt		<= 'b0;
 		iDataFilter		<= 'b0;
-		startBoundary	<= width*2-boundaryWidth-1;
+		startBoundary	<= startBoundaryCnt;
 		
 		boundaryFIFOrdreq	<= 'b0;
 		r_boundaryFIFOEmpty	<= 'b0;
@@ -155,13 +177,13 @@ always @ (posedge clk) begin
 		// At this point all skips has to be done
 		if (!skipCntEn) begin
 			// At start/end boundary
-			if (demosaicCnt == startBoundary) begin
+			if (filterInputCnt == startBoundary) begin
 				// Need 2 boundaries, 1 at the end and the other at the beginning
 				// of the next row.
 				// NOTE: the kernelSize should be an odd number
 				boundaryCnt		<= kernelSize-1;
 				
-				startBoundary	<= startBoundary + width;
+				startBoundary	<= startBoundary + widthWithBoundary;
 			end
 		end
 		
@@ -274,27 +296,6 @@ end
 //		end
 //	end
 //end
-//
-//reg				filterPipelineEn;
-//reg	[31:0]	filterInputCnt;
-//
-//always @(posedge clk) begin
-//	if (reset | oDoneFilter) begin
-//		filterPipelineEn	<= 0;
-//		filterInputCnt		<= 'b0;
-//	end
-//	else begin
-//		if (iValidFilter | filterPipelineEn) begin
-//			filterInputCnt	<= filterInputCnt + 1;
-//		end
-//		
-//		if (filterInputCnt >= totalPixelCnt) begin
-//			// Input is finished, need to keep enabling the filter pipeline
-//			filterPipelineEn	<= 1;
-//		end
-//	end
-//end
-//
 //
 //reg	[7:0]	convengResetCnt;
 //reg			convengReset;
