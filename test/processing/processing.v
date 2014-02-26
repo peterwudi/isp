@@ -245,7 +245,7 @@ end
 
 
 
-//
+// For demosaic_neighbor
 //always @ (posedge clk) begin
 //	if (reset) begin
 //		skipCnt			<= 'b0;
@@ -349,177 +349,177 @@ end
 //);
 //
 //assign oDataFilter = {orData, ogData, obData};
+
+
+filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
+filter
+(
+	.clk(clk),
+	.reset(reset | oDoneFilter),
+	.iValid(iValidFilter | filterPipelineEn),
+	.oValid(oValidFilter),
+	.oDone(oDoneFilter),
+	
+	.iData(iDataFilter),
+	.oData(oDataFilter)
+);
+
 //
-//
-////filter_fifo_7 #(.width(width), .height(height), .kernel_size(kernelSize))
-////filter
-////(
-////	.clk(clk),
-////	.reset(reset | oDoneFilter),
-////	.iValid(iValidFilter | filterPipelineEn),
-////	.oValid(oValidFilter),
-////	.oDone(oDoneFilter),
-////	
-////	.iData(iDataFilter),
-////	.oData(oDataFilter)
-////);
-//
-////
-////filter_fifo_7_sym #(.width(width), .height(height), .kernel_size(kernelSize))
-////filter
-////(
-////	.clk(clk),
-////	.reset(reset | oDoneFilter),
-////	.iValid(iValidFilter | filterPipelineEn),
-////	.oValid(oValidFilter),
-////	.oDone(oDoneFilter),
-////	
-////	.iData(iDataFilter),
-////	.oData(oDataFilter)
-////);
-//
-//
-//// 18-bit singed fixed point number, 9 bits
-//// before/after the decimal point
-//
-///*
-//Y     0.2988   0.5869   0.1143        R
-//
-//Cb  = -0.1689  -0.3311  0.5000    X   G
-//
-//Cr    0.5000   -0.4189  -0.0811       B
-//*/
-//
-//// Coef has 17 bits after decimal point
-//localparam signed [9*18-1:0] rgb2ycc_coef =
-//{
-//	18'sd39164,  18'sd76926,  18'sd14982,
-//	-18'sd22138, -18'sd43398, 18'sd65536,
-//	18'sd65536, -18'sd54906, -18'sd10630
-//};
-//
-//wire	[37:0]	moY, moCb, moCr;
-//
-//matrixmult_3x3 #(.frameSize(frameSize))
-//rgb2ycc
+//filter_fifo_7_sym #(.width(width), .height(height), .kernel_size(kernelSize))
+//filter
 //(
 //	.clk(clk),
-//	.reset(reset | oDoneYcc),
-//	.iValid(oValidFilter),
-//	.iX({10'b0, oDataFilter[23:16]}),
-//	.iY({10'b0, oDataFilter[15:8]}),
-//	.iZ({10'b0, oDataFilter[7:0]}),
+//	.reset(reset | oDoneFilter),
+//	.iValid(iValidFilter | filterPipelineEn),
+//	.oValid(oValidFilter),
+//	.oDone(oDoneFilter),
 //	
-//	.coef(rgb2ycc_coef),
-//	
-//	.oA(moY),
-//	.oB(moCb),
-//	.oC(moCr),
-//	.oValid(oValidYcc),
-//	.oDone(oDoneYcc)
+//	.iData(iDataFilter),
+//	.oData(oDataFilter)
 //);
-//
-//// 18bits int x (18bits with 17 bits after the decimal point)
-//// gets you a 36bits number with 17 bits after the decimal
-//// point. We want only 9.
-//assign	y	= moY[25:8];
-//assign	cb	= moCb[25:8];
-//assign	cr	= moCr[25:8];
-//
-//
-//// Color correction
-//// Only put it here for measurement...
-//wire				[37:0]	moColorR, moColorG, moColorB;
-//wire							oDoneColor, oValidColor;
-//wire	signed	[17:0]	oColorR, oColorG, oColorB;
-//localparam signed [9*18-1:0] colorcorr_coef =
-//{
-//	18'sd1, 18'sd0, 18'sd0,
-//	18'sd0, 18'sd1, 18'sd0,
-//	18'sd0, 18'sd0, 18'sd1
-//};
-//
-//matrixmult_3x3 #(.frameSize(frameSize))
-//colorcorr
-//(
-//	.clk(clk),
-//	.reset(reset | oDoneColor),
-//	.iValid(oValidYcc),
-//	.iX(y),
-//	.iY(cb),
-//	.iZ(cr),
-//	
-//	.coef(colorcorr_coef),
-//	
-//	.oA(moColorR),
-//	.oB(moColorG),
-//	.oC(moColorB),
-//	.oValid(oValidColor),
-//	.oDone(oDoneColor)
-//);
-//
-//assign	oColorR	= moColorR[17:0];
-//assign	oColorG	= moColorG[17:0];
-//assign	oColorB	= moColorB[17:0];
-//
-//
-//// Gamma correction
-//wire	[17:0]	yGamma, cbGamma, crGamma;
-//wire				oValidGamma;
-//
-//gamma gamma
-//(
-//	.clk(clk),
-//	.reset(reset),
-//	.iY(oColorR),
-//	.iCb(oColorG),
-//	.iCr(oColorB),
-//	.iValid(oValidColor),
-//	
-//	.oY(yGamma),
-//	.oCb(cbGamma),
-//	.oCr(crGamma),
-//	.oValid(oValidGamma)
-//);
-//
-//localparam signed [9*18-1:0] ycc2rgb_coef =
-//{
-//	18'sd65536,  18'sd0,       18'sd91881,
-//	18'sd65536, -18'sd22551,  -18'sd46799,
-//	18'sd65536,  18'sd112853,  18'sd10
-//};
-//
-//wire	[37:0]	moFinalR, moFinalG, moFinalB;
-//
-//matrixmult_3x3 #(.frameSize(frameSize))
-//ycc2rgb
-//(
-//	.clk(clk),
-//	.reset(reset | oDoneRGB),
-//	.iValid(oValidGamma),
-//	.iX(yGamma),
-//	.iY(cbGamma),
-//	.iZ(crGamma),
-//	
-//	.coef(ycc2rgb_coef),
-//	
-//	.oA(moFinalR),
-//	.oB(moFinalG),
-//	.oC(moFinalB),
-//	.oValid(oValidRGB),
-//	.oDone(oDoneRGB)
-//);
-//
-////	ycc x ycc2rgb_coef
-//// aaaaaaaaa bbbbbbbbb	x	cc dddddddddddddddd
-////	  9 bits   9 bits     2bits   16 bits
-//// = aaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
-////    12 bits            25 bits
-//// Want to take the lower 8 bits of the integer part
-//// i.e. [32:25]
-//assign	oFinalR	= moFinalR[32:25];
-//assign	oFinalG	= moFinalG[32:25];
-//assign	oFinalB	= moFinalB[32:25];
+
+
+// 18-bit singed fixed point number, 9 bits
+// before/after the decimal point
+
+/*
+Y     0.2988   0.5869   0.1143        R
+
+Cb  = -0.1689  -0.3311  0.5000    X   G
+
+Cr    0.5000   -0.4189  -0.0811       B
+*/
+
+// Coef has 17 bits after decimal point
+localparam signed [9*18-1:0] rgb2ycc_coef =
+{
+	18'sd39164,  18'sd76926,  18'sd14982,
+	-18'sd22138, -18'sd43398, 18'sd65536,
+	18'sd65536, -18'sd54906, -18'sd10630
+};
+
+wire	[37:0]	moY, moCb, moCr;
+
+matrixmult_3x3 #(.frameSize(frameSize))
+rgb2ycc
+(
+	.clk(clk),
+	.reset(reset | oDoneYcc),
+	.iValid(oValidFilter),
+	.iX({10'b0, oDataFilter[23:16]}),
+	.iY({10'b0, oDataFilter[15:8]}),
+	.iZ({10'b0, oDataFilter[7:0]}),
+	
+	.coef(rgb2ycc_coef),
+	
+	.oA(moY),
+	.oB(moCb),
+	.oC(moCr),
+	.oValid(oValidYcc),
+	.oDone(oDoneYcc)
+);
+
+// 18bits int x (18bits with 17 bits after the decimal point)
+// gets you a 36bits number with 17 bits after the decimal
+// point. We want only 9.
+assign	y	= moY[25:8];
+assign	cb	= moCb[25:8];
+assign	cr	= moCr[25:8];
+
+
+// Color correction
+// Only put it here for measurement...
+wire				[37:0]	moColorR, moColorG, moColorB;
+wire							oDoneColor, oValidColor;
+wire	signed	[17:0]	oColorR, oColorG, oColorB;
+localparam signed [9*18-1:0] colorcorr_coef =
+{
+	18'sd1, 18'sd0, 18'sd0,
+	18'sd0, 18'sd1, 18'sd0,
+	18'sd0, 18'sd0, 18'sd1
+};
+
+matrixmult_3x3 #(.frameSize(frameSize))
+colorcorr
+(
+	.clk(clk),
+	.reset(reset | oDoneColor),
+	.iValid(oValidYcc),
+	.iX(y),
+	.iY(cb),
+	.iZ(cr),
+	
+	.coef(colorcorr_coef),
+	
+	.oA(moColorR),
+	.oB(moColorG),
+	.oC(moColorB),
+	.oValid(oValidColor),
+	.oDone(oDoneColor)
+);
+
+assign	oColorR	= moColorR[17:0];
+assign	oColorG	= moColorG[17:0];
+assign	oColorB	= moColorB[17:0];
+
+
+// Gamma correction
+wire	[17:0]	yGamma, cbGamma, crGamma;
+wire				oValidGamma;
+
+gamma gamma
+(
+	.clk(clk),
+	.reset(reset),
+	.iY(oColorR),
+	.iCb(oColorG),
+	.iCr(oColorB),
+	.iValid(oValidColor),
+	
+	.oY(yGamma),
+	.oCb(cbGamma),
+	.oCr(crGamma),
+	.oValid(oValidGamma)
+);
+
+localparam signed [9*18-1:0] ycc2rgb_coef =
+{
+	18'sd65536,  18'sd0,       18'sd91881,
+	18'sd65536, -18'sd22551,  -18'sd46799,
+	18'sd65536,  18'sd112853,  18'sd10
+};
+
+wire	[37:0]	moFinalR, moFinalG, moFinalB;
+
+matrixmult_3x3 #(.frameSize(frameSize))
+ycc2rgb
+(
+	.clk(clk),
+	.reset(reset | oDoneRGB),
+	.iValid(oValidGamma),
+	.iX(yGamma),
+	.iY(cbGamma),
+	.iZ(crGamma),
+	
+	.coef(ycc2rgb_coef),
+	
+	.oA(moFinalR),
+	.oB(moFinalG),
+	.oC(moFinalB),
+	.oValid(oValidRGB),
+	.oDone(oDoneRGB)
+);
+
+//	ycc x ycc2rgb_coef
+// aaaaaaaaa bbbbbbbbb	x	cc dddddddddddddddd
+//	  9 bits   9 bits     2bits   16 bits
+// = aaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
+//    12 bits            25 bits
+// Want to take the lower 8 bits of the integer part
+// i.e. [32:25]
+assign	oFinalR	= moFinalR[32:25];
+assign	oFinalG	= moFinalG[32:25];
+assign	oFinalB	= moFinalB[32:25];
 
 
 

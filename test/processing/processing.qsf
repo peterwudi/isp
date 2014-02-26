@@ -75,10 +75,10 @@ set_global_assignment -name POWER_INPUT_FILE_NAME simulation/modelsim/processing
 set_instance_assignment -name POWER_READ_INPUT_FILE processing.vcd -to processing
 set_global_assignment -name POWER_VCD_FILE_START_TIME "311 us" -section_id processing.vcd
 set_global_assignment -name POWER_VCD_FILE_END_TIME "426 us" -section_id processing.vcd
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
 set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name SEED 1
@@ -109,4 +109,5 @@ set_global_assignment -name QIP_FILE ../../components/demosaic_acpi_G_interploat
 set_global_assignment -name QIP_FILE demosaic_acpi_RB_interploation_240p.qip
 set_global_assignment -name QIP_FILE ../../components/demosaic_acpi_RB_interploation_240p.qip
 set_global_assignment -name QIP_FILE boundaryFIFO.qip
+set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
